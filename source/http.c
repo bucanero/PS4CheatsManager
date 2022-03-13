@@ -9,7 +9,7 @@
 #include <orbis/Sysmodule.h>
 
 #include "common.h"
-#include "saves.h"
+#include "cheats.h"
 
 #define HTTP_SUCCESS 	1
 #define HTTP_FAILED	 	0
