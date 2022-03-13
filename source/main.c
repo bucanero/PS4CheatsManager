@@ -1126,7 +1126,6 @@ s32 main(s32 argc, const char* argv[])
 	uint32_t deltaFrameTicks = 0;
 
 	dbglogger_init();
-	dbglogger_init_mode(TCP_LOGGER, "10.22.22.58", 19999);
 #endif
 
 	initInternal();
