@@ -8,7 +8,7 @@ This is a simple PS4 GUI that manages GoldHEN cheat codes files.
 
 # License
 
-[GoldHEN Cheats Manager](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/) library - Copyright (C) 2022  Damian Parrino
+[GoldHEN Cheats Manager](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/) - Copyright (C) 2022  Damian Parrino
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the [GNU General Public License](LICENSE) as published by
