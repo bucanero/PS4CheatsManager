@@ -383,7 +383,7 @@ int ReadOnlineSaves(game_entry_t * game)
 
 list_t * ReadBackupList(const char* userPath)
 {
-	if (http_download("https://github.com/kmeps4/Cheats_Repo/archive/refs/heads/", "main.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
+	if (http_download("https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/", "main.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
 	{
 		if (extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_DATA_PATH))
 			show_message("Successfully installed local application data");

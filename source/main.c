@@ -1119,7 +1119,7 @@ static int initInternal()
 */
 s32 main(s32 argc, const char* argv[])
 {
-#ifdef APOLLO_ENABLE_LOGGING
+#ifdef DEBUG_ENABLE_LOG
 	// Frame tracking info for debugging
 	uint32_t lastFrameTicks  = 0;
 	uint32_t startFrameTicks = 0;
@@ -1267,7 +1267,7 @@ s32 main(s32 argc, const char* argv[])
 
 	while (!close_app)
 	{
-#ifdef APOLLO_ENABLE_LOGGING
+#ifdef DEBUG_ENABLE_LOG
         startFrameTicks = SDL_GetTicks();
         deltaFrameTicks = startFrameTicks - lastFrameTicks;
         lastFrameTicks  = startFrameTicks;
@@ -1298,7 +1298,7 @@ s32 main(s32 argc, const char* argv[])
 			SetFontAlign(FONT_ALIGN_LEFT);
 		}
 
-#ifdef APOLLO_ENABLE_LOGGING
+#ifdef DEBUG_ENABLE_LOG
 		// Calculate FPS and ms/frame
 		SetFontColor(APP_FONT_COLOR | 0xFF, 0);
 		DrawFormatString(50, 960, "FPS: %d", (1000 / deltaFrameTicks));
