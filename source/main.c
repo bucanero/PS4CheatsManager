@@ -70,7 +70,6 @@ OrbisPadData padA[MAX_PADS];
 
 
 void drawScene();
-void update_hdd_path(char *p);
 
 app_config_t apollo_config = {
     .music = 1,
@@ -96,9 +95,9 @@ png_texture * menu_textures;                // png_texture array for main menu, 
 
 const char * menu_about_strings[] = { "Bucanero", "PS4 Cheats Manager",
 									"Ctn123", "Cheat Engine",
-									"Shinigami", "Cheat Engine",
+									"ShininGami", "Cheat Engine",
 									"SiSTRo", "GoldHEN, Cheat Menu",
-									"Kamaleon", "QA Support",
+									"Kameleon", "QA Support",
 									"", "",
 									"PS3", "credits",
 									"Berion", "GUI design",
@@ -140,10 +139,10 @@ save_list_t hdd_saves = {
 	.icon_id = header_ico_cht_png_index,
 	.title = "HDD Cheats",
     .list = NULL,
-    .path = "",
+    .path = USER_PATH_HDD,
     .ReadList = &ReadUserList,
     .ReadCodes = &ReadCodes,
-    .UpdatePath = &update_hdd_path,
+    .UpdatePath = NULL,
 };
 
 /*
@@ -405,11 +404,6 @@ int LoadSounds(void* data)
 	drmp3_uninit(&wav);
 
 	return 0;
-}
-
-void update_hdd_path(char* path)
-{
-	strcpy(path, USER_PATH_HDD);
 }
 
 int ReloadUserSaves(save_list_t* save_list)

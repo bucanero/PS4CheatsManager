@@ -41,7 +41,7 @@ The application also provides direct access to the [Online Cheat database](https
 
 * [Bucanero](https://github.com/bucanero): Project developer
 * [Ctn123](https://github.com/ctn123): Cheat Engine
-* [Shinigami](https://github.com/ScriptSK): Cheat Engine
+* [ShininGami](https://github.com/ScriptSK): Cheat Engine
 * [SiSTRo](https://github.com/SiSTR0): [GoldHEN](https://github.com/GoldHEN/GoldHEN)
 * [Kameleon](https://github.com/kmeps4): QA Support
 

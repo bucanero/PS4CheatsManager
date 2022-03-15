@@ -357,7 +357,7 @@ int ReadOnlineSaves(game_entry_t * game)
 {
 //	code_entry_t* item;
 	char path[256];
-	snprintf(path, sizeof(path), GOLDCHEATS_LOCAL_CACHE "%s_%s.txt", game->title_id, game->version);
+	snprintf(path, sizeof(path), GOLDCHEATS_LOCAL_CACHE "%s", strrchr(game->path, '/') + 1);
 
 	if (file_exists(path) == SUCCESS)
 	{
@@ -375,7 +375,13 @@ int ReadOnlineSaves(game_entry_t * game)
 
 	char *tmp = game->path;
 	game->path = path;
-	set_json_codes(game);
+
+	if (game->flags & CHEAT_FLAG_JSON)
+		set_json_codes(game);
+
+	if (game->flags & CHEAT_FLAG_SHN)
+		set_shn_codes(game);
+
 	game->path = tmp;
 
 	return (list_count(game->codes));
@@ -642,7 +648,7 @@ static void read_shn_games(const char* userPath, list_t *list)
 		if (file_exists(fullPath) != SUCCESS)
 			continue;
 
-		LOG("ReadUserList() :: Reading %s...", dir->d_name);
+		LOG("Reading %s...", dir->d_name);
 
 		long bsize;
 		char *buffer = readTextFile(fullPath, &bsize);
@@ -706,7 +712,7 @@ static void read_json_games(const char* userPath, list_t *list)
 		if (file_exists(fullPath) != SUCCESS)
 			continue;
 
-		LOG("ReadUserList() :: Reading %s...", dir->d_name);
+		LOG("Reading %s...", dir->d_name);
 
 		long bsize;
 		char *buffer = readTextFile(fullPath, &bsize);
@@ -811,12 +817,14 @@ list_t * ReadUserList(const char* userPath)
  *	gmc:			Set as the number of games read
  * Return:			Pointer to array of game_entry, null if failed
  */
-static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
+static void _ReadOnlineListEx(const char* urlPath, const char* fext, uint16_t flag, list_t *list)
 {
 	game_entry_t *item;
 	char path[256];
+	char fname[64];
 
 	snprintf(path, sizeof(path), GOLDCHEATS_LOCAL_CACHE "%04X_games.txt", flag);
+	snprintf(fname, sizeof(fname), "%s.txt", fext);
 
 	if (file_exists(path) == SUCCESS)
 	{
@@ -824,11 +832,11 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 		stat(path, &stats);
 		// re-download if file is +1 day old
 		if ((stats.st_mtime + ONLINE_CACHE_TIMEOUT) < time(NULL))
-			http_download(urlPath, "games.txt", path, 0);
+			http_download(urlPath, fname, path, 0);
 	}
 	else
 	{
-		if (!http_download(urlPath, "games.txt", path, 0))
+		if (!http_download(urlPath, fname, path, 0))
 			return;
 	}
 
@@ -852,7 +860,7 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 		{
 			*tmp++ = 0;
 			item = _createSaveEntry(flag | CHEAT_FLAG_ONLINE, tmp);
-			asprintf(&item->path, "%s%s", urlPath, content);
+			asprintf(&item->path, "%s%s/%s", urlPath, fext, content);
 
 			tmp = strchr(content, '_');
 			*tmp++ = 0;
@@ -880,14 +888,13 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 
 list_t * ReadOnlineList(const char* urlPath)
 {
-	return NULL;
-
-	char url[256];
 	list_t *list = list_alloc();
 
 	// PS4 JSON games
-	snprintf(url, sizeof(url), "%s" "json/", urlPath);
-	_ReadOnlineListEx(url, CHEAT_FLAG_PS4 | CHEAT_FLAG_JSON, list);
+	_ReadOnlineListEx(urlPath, "json", CHEAT_FLAG_PS4 | CHEAT_FLAG_JSON, list);
+
+	// PS4 SHN games
+	_ReadOnlineListEx(urlPath, "shn", CHEAT_FLAG_PS4 | CHEAT_FLAG_SHN, list);
 
 	if (!list_count(list))
 	{
