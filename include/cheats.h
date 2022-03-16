@@ -85,12 +85,8 @@ enum char_flag_enum
 enum code_type_enum
 {
     PATCH_NULL,
-    PATCH_GAMEGENIE = APOLLO_CODE_GAMEGENIE,
-    PATCH_BSD = APOLLO_CODE_BSD,
+    PATCH_VIEW,
     PATCH_COMMAND,
-    PATCH_SFO,
-    PATCH_TROP_UNLOCK,
-    PATCH_TROP_LOCK,
 };
 
 typedef struct game_entry

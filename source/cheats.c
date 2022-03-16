@@ -248,7 +248,7 @@ int set_json_codes(game_entry_t* item)
 		if (!cJSON_IsString(mod_name) || !cJSON_IsString(mod_type))
 			continue;
 
-		cmd = _createCmdCode(PATCH_GAMEGENIE, mod_name->valuestring, CMD_CODE_NULL);
+		cmd = _createCmdCode(PATCH_VIEW, mod_name->valuestring, CMD_CODE_NULL);
 		
 		const cJSON *mem = cJSON_GetObjectItemCaseSensitive(mod, "memory");
 		cmd->codes = cJSON_Print(mem);
@@ -305,7 +305,7 @@ int set_shn_codes(game_entry_t* item)
 
 		if (value)
 		{
-			cmd = _createCmdCode(PATCH_GAMEGENIE, mxmlElementGetAttr(node, "Text"), CMD_CODE_NULL);
+			cmd = _createCmdCode(PATCH_VIEW, mxmlElementGetAttr(node, "Text"), CMD_CODE_NULL);
 			cmd->codes = mxmlSaveAllocString(node, &xml_whitespace_cb);
 
 			LOG("Added '%s' (%d)", cmd->name, cmd->type);

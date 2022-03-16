@@ -98,13 +98,9 @@ void DrawHeader_Ani(int icon, const char * hdrTitle, const char * headerSubTitle
 
 	_drawListBackground(0, icon);
 	//------------- Menu Bar
-/*
-	int cnt, cntMax = ((ani * div) > (SCREEN_WIDTH - 75)) ? (SCREEN_WIDTH - 75) : (ani * div);
-	for (cnt = MENU_ICON_OFF; cnt < cntMax; cnt++)
-		DrawTexture(&menu_textures[header_line_png_index], cnt, 40, 0, menu_textures[header_line_png_index].width, menu_textures[header_line_png_index].height / 2, 0xffffffff);
-
-	DrawTexture(&menu_textures[header_dot_png_index], cnt - 4, 40, 0, menu_textures[header_dot_png_index].width / 2, menu_textures[header_dot_png_index].height / 2, 0xffffff00 | icon_a);
-*/
+	SetFontColor(0x000000 | icon_a, 0);
+	SetFontSize(APP_FONT_SIZE_SUBTITLE);
+	DrawStringMono(MENU_ICON_OFF + 10, 80, "\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4");
 
 	//header mini icon
 	DrawTextureCenteredX(&menu_textures[icon], MENU_ICON_OFF - 20, 32, 0, 96, 96, 0xffffff00 | icon_a);

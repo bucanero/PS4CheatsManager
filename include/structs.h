@@ -4,9 +4,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define APOLLO_CODE_GAMEGENIE      1
-#define APOLLO_CODE_BSD            2
-
 #ifdef __cplusplus
 extern "C" {
 #endif

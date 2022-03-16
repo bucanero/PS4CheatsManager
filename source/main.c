@@ -95,7 +95,7 @@ png_texture * menu_textures;                // png_texture array for main menu, 
 
 const char * menu_about_strings[] = { "Bucanero", "PS4 Cheats Manager",
 									"Ctn123", "Cheat Engine",
-									"ShininGami", "Cheat Engine",
+									"Shiningami", "Cheat Engine",
 									"SiSTRo", "GoldHEN, Cheat Menu",
 									"Kameleon", "QA Support",
 									"", "",
@@ -692,7 +692,7 @@ void doSaveMenu(save_list_t * save_list)
     		SetMenu(MENU_PATCHES);
     		return;
     	}
-    	else if (pad_check_button(ORBIS_PAD_BUTTON_TRIANGLE) && save_list->UpdatePath)
+    	else if (pad_check_button(ORBIS_PAD_BUTTON_TRIANGLE)) // && save_list->UpdatePath)
     	{
 			selected_entry = list_get_item(save_list->list, menu_sel);
 			if (selected_entry->type != FILE_TYPE_MENU)
@@ -952,13 +952,14 @@ void doPatchMenu()
 			selected_centry = list_get_item(selected_entry->codes, menu_sel);
 
 			if (selected_centry->type != PATCH_NULL)
-				selected_centry->activated = !selected_centry->activated;
+//				selected_centry->activated = !selected_centry->activated;
 
 			if (selected_centry->type == PATCH_COMMAND)
 				execCodeCommand(selected_centry, selected_centry->codes);
 
 			if (selected_centry->activated)
 			{
+				/*
 				// Only activate Required codes if a cheat is selected
 				if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD)
 				{
@@ -966,11 +967,10 @@ void doPatchMenu()
 					list_node_t* node;
 
 					for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
-						if (0)
-//						if (wildcard_match_icase(code->name, "*(REQUIRED)*"))
+						if (wildcard_match_icase(code->name, "*(REQUIRED)*"))
 							code->activated = 1;
 				}
-				/*
+
 				if (!selected_centry->options)
 				{
 					int size;
@@ -1007,8 +1007,7 @@ void doPatchMenu()
 		{
 			selected_centry = list_get_item(selected_entry->codes, menu_sel);
 
-			if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD ||
-				selected_centry->type == PATCH_TROP_LOCK || selected_centry->type == PATCH_TROP_UNLOCK)
+			if (selected_centry->type == PATCH_VIEW)
 			{
 				SetMenu(MENU_PATCH_VIEW);
 				return;
@@ -1276,9 +1275,9 @@ s32 main(s32 argc, const char* argv[])
 		if (menu_pad_help[menu_id])
 		{
 			u8 alpha = 0xFF;
-			if (pad_data.idle > 80)
+			if (pad_data.idle > 0x800)
 			{
-				int dec = (pad_data.idle - 80) * 4;
+				int dec = (pad_data.idle - 0x800) * 2;
 				if (dec > alpha)
 					dec = alpha;
 				alpha -= dec;
