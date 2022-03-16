@@ -4,7 +4,11 @@
 
 An open-source PlayStation 4 cheat code manager for GoldHEN.
 
-![image](./docs/screenshots/main-menu.jpg)
+![image](./screenshots/main-menu2.jpg)
+
+![image](./screenshots/game-list.jpg)
+
+![image](./screenshots/goldcheats-xmb.jpg)
 
 **GoldHEN Cheats Manager** is a simple PS4 homebrew application that manages GoldHEN cheat codes files.
 

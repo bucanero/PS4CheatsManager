@@ -125,6 +125,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	else if (contentLengthType == ORBIS_HTTP_CONTENTLEN_EXIST) {
 		LOG("Content-Length = %lu\n", contentLength);
 	}
+	else LOG("Unknown Content-Length");
 
 	switch (statusCode)
 	{
@@ -158,7 +159,10 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	while (1) {
 		int read = sceHttpReadData(req, dl_buf, sizeof(dl_buf));
 		if (read < 0)
+		{
+			LOG("HTTP read error! (0x%08X)", read);
 			break;
+		}
 
 		if (read == 0)
 		{
@@ -168,7 +172,10 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 
 		ret = fwrite(dl_buf, 1, read, fd);
 		if (ret < 0 || ret != read)
+		{
+			LOG("File write error! (%d)", ret);
 			break;
+		}
 
 		total_read += read;
 
