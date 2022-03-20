@@ -83,7 +83,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 
 	tpl = sceHttpCreateTemplate(libhttpCtxId, HTTP_USER_AGENT, ORBIS_HTTP_VERSION_1_1, 1);
 	if (tpl < 0) {
-		LOG("sceHttpCreateConnectionWithURL() error: 0x%08X\n", tpl);
+		LOG("sceHttpCreateTemplate() error: 0x%08X\n", tpl);
 		return HTTP_FAILED;
 	}
 
@@ -107,7 +107,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	LOG("Sending Request to '%s'\n", full_url);
 	ret = sceHttpSendRequest(req, NULL, 0);
 	if (ret < 0) {
-		LOG("sceHttpCreateRequestWithURL (%X)", ret);
+		LOG("sceHttpSendRequest (%X)", ret);
 		goto close_http;
 	}
 
