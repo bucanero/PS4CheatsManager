@@ -74,6 +74,34 @@ static sqlite3* open_sqlite_db(const char* db_path)
 	return db;
 }
 
+void check_game_appdb(list_t* list)
+{
+	sqlite3* db;
+	sqlite3_stmt *res;
+	list_node_t* node;
+	game_entry_t* item;
+
+	if ((db = open_sqlite_db("/system_data/priv/mms/app.db")) == NULL)
+		return;
+
+	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
+	{
+		char* query = sqlite3_mprintf("SELECT titleId, val FROM tbl_appinfo WHERE key = 'APP_VER' AND "
+			" titleId = %Q AND val = %Q", item->title_id, item->version);
+
+		if (sqlite3_prepare_v2(db, query, -1, &res, NULL) == SQLITE_OK && sqlite3_step(res) == SQLITE_ROW)
+		{
+			LOG("Found game: %s v%s", item->title_id, item->version);
+			item->flags |= CHEAT_FLAG_OWNER;
+		}
+		
+		sqlite3_free(query);
+	}
+
+	sqlite3_close(db);
+	return;
+}
+
 int orbis_SaveUmount(const char* mountPath)
 {
 	OrbisSaveDataMountPoint umount;
@@ -805,6 +833,7 @@ list_t * ReadUserList(const char* userPath)
 		return NULL;
 	}
 
+	check_game_appdb(list);
 	return list;
 }
 
@@ -866,7 +895,7 @@ static void _ReadOnlineListEx(const char* urlPath, const char* fext, uint16_t fl
 			*tmp++ = 0;
 			item->title_id = strdup(content);
 
-			*strrchr(tmp, '.') = 0;
+			*(tmp + 5) = 0;
 			item->version = strdup(tmp);
 
 			LOG("+ [%s %s] %s", item->title_id, item->version, item->name);
@@ -902,6 +931,7 @@ list_t * ReadOnlineList(const char* urlPath)
 		return NULL;
 	}
 
+	check_game_appdb(list);
 	return list;
 }
 
