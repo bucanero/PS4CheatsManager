@@ -127,7 +127,7 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 			LOG("Extracting %s", fpath);
 
 			update_progress_bar(i, n, name);
-			ret += zip_entry_fread(zip, fpath);
+			ret += (zip_entry_fread(zip, fpath) == SUCCESS);
 		}
 		zip_entry_close(zip);
 	}
@@ -135,5 +135,5 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 	end_progress_bar();
 	zip_close(zip);
 
-	return (ret == SUCCESS);
+	return (ret);
 }

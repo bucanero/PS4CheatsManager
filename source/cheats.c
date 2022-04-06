@@ -419,11 +419,16 @@ list_t * ReadBackupList(const char* userPath)
 {
 	if (http_download("https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/", "main.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
 	{
-		if (extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_DATA_PATH))
-			show_message("Successfully installed local application data");
+		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_DATA_PATH);
+
+		if (ret > 0)
+			show_message("Successfully installed %d cheat files", ret);
+		else
+			show_message("Zip extraction error!");
 
 		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
 	}
+	else show_message("Download error!");
 
 	return NULL;
 

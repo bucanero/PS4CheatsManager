@@ -1216,7 +1216,7 @@ s32 main(s32 argc, const char* argv[])
 	// Unpack application data on first run
 	if (apollo_config.packver < GOLDCHEATS_DATA_VERSION)
 	{
-		if (extract_zip(GOLDCHEATS_APP_PATH "misc/cheats.zip", GOLDCHEATS_DATA_PATH))
+		if (extract_zip(GOLDCHEATS_APP_PATH "misc/appdata.zip", GOLDCHEATS_DATA_PATH))
 			show_message("Successfully installed local application data");
 
 		apollo_config.packver = GOLDCHEATS_DATA_VERSION;
