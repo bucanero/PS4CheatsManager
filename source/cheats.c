@@ -749,7 +749,6 @@ static void read_json_games(const char* userPath, list_t *list)
 
 		long bsize;
 		char *buffer = readTextFile(fullPath, &bsize);
-
 		cJSON *cheat = cJSON_Parse(buffer);
 		const cJSON *jobject;
 

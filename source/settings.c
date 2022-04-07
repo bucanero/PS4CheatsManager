@@ -6,6 +6,7 @@
 #include <orbis/libkernel.h>
 #include <orbis/SaveData.h>
 #include <orbis/UserService.h>
+#include <cjson/cJSON.h>
 
 #include "types.h"
 #include "menu.h"
@@ -143,62 +144,47 @@ void update_callback(int sel)
 	long size = 0;
 
 	buffer = readTextFile(GOLDCHEATS_LOCAL_CACHE "ver.check", &size);
+	cJSON *json = cJSON_Parse(buffer);
 
-	if (!buffer)
+	if (!json)
+	{
+		LOG("JSON parse Error: %s\n", buffer);
+		free(buffer);
 		return;
+	}
 
 	LOG("received %u bytes", size);
 
-	static const char find[] = "\"name\":\"GoldHEN Cheats Manager v";
-	const char* start = strstr(buffer, find);
-	if (!start)
+	const cJSON *ver = cJSON_GetObjectItemCaseSensitive(json, "tag_name");
+	const cJSON *url = cJSON_GetObjectItemCaseSensitive(json, "assets");
+	url = cJSON_GetObjectItemCaseSensitive(cJSON_GetArrayItem(url, 0), "browser_download_url");
+
+	if (!cJSON_IsString(ver) || !cJSON_IsString(url))
 	{
 		LOG("no name found");
 		goto end_update;
 	}
 
-	LOG("found name");
-	start += sizeof(find) - 1;
+	LOG("latest version is %s", ver->valuestring);
 
-	char* end = strchr(start, '"');
-	if (!end)
-	{
-		LOG("no end of name found");
-		goto end_update;
-	}
-	*end = 0;
-	LOG("latest version is %s", start);
-
-	if (strcasecmp(GOLDCHEATS_VERSION, start) == 0)
+	if (strcasecmp(GOLDCHEATS_VERSION, ver->valuestring + 1) == 0)
 	{
 		LOG("no need to update");
 		goto end_update;
 	}
 
-	start = strstr(end+1, "\"browser_download_url\":\"");
-	if (!start)
-		goto end_update;
-
-	start += 24;
-	end = strchr(start, '"');
-	if (!end)
-	{
-		LOG("no download URL found");
-		goto end_update;
-	}
-
-	*end = 0;
-	LOG("download URL is %s", start);
+	LOG("download URL is %s", url->valuestring);
 
 	if (show_dialog(1, "New version available! Download update?"))
 	{
-		if (http_download(start, "", "/data/goldcheats.pkg", 1))
+		if (http_download(url->valuestring, "", "/data/goldcheats.pkg", 1))
 			show_message("Update downloaded to /data/goldcheats.pkg");
 		else
 			show_message("Download error!");
 	}
 
 end_update:
+	cJSON_Delete(json);
 	free(buffer);
 	return;
 }
