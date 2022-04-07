@@ -109,6 +109,7 @@ jobs:
     - name: Push package artifact
       uses: actions/upload-artifact@v3
       with:
+        name: goldcheats-build_${{ env.commit_ver }}
         path: ${{ env.pkg_file }}
         if-no-files-found: error
         retention-days: 7 # don't keep artifacts for too long
