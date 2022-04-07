@@ -1,4 +1,4 @@
-name: Build app package
+name: Build package
 
 on: [ push, pull_request, workflow_dispatch ]
 
