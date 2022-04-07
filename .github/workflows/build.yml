@@ -46,6 +46,12 @@ jobs:
         path: ./llvm
         key: llvm-${{ env.llvm_ver }}
 
+    - name: Install LLVM and Clang
+      uses: KyleMayes/install-llvm-action@v1
+      with:
+        version: ${{ env.llvm_ver }}
+        cached: ${{ steps.cache-llvm.outputs.cache-hit }}
+
     - name: Install zlib
       working-directory: oosdk_libraries/zlib_partial
       run: |
