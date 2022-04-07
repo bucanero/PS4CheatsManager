@@ -27,7 +27,7 @@ jobs:
       run: |
         ver="1.$(git rev-list HEAD --count)"
         echo "commit_ver=$ver" >> $GITHUB_ENV
-        echo "pkg_file=IV0000-APOL00004_00-APOLLO0000000PS4.pkg" >> $GITHUB_ENV
+        echo "pkg_file=IV0000-GOLD00777_00-GOLDCHEATS000PS4.pkg" >> $GITHUB_ENV
         echo "llvm_ver=10.0" >> $GITHUB_ENV
         mv GoldHEN_Cheat_Repository appdata
 
