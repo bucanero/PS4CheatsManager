@@ -21,6 +21,7 @@ jobs:
         git clone https://github.com/bucanero/mxml                --depth 1
         git clone https://github.com/bucanero/cJSON               --depth 1
         git clone https://github.com/Al-Azif/ps4-skeleton.git     --depth 1
+        git clone https://github.com/GoldHEN/GoldHEN_Cheat_Repository --depth 1
 
     - name: Set env vars
       run: |
@@ -28,7 +29,7 @@ jobs:
         echo "commit_ver=$ver" >> $GITHUB_ENV
         echo "pkg_file=IV0000-APOL00004_00-APOLLO0000000PS4.pkg" >> $GITHUB_ENV
         echo "llvm_ver=10.0" >> $GITHUB_ENV
-        echo "#define APOLLO_VERSION \"$ver\"" > include/app_version.h
+        mv GoldHEN_Cheat_Repository appdata
 
       # temporary release until 0.53 is released
     - name: Download OpenOrbis Toolchain
