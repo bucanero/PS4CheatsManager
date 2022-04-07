@@ -4,6 +4,14 @@ All notable changes to the `GoldHEN Cheats Manager` project will be documented i
 
 ## [Unreleased]()
 
+## [v0.6.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v0.6.0) - 2022-04-07
+
+### Added
+
+- Display number of files installed after `Update`
+- Installed Games detection on Cheat list screen
+- Show total number of files on Cheat list screen
+
 ## [v0.5.1](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v0.5.1) - 2022-03-16
 
 ### Added
