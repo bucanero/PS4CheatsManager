@@ -91,6 +91,10 @@ int close_app = 0;
 int idle_time = 0;                          // Set by readPad
 
 png_texture * menu_textures;                // png_texture array for main menu, initialized in LoadTexture
+SDL_Window* window;                         // SDL window
+SDL_Renderer* renderer;                     // SDL software renderer
+uint32_t* texture_mem;                      // Pointers to texture memory
+uint32_t* free_mem;                         // Pointer after last texture
 
 
 const char * menu_about_strings[] = { "Bucanero", "PS4 Cheats Manager",

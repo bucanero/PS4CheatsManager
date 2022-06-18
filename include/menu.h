@@ -7,8 +7,8 @@
 #include "settings.h"
 
 // SDL window and software renderer
-SDL_Window* window;
-SDL_Renderer* renderer;
+extern SDL_Window* window;
+extern SDL_Renderer* renderer;
 
 //Textures
 enum texture_index
@@ -103,8 +103,8 @@ typedef struct t_png_texture
 	SDL_Texture *texture;
 } png_texture;
 
-u32 * texture_mem;      // Pointers to texture memory
-u32 * free_mem;         // Pointer after last texture
+extern u32 * texture_mem;      // Pointers to texture memory
+extern u32 * free_mem;         // Pointer after last texture
 
 extern png_texture * menu_textures;				// png_texture array for main menu, initialized in LoadTexture
 
@@ -123,17 +123,17 @@ extern struct game_entry * selected_entry;
 extern struct code_entry * selected_centry;
 extern int option_index;
 
-extern void DrawBackground2D(u32 rgba);
-extern void DrawTexture(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba);
-extern void DrawTextureCentered(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba);
-extern void DrawTextureCenteredX(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba);
-extern void DrawTextureCenteredY(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba);
-extern void DrawHeader(int icon, int xOff, const char * headerTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int mode);
-extern void DrawHeader_Ani(int icon, const char * headerTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int ani, int div);
-extern void DrawBackgroundTexture(int x, u8 alpha);
-extern void DrawTextureRotated(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba, float angle);
-extern void Draw_MainMenu();
-extern void Draw_MainMenu_Ani();
+void DrawBackground2D(u32 rgba);
+void DrawTexture(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba);
+void DrawTextureCentered(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba);
+void DrawTextureCenteredX(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba);
+void DrawTextureCenteredY(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba);
+void DrawHeader(int icon, int xOff, const char * headerTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int mode);
+void DrawHeader_Ani(int icon, const char * headerTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int ani, int div);
+void DrawBackgroundTexture(int x, u8 alpha);
+void DrawTextureRotated(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba, float angle);
+void Draw_MainMenu();
+void Draw_MainMenu_Ani();
 int LoadMenuTexture(const char* path, int idx);
 
 void drawSplashLogo(int m);
