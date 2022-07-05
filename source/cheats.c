@@ -417,7 +417,13 @@ int ReadOnlineSaves(game_entry_t * game)
 
 list_t * ReadBackupList(const char* userPath)
 {
-	if (http_download("https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/", "main.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
+	if (extract_zip_gh("/mnt/usb0/GoldHEN_Cheat_Repository-main.zip", GOLDCHEATS_DATA_PATH))
+		show_message("Successfully installed offline data from USB");
+
+	else if (extract_zip_gh("/data/GoldHEN_Cheat_Repository-main.zip", GOLDCHEATS_DATA_PATH))
+		show_message("Successfully installed offline data from HDD");
+
+	else if (http_download("https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/", "main.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
 	{
 		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_DATA_PATH);
 

@@ -4,6 +4,15 @@ All notable changes to the `GoldHEN Cheats Manager` project will be documented i
 
 ## [Unreleased]()
 
+## [v0.7.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v0.7.0) - 2022-07-05
+
+### Added
+
+- Installed Game list filter to show only available cheats
+- Offline cheat pack (.zip) installation from USB/HDD
+  - /mnt/usb0/GoldHEN_Cheat_Repository-main.zip
+  - /data/GoldHEN_Cheat_Repository-main.zip
+
 ## [v0.6.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v0.6.0) - 2022-04-07
 
 ### Added
