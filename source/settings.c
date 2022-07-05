@@ -21,37 +21,37 @@ menu_option_t menu_options[] = {
 	{ .name = "Background Music", 
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
-		.value = &apollo_config.music, 
+		.value = &gcm_config.music, 
 		.callback = music_callback 
 	},
 	{ .name = "Sort Games", 
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
-		.value = &apollo_config.doSort, 
+		.value = &gcm_config.doSort, 
 		.callback = sort_callback 
 	},
 	{ .name = "Menu Animations", 
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
-		.value = &apollo_config.doAni, 
+		.value = &gcm_config.doAni, 
 		.callback = ani_callback 
 	},
 	{ .name = "Version Update Check", 
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
-		.value = &apollo_config.update, 
+		.value = &gcm_config.update, 
 		.callback = update_callback 
 	},
 	{ .name = "\nScreen Horizontal Margin", 
 		.options = NULL, 
 		.type = APP_OPTION_INC, 
-		.value = &apollo_config.marginH, 
+		.value = &gcm_config.marginH, 
 		.callback = horm_callback 
 	},
 	{ .name = "Screen Vertical Margin", 
 		.options = NULL, 
 		.type = APP_OPTION_INC, 
-		.value = &apollo_config.marginV, 
+		.value = &gcm_config.marginV, 
 		.callback = verm_callback 
 	},
 	{ .name = "\nClear Temp Folder", 
@@ -72,17 +72,17 @@ menu_option_t menu_options[] = {
 
 void music_callback(int sel)
 {
-	apollo_config.music = !sel;
+	gcm_config.music = !sel;
 }
 
 void sort_callback(int sel)
 {
-	apollo_config.doSort = !sel;
+	gcm_config.doSort = !sel;
 }
 
 void ani_callback(int sel)
 {
-	apollo_config.doAni = !sel;
+	gcm_config.doAni = !sel;
 }
 
 void horm_callback(int sel)
@@ -91,7 +91,7 @@ void horm_callback(int sel)
 		sel = 0;
 	if (sel > 100)
 		sel = 100;
-	apollo_config.marginH = sel;
+	gcm_config.marginH = sel;
 }
 
 void verm_callback(int sel)
@@ -100,7 +100,7 @@ void verm_callback(int sel)
 		sel = 0;
 	if (sel > 100)
 		sel = 100;
-	apollo_config.marginV = sel;
+	gcm_config.marginV = sel;
 }
 
 void clearcache_callback(int sel)
@@ -119,17 +119,11 @@ void unzip_app_data(const char* zip_file)
 	unlink_secure(zip_file);
 }
 
-void upd_appdata_callback(int sel)
-{
-	if (http_download(ONLINE_URL, "PS4/ps4appdata.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
-		unzip_app_data(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
-}
-
 void update_callback(int sel)
 {
-    apollo_config.update = !sel;
+    gcm_config.update = !sel;
 
-    if (!apollo_config.update)
+    if (!gcm_config.update)
         return;
 
 	LOG("checking latest GoldCheats version at %s", GOLDCHEATS_UPDATE_URL);
@@ -206,7 +200,7 @@ int save_app_settings(app_config_t* config)
 	memset(&mountResult, 0x00, sizeof(mountResult));
 	strlcpy(dirName.data, "Settings", sizeof(dirName.data));
 
-	mount.userId = apollo_config.user_id;
+	mount.userId = gcm_config.user_id;
 	mount.dirName = &dirName;
 	mount.blocks = ORBIS_SAVE_DATA_BLOCKS_MIN2;
 	mount.mountMode = (ORBIS_SAVE_DATA_MOUNT_MODE_CREATE2 | ORBIS_SAVE_DATA_MOUNT_MODE_RDWR | ORBIS_SAVE_DATA_MOUNT_MODE_COPY_ICON);
@@ -250,7 +244,7 @@ int load_app_settings(app_config_t* config)
 	memset(&mountResult, 0x00, sizeof(mountResult));
 	strlcpy(dirName.data, "Settings", sizeof(dirName.data));
 
-	mount.userId = apollo_config.user_id;
+	mount.userId = gcm_config.user_id;
 	mount.dirName = &dirName;
 	mount.blocks = ORBIS_SAVE_DATA_BLOCKS_MIN2;
 	mount.mountMode = ORBIS_SAVE_DATA_MOUNT_MODE_RDONLY;

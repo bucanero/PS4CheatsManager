@@ -1,6 +1,6 @@
 # Package metadata.
 TITLE       := GoldHEN Cheats Manager
-VERSION     := 00.60
+VERSION     := 00.70
 TITLE_ID    := GOLD00777
 CONTENT_ID  := IV0000-GOLD00777_00-GOLDCHEATS000PS4
 
@@ -86,7 +86,7 @@ $(INTDIR)/%.o: $(PROJDIR)/%.cpp
 	$(CCX) $(CXXFLAGS) -o $@ $<
 
 clean:
-	rm -f $(CONTENT_ID).pkg pkg.gp4 pkg/sce_sys/param.sfo eboot.bin \
+	rm -f $(CONTENT_ID).pkg pkg.gp4 sce_sys/param.sfo eboot.bin \
 		$(INTDIR)/$(PROJDIR).elf $(INTDIR)/$(PROJDIR).oelf $(OBJS)
 
 #---------------------------------------------------------------------------------

@@ -101,7 +101,7 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (apollo_config.marginV * 2), icon_a);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), icon_a);
 		DrawHeader(header_ico_cht_png_index, left, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		//DrawOptions(selected_centry->options[option_index], game_a, 18, menu_old_sel[7]);
@@ -134,7 +134,7 @@ void Draw_CheatsMenu_Options_Ani(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (apollo_config.marginV * 2), icon_a);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), icon_a);
 		DrawHeader(header_ico_cht_png_index, left, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
         
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
@@ -154,7 +154,7 @@ void Draw_CheatsMenu_Options(void)
 
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
-	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (apollo_config.marginV * 2), 0x000000FF);
+	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), 0x000000FF);
 	DrawHeader(header_ico_cht_png_index, MENU_SPLIT_OFF, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
 	DrawOptions(&selected_centry->options[option_index], 0xFF, APP_LINE_OFFSET, menu_sel);
@@ -246,7 +246,7 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (apollo_config.marginV * 2), icon_a);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), icon_a);
 		DrawHeader(header_ico_cht_png_index, left, "Details", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		SDL_RenderPresent(renderer);
@@ -275,7 +275,7 @@ void Draw_CheatsMenu_View_Ani(const char* title)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (apollo_config.marginV * 2), icon_a);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), icon_a);
 		DrawHeader(header_ico_cht_png_index, left, title, selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
@@ -295,7 +295,7 @@ void Draw_CheatsMenu_View(const char* title)
     
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
-	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (apollo_config.marginV * 2), 0x000000FF);
+	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), 0x000000FF);
 	DrawHeader(header_ico_cht_png_index, MENU_SPLIT_OFF, title, selected_centry->name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
     int nlines = DrawCodes(selected_centry, 0xFF, APP_LINE_OFFSET, MENU_SPLIT_OFF, menu_sel);
@@ -311,7 +311,7 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
     
     list_node_t *node;
     game_entry_t *item;
-    char tmp[4] = "   ";
+//    char tmp[4] = "   ";
     int game_y = help_png_y, y_inc = APP_LINE_OFFSET;
     int maxPerPage = (SCREEN_HEIGHT - (game_y * 2) - 30) / y_inc;
     

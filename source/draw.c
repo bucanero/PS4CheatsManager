@@ -1,5 +1,4 @@
 #include <string.h>
-//#include <threads.h>
 #include <unistd.h>
 #include <stdio.h>
 
@@ -177,9 +176,9 @@ void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSu
 void DrawBackgroundTexture(int x, u8 alpha)
 {
 	if (x == 0)
-		DrawTexture(&menu_textures[bgimg_png_index], x - apollo_config.marginH, -apollo_config.marginV, 0, SCREEN_WIDTH - x + (apollo_config.marginH * 2), SCREEN_HEIGHT + (apollo_config.marginV * 2), 0xFFFFFF00 | alpha);
+		DrawTexture(&menu_textures[bgimg_png_index], x - gcm_config.marginH, -gcm_config.marginV, 0, SCREEN_WIDTH - x + (gcm_config.marginH * 2), SCREEN_HEIGHT + (gcm_config.marginV * 2), 0xFFFFFF00 | alpha);
 	else
-		DrawTexture(&menu_textures[bgimg_png_index], x, -apollo_config.marginV, 0, SCREEN_WIDTH - x + apollo_config.marginH, SCREEN_HEIGHT + (apollo_config.marginV * 2), 0xFFFFFF00 | alpha);
+		DrawTexture(&menu_textures[bgimg_png_index], x, -gcm_config.marginV, 0, SCREEN_WIDTH - x + gcm_config.marginH, SCREEN_HEIGHT + (gcm_config.marginV * 2), 0xFFFFFF00 | alpha);
 }
 
 void DrawTexture(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba)
@@ -233,10 +232,10 @@ static void drawJar(uint8_t idx, int pos_x, int pos_y, const char* text, uint8_t
 {
 	uint8_t active = (menu_sel + titlescr_ico_xmb_png_index == idx);
 
-	DrawTexture(&menu_textures[idx], pos_x, apollo_config.marginV + pos_y, 0, menu_textures[idx].width, menu_textures[idx].height, 0xffffff00 | (alpha == 0xFF ? (active ? 0xFF : 0x20) : alpha));
+	DrawTexture(&menu_textures[idx], pos_x, gcm_config.marginV + pos_y, 0, menu_textures[idx].width, menu_textures[idx].height, 0xffffff00 | (alpha == 0xFF ? (active ? 0xFF : 0x20) : alpha));
 
 	SetFontColor(APP_FONT_MENU_COLOR | (alpha == 0xFF ? (active ? 0xFF : 0x20) : alpha), 0);
-	DrawStringMono(pos_x + (menu_textures[idx].width / 2), apollo_config.marginV + menu_textures[idx].height + pos_y + 50, text);
+	DrawStringMono(pos_x + (menu_textures[idx].width / 2), gcm_config.marginV + menu_textures[idx].height + pos_y + 50, text);
 }
 
 static void drawJars(uint8_t alpha)

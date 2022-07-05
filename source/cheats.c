@@ -477,7 +477,7 @@ list_t * ReadBackupList(const char* userPath)
 
 int ReadBackupCodes(game_entry_t * bup)
 {
-	code_entry_t * cmd;
+//	code_entry_t * cmd;
 	char fext[5] = "";
 
 	switch(bup->type)
@@ -646,6 +646,11 @@ int sortCodeList_Compare(const void* a, const void* b)
 	return strcasecmp(((code_entry_t*) a)->name, ((code_entry_t*) b)->name);
 }
 
+int sortGameList_Exists(const void* a, const void* b)
+{
+	return ((((game_entry_t*) a)->flags & CHEAT_FLAG_OWNER) < (((game_entry_t*) b)->flags & CHEAT_FLAG_OWNER));
+}
+
 /*
  * Function:		qsortSaveList_Compare()
  * File:			saves.c
@@ -656,7 +661,7 @@ int sortCodeList_Compare(const void* a, const void* b)
  *	b:				Second code
  * Return:			1 if greater, -1 if less, or 0 if equal
  */
-int sortSaveList_Compare(const void* a, const void* b)
+int sortGameList_Compare(const void* a, const void* b)
 {
 	return strcasecmp(((game_entry_t*) a)->name, ((game_entry_t*) b)->name);
 }

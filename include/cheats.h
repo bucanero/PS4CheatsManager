@@ -106,6 +106,7 @@ typedef struct
     char path[128];
     char* title;
     uint8_t icon_id;
+    size_t filtered;
     void (*UpdatePath)(char *);
     int (*ReadCodes)(game_entry_t *);
     list_t* (*ReadList)(const char*);
@@ -118,7 +119,8 @@ list_t * ReadBackupList(const char* userPath);
 list_t * ReadTrophyList(const char* userPath);
 void UnloadGameList(list_t * list);
 char * readTextFile(const char * path, long* size);
-int sortSaveList_Compare(const void* A, const void* B);
+int sortGameList_Exists(const void* A, const void* B);
+int sortGameList_Compare(const void* A, const void* B);
 int sortCodeList_Compare(const void* A, const void* B);
 int ReadCodes(game_entry_t * save);
 int ReadTrophies(game_entry_t * game);

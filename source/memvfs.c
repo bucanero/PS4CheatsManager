@@ -28,7 +28,7 @@
 **
 **    sz=           The current size the database file
 **
-**    maxsz=        The maximum size of the database.  In other words, the
+**    max=          The maximum size of the database.  In other words, the
 **                  amount of space allocated for the ptr= buffer.
 **
 **    freeonclose=  If true, then sqlite3_free() is called on the ptr=

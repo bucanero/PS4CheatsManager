@@ -71,7 +71,7 @@ OrbisPadData padA[MAX_PADS];
 
 void drawScene();
 
-app_config_t apollo_config = {
+app_config_t gcm_config = {
     .music = 1,
     .doSort = 1,
     .doAni = 1,
@@ -126,8 +126,8 @@ int last_menu_id[TOTAL_MENU_IDS] = { 0 };						// Last menu id called (for retur
 
 const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x10 Select    \x13 Back    \x11 Refresh",							//Update
-								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//HDD list
-								"\x10 Select    \x13 Back    \x11 Refresh",							//Online list
+								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//HDD list
+								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Online list
 								"\x10 Select    \x13 Back",											//Options
 								"\x13 Back",														//About
 								"\x10 Select    \x12 View Code    \x13 Back",						//Select Cheats
@@ -202,7 +202,7 @@ int initPad()
 
     // Open a handle for the controller
     padhandle = scePadOpen(userID, 0, 0, NULL);
-	apollo_config.user_id = userID;
+	gcm_config.user_id = userID;
 
     if (padhandle < 0)
     {
@@ -313,7 +313,7 @@ int LoadTextures_Menu()
 		return 0;
 	free_mem = (u32*) init_ttf_table((u8*) free_mem);
 
-	set_ttf_window(0, 0, SCREEN_WIDTH + apollo_config.marginH, SCREEN_HEIGHT + apollo_config.marginV, WIN_SKIP_LF);
+	set_ttf_window(0, 0, SCREEN_WIDTH + gcm_config.marginH, SCREEN_HEIGHT + gcm_config.marginV, WIN_SKIP_LF);
 	
 	if (!menu_textures)
 		menu_textures = (png_texture *)malloc(sizeof(png_texture) * TOTAL_MENU_TEXTURES);
@@ -424,8 +424,8 @@ int ReloadUserSaves(save_list_t* save_list)
 		save_list->UpdatePath(save_list->path);
 
 	save_list->list = save_list->ReadList(save_list->path);
-	if (apollo_config.doSort)
-		list_bubbleSort(save_list->list, &sortSaveList_Compare);
+	if (gcm_config.doSort)
+		list_bubbleSort(save_list->list, &sortGameList_Compare);
 
     stop_loading_screen();
 
@@ -482,12 +482,12 @@ void SetMenu(int id)
 
 		case MENU_SAVE_DETAILS:
 		case MENU_PATCH_VIEW: //Cheat View Menu
-			if (apollo_config.doAni)
+			if (gcm_config.doAni)
 				Draw_CheatsMenu_View_Ani_Exit();
 			break;
 
 		case MENU_CODE_OPTIONS: //Cheat Option Menu
-			if (apollo_config.doAni)
+			if (gcm_config.doAni)
 				Draw_CheatsMenu_Options_Ani_Exit();
 			break;
 	}
@@ -495,7 +495,7 @@ void SetMenu(int id)
 	switch (id) //going to menu
 	{
 		case MENU_MAIN_SCREEN: //Main Menu
-			if (apollo_config.doAni || menu_id == MENU_MAIN_SCREEN) //if load animation
+			if (gcm_config.doAni || menu_id == MENU_MAIN_SCREEN) //if load animation
 				Draw_MainMenu_Ani();
 			break;
 
@@ -503,7 +503,7 @@ void SetMenu(int id)
 			if (!hdd_saves.list && !ReloadUserSaves(&hdd_saves))
 				return;
 			
-			if (apollo_config.doAni)
+			if (gcm_config.doAni)
 				Draw_UserCheatsMenu_Ani(&hdd_saves);
 			break;
 
@@ -511,18 +511,18 @@ void SetMenu(int id)
 			if (!online_saves.list && !ReloadUserSaves(&online_saves))
 				return;
 
-			if (apollo_config.doAni)
+			if (gcm_config.doAni)
 				Draw_UserCheatsMenu_Ani(&online_saves);
 			break;
 
 		case MENU_CREDITS: //About Menu
 			// set to display the PSID on the About menu
-			if (apollo_config.doAni)
+			if (gcm_config.doAni)
 				Draw_AboutMenu_Ani();
 			break;
 
 		case MENU_SETTINGS: //Options Menu
-			if (apollo_config.doAni)
+			if (gcm_config.doAni)
 				Draw_OptionsMenu_Ani();
 			break;
 
@@ -530,7 +530,7 @@ void SetMenu(int id)
 			if (!user_backup.list && !ReloadUserSaves(&user_backup))
 				return;
 
-			if (apollo_config.doAni)
+			if (gcm_config.doAni)
 				Draw_UserCheatsMenu_Ani(&user_backup);
 			break;
 
@@ -550,31 +550,31 @@ void SetMenu(int id)
 					http_download(selected_entry->path, "icon0.png", iconfile, 0);
 			}
 			else if (selected_entry->flags & CHEAT_FLAG_HDD)
-				snprintf(iconfile, sizeof(iconfile), PS4_SAVES_PATH_HDD "%s/%s_icon0.png", apollo_config.user_id, selected_entry->title_id, selected_entry->version);
+				snprintf(iconfile, sizeof(iconfile), PS4_SAVES_PATH_HDD "%s/%s_icon0.png", gcm_config.user_id, selected_entry->title_id, selected_entry->version);
 
 			if (file_exists(iconfile) == SUCCESS)
 				LoadFileTexture(iconfile, icon_png_file_index);
 			else
 				menu_textures[icon_png_file_index].size = 0;
 */
-			if (apollo_config.doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
+			if (gcm_config.doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
 				Draw_CheatsMenu_Selection_Ani();
 			break;
 
 		case MENU_PATCH_VIEW: //Cheat View Menu
 			menu_old_sel[MENU_PATCH_VIEW] = 0;
-			if (apollo_config.doAni)
+			if (gcm_config.doAni)
 				Draw_CheatsMenu_View_Ani("Code view");
 			break;
 
 		case MENU_SAVE_DETAILS: //Save Detail View Menu
-			if (apollo_config.doAni)
+			if (gcm_config.doAni)
 				Draw_CheatsMenu_View_Ani(selected_entry->name);
 			break;
 
 		case MENU_CODE_OPTIONS: //Cheat Option Menu
 			menu_old_sel[MENU_CODE_OPTIONS] = 0;
-			if (apollo_config.doAni)
+			if (gcm_config.doAni)
 				Draw_CheatsMenu_Options_Ani();
 			break;
 	}
@@ -689,7 +689,7 @@ void doSaveMenu(save_list_t * save_list)
     			return;
     		}
 
-    		if (apollo_config.doSort && 1)
+    		if (gcm_config.doSort && 1)
 //				((save_list->icon_id == cat_bup_png_index) || (save_list->icon_id == cat_db_png_index)))
     			list_bubbleSort(selected_entry->codes, &sortCodeList_Compare);
 
@@ -697,13 +697,25 @@ void doSaveMenu(save_list_t * save_list)
     		return;
     	}
     	else if (pad_check_button(ORBIS_PAD_BUTTON_TRIANGLE)) // && save_list->UpdatePath)
-    	{
-			selected_entry = list_get_item(save_list->list, menu_sel);
-			if (selected_entry->type != FILE_TYPE_MENU)
+		{
+			menu_sel = 0;
+			if (save_list->filtered)
 			{
-				selected_centry = LoadSaveDetails();
-				SetMenu(MENU_SAVE_DETAILS);
-				return;
+				save_list->list->count = save_list->filtered;
+				save_list->filtered = 0;
+
+				if (gcm_config.doSort)
+					list_bubbleSort(save_list->list, &sortGameList_Compare);
+			}
+			else
+			{
+				save_list->filtered = save_list->list->count;
+				list_bubbleSort(save_list->list, &sortGameList_Exists);
+
+				game_entry_t* item;
+				save_list->list->count = 0;
+				for (list_node_t *node = list_head(save_list->list); (item = list_get(node)); node = list_next(node))
+					if (item->flags & CHEAT_FLAG_OWNER) save_list->list->count++;
 			}
 		}
 		else if (pad_check_button(ORBIS_PAD_BUTTON_SQUARE))
@@ -768,8 +780,8 @@ void doOptionsMenu()
 
 		else if (pad_check_button(ORBIS_PAD_BUTTON_CIRCLE))
 		{
-			save_app_settings(&apollo_config);
-			set_ttf_window(0, 0, SCREEN_WIDTH + apollo_config.marginH, SCREEN_HEIGHT + apollo_config.marginV, WIN_SKIP_LF);
+			save_app_settings(&gcm_config);
+			set_ttf_window(0, 0, SCREEN_WIDTH + gcm_config.marginH, SCREEN_HEIGHT + gcm_config.marginV, WIN_SKIP_LF);
 			SetMenu(MENU_MAIN_SCREEN);
 			return;
 		}
@@ -1125,6 +1137,15 @@ s32 main(s32 argc, const char* argv[])
 	dbglogger_init();
 #endif
 
+	// Initialize SDL functions
+	LOG("Initializing SDL");
+
+	if (SDL_Init(SDL_INIT_VIDEO) != SUCCESS)
+	{
+		LOG("Failed to initialize SDL: %s", SDL_GetError());
+		return (-1);
+	}
+
 	initInternal();
 	http_init();
 	initPad();
@@ -1144,15 +1165,6 @@ s32 main(s32 argc, const char* argv[])
 	{
 		LOG("[ERROR] Failed to open audio on main port");
 		return audio;
-	}
-
-	// Initialize SDL functions
-	LOG("Initializing SDL");
-
-	if (SDL_Init(SDL_INIT_VIDEO) != SUCCESS)
-	{
-		LOG("Failed to initialize SDL: %s", SDL_GetError());
-		return (-1);
 	}
 
 	// Create a window context
@@ -1215,16 +1227,16 @@ s32 main(s32 argc, const char* argv[])
 	patch_save_libraries();
 
 	// Load application settings
-	load_app_settings(&apollo_config);
+	load_app_settings(&gcm_config);
 
 	// Unpack application data on first run
-	if (apollo_config.packver < GOLDCHEATS_DATA_VERSION)
+	if (gcm_config.packver < GOLDCHEATS_DATA_VERSION)
 	{
 		if (extract_zip(GOLDCHEATS_APP_PATH "misc/appdata.zip", GOLDCHEATS_DATA_PATH))
 			show_message("Successfully installed local application data");
 
-		apollo_config.packver = GOLDCHEATS_DATA_VERSION;
-		save_app_settings(&apollo_config);
+		gcm_config.packver = GOLDCHEATS_DATA_VERSION;
+		save_app_settings(&gcm_config);
 	}
 
 	// Setup font
@@ -1254,13 +1266,13 @@ s32 main(s32 argc, const char* argv[])
 	SDL_DestroyTexture(menu_textures[goldhen_png_index].texture);
 	
 	//Set options
-	music_callback(!apollo_config.music);
-	update_callback(!apollo_config.update);
+	music_callback(!gcm_config.music);
+	update_callback(!gcm_config.update);
 
 	SetMenu(MENU_MAIN_SCREEN);
 
 	SDL_CreateThread(&pad_input_update, "input_thread", &pad_data);
-	SDL_CreateThread(&LoadSounds, "audio_thread", &apollo_config.music);
+	SDL_CreateThread(&LoadSounds, "audio_thread", &gcm_config.music);
 
 	while (!close_app)
 	{
