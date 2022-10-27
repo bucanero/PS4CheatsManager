@@ -76,8 +76,6 @@ app_config_t gcm_config = {
     .doSort = 1,
     .doAni = 1,
     .update = 1,
-    .marginH = 0,
-    .marginV = 0,
     .user_id = 0,
     .psid = {0, 0},
     .packver = 0,
@@ -313,7 +311,7 @@ int LoadTextures_Menu()
 		return 0;
 	free_mem = (u32*) init_ttf_table((u8*) free_mem);
 
-	set_ttf_window(0, 0, SCREEN_WIDTH + gcm_config.marginH, SCREEN_HEIGHT + gcm_config.marginV, WIN_SKIP_LF);
+	set_ttf_window(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WIN_SKIP_LF);
 	
 	if (!menu_textures)
 		menu_textures = (png_texture *)malloc(sizeof(png_texture) * TOTAL_MENU_TEXTURES);
@@ -781,7 +779,7 @@ void doOptionsMenu()
 		else if (pad_check_button(ORBIS_PAD_BUTTON_CIRCLE))
 		{
 			save_app_settings(&gcm_config);
-			set_ttf_window(0, 0, SCREEN_WIDTH + gcm_config.marginH, SCREEN_HEIGHT + gcm_config.marginV, WIN_SKIP_LF);
+			set_ttf_window(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WIN_SKIP_LF);
 			SetMenu(MENU_MAIN_SCREEN);
 			return;
 		}

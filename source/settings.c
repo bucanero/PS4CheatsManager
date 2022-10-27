@@ -42,18 +42,6 @@ menu_option_t menu_options[] = {
 		.value = &gcm_config.update, 
 		.callback = update_callback 
 	},
-	{ .name = "\nScreen Horizontal Margin", 
-		.options = NULL, 
-		.type = APP_OPTION_INC, 
-		.value = &gcm_config.marginH, 
-		.callback = horm_callback 
-	},
-	{ .name = "Screen Vertical Margin", 
-		.options = NULL, 
-		.type = APP_OPTION_INC, 
-		.value = &gcm_config.marginV, 
-		.callback = verm_callback 
-	},
 	{ .name = "\nClear Temp Folder", 
 		.options = NULL, 
 		.type = APP_OPTION_CALL, 
@@ -83,24 +71,6 @@ void sort_callback(int sel)
 void ani_callback(int sel)
 {
 	gcm_config.doAni = !sel;
-}
-
-void horm_callback(int sel)
-{
-	if (sel == 255)
-		sel = 0;
-	if (sel > 100)
-		sel = 100;
-	gcm_config.marginH = sel;
-}
-
-void verm_callback(int sel)
-{
-	if (sel == 255)
-		sel = 0;
-	if (sel > 100)
-		sel = 100;
-	gcm_config.marginV = sel;
 }
 
 void clearcache_callback(int sel)
