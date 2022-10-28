@@ -127,7 +127,7 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 			LOG("Extracting %s", fpath);
 			char extract_msg[64];
 			snprintf(extract_msg, sizeof(extract_msg), "Extracting %s", name);
-			update_progress_bar(i, n, name);
+			update_progress_bar(i, n, extract_msg);
 			ret += (zip_entry_fread(zip, fpath) == SUCCESS);
 		}
 		zip_entry_close(zip);
