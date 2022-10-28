@@ -434,6 +434,15 @@ list_t * ReadBackupList(const char* userPath)
 
 		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
 	}
+	if (http_download("http://assets.illusion0001.com/", "patch1.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
+	{
+		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_PATCH_PATH);
+		if (ret > 0)
+			show_message("Successfully installed %d patch files", ret);
+		else
+			show_message("Zip extraction error!");
+		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
+	}
 	else show_message("Download error!");
 
 	return NULL;
