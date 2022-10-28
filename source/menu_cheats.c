@@ -421,7 +421,7 @@ void DrawCheatsList(int selIndex, game_entry_t* game, u8 alpha)
                 SetFontSize((int)(y_inc * 1.0), (int)(y_inc * 0.6));
                 SetFontAlign(FONT_ALIGN_CENTER);
 				SetFontColor(APP_FONT_TAG_COLOR | a, 0);
-                DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 5, "select");
+                DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 5, "active");
                 SetFontAlign(FONT_ALIGN_LEFT);
                 SetFontSize(APP_FONT_SIZE_SELECTION);
                 

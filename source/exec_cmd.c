@@ -17,11 +17,11 @@ uint64_t patch_hash_calc(const game_entry_t* game, const code_entry_t* code)
     output_hash = djb2_hash(game->name, output_hash);
     output_hash = djb2_hash(code->name, output_hash);
     output_hash = djb2_hash(game->version, output_hash);
-    output_hash = djb2_hash(game->title_id, output_hash);
+    output_hash = djb2_hash(game->path, output_hash);
     output_hash = djb2_hash(code->file, output_hash);
 
-    LOG("input: \"%s%s%s%s%s\"", game->name, code->name, game->version, game->title_id, code->file);
-    LOG("output: 0x%016lx", output_hash);
+//    LOG("input: \"%s%s%s%s%s\"", game->name, code->name, game->version, game->path, code->file);
+//    LOG("output: 0x%016lx", output_hash);
     return output_hash;
 }
 
@@ -31,7 +31,8 @@ static void togglePatch(const game_entry_t* game, const code_entry_t* code)
 	uint8_t settings[2] = {0x30, 0x0A}; // "0\n"
 
 	uint64_t hash = patch_hash_calc(game, code);
-	snprintf(hash_path, sizeof(hash_path), GOLDCHEATS_PATCH_PATH "settings/0x%" PRIx64 ".txt", hash);
+	snprintf(hash_path, sizeof(hash_path), GOLDCHEATS_PATCH_PATH "settings/0x%016lx.txt", hash);
+	LOG("Toggle patch (%d): %s", code->activated, hash_path);
 
 	settings[0] += code->activated;
 	if (write_buffer(hash_path, settings, sizeof(settings)) < 0)

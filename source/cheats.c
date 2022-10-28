@@ -580,7 +580,7 @@ static int is_patch_enabled(const game_entry_t* game, const code_entry_t* code)
 	uint8_t settings[2];
 
 	uint64_t hash = patch_hash_calc(game, code);
-	snprintf(hash_path, sizeof(hash_path), GOLDCHEATS_PATCH_PATH "settings/0x%" PRIx64 ".txt", hash);
+	snprintf(hash_path, sizeof(hash_path), GOLDCHEATS_PATCH_PATH "settings/0x%016lx.txt", hash);
 
 	if(read_file(hash_path, settings, sizeof(settings)) < 0 || settings[0] != 0x31)
 		return 0;
