@@ -574,6 +574,20 @@ int ReadBackupCodes(game_entry_t * bup)
 	return list_count(bup->codes);
 }
 
+static int is_patch_enabled(const game_entry_t* game, const code_entry_t* code)
+{
+	char hash_path[256];
+	uint8_t settings[2];
+
+	uint64_t hash = patch_hash_calc(game, code);
+	snprintf(hash_path, sizeof(hash_path), GOLDCHEATS_PATCH_PATH "settings/0x%" PRIx64 ".txt", hash);
+
+	if(read_file(hash_path, settings, sizeof(settings)) < 0 || settings[0] != 0x31)
+		return 0;
+
+	return 1;
+}
+
 list_t * ReadPatchList(const char* userPath)
 {
 	DIR *d;
@@ -681,13 +695,16 @@ int ReadPatches(game_entry_t * game)
 			continue;
 
 		const cJSON *obj = cJSON_GetObjectItemCaseSensitive(app, "name");
-		cmd = _createCmdCode(PATCH_VIEW, cJSON_IsString(obj) ? obj->valuestring : "", CMD_CODE_NULL);
+		cmd = (code_entry_t *)calloc(1, sizeof(code_entry_t));
+		cmd->type = PATCH_VIEW;
+		cmd->name = strdup(cJSON_IsString(obj) ? obj->valuestring : "");
 
 		obj = cJSON_GetObjectItemCaseSensitive(app, "app_elf");
 		cmd->file = strdup(cJSON_IsString(obj) ? obj->valuestring : "");
 
 		obj = cJSON_GetObjectItemCaseSensitive(app, "patch_list");
 		cmd->codes = cJSON_Print(obj);
+		cmd->activated = is_patch_enabled(game, cmd);
 
 		list_append(game->codes, cmd);
 		LOG("Added '%s' (%s)", cmd->name, cmd->file);

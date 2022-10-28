@@ -31,8 +31,8 @@ enum cmd_code_enum
 {
     CMD_CODE_NULL,
 
-// Save commands
-    CMD_DECRYPT_FILE,
+// Code commands
+    CMD_TOGGLE_PATCH,
     CMD_VIEW_RAW_PATCH,
     CMD_VIEW_DETAILS,
 };
@@ -152,6 +152,7 @@ int init_loading_screen(const char* msg);
 void stop_loading_screen();
 
 void execCodeCommand(code_entry_t* code, const char* codecmd);
+uint64_t patch_hash_calc(const game_entry_t* game, const code_entry_t* code);
 
 int get_save_details(const game_entry_t *save, char** details);
 int orbis_SaveUmount(const char* mountPath);

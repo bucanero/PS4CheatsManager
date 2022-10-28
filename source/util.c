@@ -1,8 +1,6 @@
 #include "util.h"
 #include "types.h"
 
-//#include <polarssl/sha1.h>
-
 void dump_data(const u8 *data, u64 size) {
 	u64 i;
 	for (i = 0; i < size; i++)
@@ -151,19 +149,11 @@ int write_buffer(const char *file_path, uint8_t *buf, size_t size)
 }
 
 // http://www.cse.yorku.ca/~oz/hash.html
-u64 hash(const char *str) {
-    u64 hash = 5381;
-    u32 c;
+uint64_t djb2_hash(const char *str, uint64_t hash) {
+    uint32_t c;
+
     while ((c = *str++))
         hash = hash * 33 ^ c;
-    LOG("output %016lx", hash);
-    return hash;
-}
 
-u64 patch_hash_calc(const char* input_str) {
-    u64 output_hash = 0;
-    output_hash = hash(input_str);
-    LOG("input \"%s\"", input_str);
-    LOG("output: 0x%016lx", output_hash);
-    return output_hash;
+    return hash;
 }

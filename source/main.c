@@ -990,8 +990,12 @@ void doPatchMenu()
 		{
 			selected_centry = list_get_item(selected_entry->codes, menu_sel);
 
-			if (selected_centry->type != PATCH_NULL)
-//				selected_centry->activated = !selected_centry->activated;
+			if (selected_entry->flags & CHEAT_FLAG_PATCH && selected_centry->type != PATCH_NULL)
+			{
+				char code = CMD_TOGGLE_PATCH;
+				selected_centry->activated = !selected_centry->activated;
+				execCodeCommand(selected_centry, &code);
+			}
 
 			if (selected_centry->type == PATCH_COMMAND)
 				execCodeCommand(selected_centry, selected_centry->codes);
@@ -1215,6 +1219,7 @@ s32 main(s32 argc, const char* argv[])
 
 	mkdirs(GOLDCHEATS_DATA_PATH);
 	mkdirs(GOLDCHEATS_LOCAL_CACHE);
+	mkdirs(GOLDCHEATS_PATCH_PATH "settings/");
 	
 	// Load freetype
 	if (sceSysmoduleLoadModule(ORBIS_SYSMODULE_FREETYPE_OL) < 0)

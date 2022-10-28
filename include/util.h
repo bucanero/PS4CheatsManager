@@ -14,11 +14,7 @@ int write_file(const char *file_path, u8 *data, u64 size);
 int mmap_file(const char *file_path, u8 **data, u64 *size);
 int unmmap_file(u8 *data, u64 size);
 
-int calculate_hmac_hash(const u8 *data, u64 size, const u8 *key, u32 key_length, u8 output[20]);
-int calculate_file_hmac_hash(const char *file_path, const u8 *key, u32 key_length, u8 output[20]);
-
 u64 align_to_pow2(u64 offset, u64 alignment);
-u64 hash(const char *str);
-u64 patch_hash_calc(const char* input_str);
+u64 djb2_hash(const char *str, u64 hash);
 
 #endif /* !_UTIL_H_ */
