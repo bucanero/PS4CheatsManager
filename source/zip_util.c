@@ -125,7 +125,8 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 			snprintf(fpath, sizeof(fpath), "%s%s", dest_path, name + 1);
 			mkdirs(fpath);
 			LOG("Extracting %s", fpath);
-
+			char extract_msg[64];
+			snprintf(extract_msg, sizeof(extract_msg), "Extracting %s", name);
 			update_progress_bar(i, n, name);
 			ret += (zip_entry_fread(zip, fpath) == SUCCESS);
 		}
