@@ -565,6 +565,22 @@ int ReadBackupCodes(game_entry_t * bup)
 	return list_count(bup->codes);
 }
 
+list_t * ReadPatchList(const char* userPath)
+{
+	return NULL;
+}
+
+int ReadPatches(game_entry_t * game)
+{
+	game->codes = list_alloc();
+
+	LOG("Loading patches from '%s'...", game->path);
+
+	LOG("%d items loaded", list_count(game->codes));
+
+	return list_count(game->codes);
+}
+
 /*
  * Function:		UnloadGameList()
  * File:			saves.c

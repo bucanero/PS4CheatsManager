@@ -3,10 +3,18 @@
 #define LOG dbglogger_log
 
 #define GOLDCHEATS_PATH				"/data/GoldHEN/"
+
+#ifdef DEBUG_ENABLE_LOG
+#define GOLDCHEATS_APP_PATH			"/data/GoldHEN/debug/"
+#define GOLDCHEATS_SANDBOX_PATH		"/mnt/sandbox/LOAD00044_000%s/"
+#else
 #define GOLDCHEATS_APP_PATH			"/mnt/sandbox/GOLD00777_000/app0/assets/"
 #define GOLDCHEATS_SANDBOX_PATH		"/mnt/sandbox/GOLD00777_000%s/"
+#endif
+
 #define GOLDCHEATS_USER_PATH		GOLDCHEATS_PATH "%08x/"
 #define GOLDCHEATS_DATA_PATH		GOLDCHEATS_PATH "cheats/"
+#define GOLDCHEATS_PATCH_PATH		GOLDCHEATS_PATH "patches/"
 #define GOLDCHEATS_LOCAL_CACHE		GOLDCHEATS_PATH "temp/"
 #define GOLDCHEATS_UPDATE_URL		"https://api.github.com/repos/GoldHEN/GoldHEN_Cheat_Manager/releases/latest"
 
@@ -14,7 +22,6 @@
 #define USB0_PATH               "/mnt/usb0/"
 #define USB1_PATH               "/mnt/usb1/"
 #define USB_PATH                "/mnt/usb%d/"
-#define USER_PATH_HDD           "/data/GoldHEN/cheats/"
 
 #define ONLINE_URL				"https://goldhen.github.io/GoldHEN_Cheat_Repository/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
@@ -116,14 +123,14 @@ list_t * ReadUsbList(const char* userPath);
 list_t * ReadUserList(const char* userPath);
 list_t * ReadOnlineList(const char* urlPath);
 list_t * ReadBackupList(const char* userPath);
-list_t * ReadTrophyList(const char* userPath);
+list_t * ReadPatchList(const char* userPath);
 void UnloadGameList(list_t * list);
 char * readTextFile(const char * path, long* size);
 int sortGameList_Exists(const void* A, const void* B);
 int sortGameList_Compare(const void* A, const void* B);
 int sortCodeList_Compare(const void* A, const void* B);
 int ReadCodes(game_entry_t * save);
-int ReadTrophies(game_entry_t * game);
+int ReadPatches(game_entry_t * game);
 int ReadOnlineSaves(game_entry_t * game);
 int ReadBackupCodes(game_entry_t * bup);
 

@@ -46,6 +46,7 @@ enum texture_index
 	scroll_lock_png_index,
 	titlescr_ico_xmb_png_index,
 	titlescr_ico_cht_png_index,
+	titlescr_ico_pat_png_index,
 	titlescr_ico_net_png_index,
 	titlescr_ico_opt_png_index,
 	titlescr_ico_abt_png_index,

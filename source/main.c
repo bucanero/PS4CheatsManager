@@ -30,6 +30,7 @@ enum menu_screen_ids
 	MENU_MAIN_SCREEN,
 	MENU_USER_BACKUP,
 	MENU_HDD_SAVES,
+	MENU_HDD_PATCHES,
 	MENU_ONLINE_DB,
 	MENU_SETTINGS,
 	MENU_CREDITS,
@@ -141,9 +142,22 @@ save_list_t hdd_saves = {
 	.icon_id = header_ico_cht_png_index,
 	.title = "HDD Cheats",
     .list = NULL,
-    .path = USER_PATH_HDD,
+    .path = GOLDCHEATS_DATA_PATH,
     .ReadList = &ReadUserList,
     .ReadCodes = &ReadCodes,
+    .UpdatePath = NULL,
+};
+
+/*
+* HDD patches list
+*/
+save_list_t hdd_patches = {
+    .icon_id = header_ico_cht_png_index,
+    .title = "HDD Patches",
+    .list = NULL,
+    .path = GOLDCHEATS_PATCH_PATH,
+    .ReadList = &ReadPatchList,
+    .ReadCodes = &ReadPatches,
     .UpdatePath = NULL,
 };
 
@@ -349,6 +363,7 @@ int LoadTextures_Menu()
 	load_menu_texture(scroll_lock, png);
 	load_menu_texture(titlescr_ico_abt, png);
 	load_menu_texture(titlescr_ico_cht, png);
+	load_menu_texture(titlescr_ico_pat, png);
 	load_menu_texture(titlescr_ico_net, png);
 	load_menu_texture(titlescr_ico_opt, png);
 	load_menu_texture(titlescr_ico_xmb, png);
@@ -468,6 +483,7 @@ void SetMenu(int id)
 	{
 		case MENU_MAIN_SCREEN: //Main Menu
 		case MENU_HDD_SAVES: //HHD Saves Menu
+		case MENU_HDD_PATCHES: //HHD Saves Menu
 		case MENU_ONLINE_DB: //Cheats Online Menu
 		case MENU_USER_BACKUP: //Backup Menu
 //			menu_textures[icon_png_file_index].size = 0;
@@ -505,6 +521,14 @@ void SetMenu(int id)
 				Draw_UserCheatsMenu_Ani(&hdd_saves);
 			break;
 
+		case MENU_HDD_PATCHES: //HDD patches Menu
+			if (!hdd_patches.list && !ReloadUserSaves(&hdd_patches))
+				return;
+			
+			if (gcm_config.doAni)
+				Draw_UserCheatsMenu_Ani(&hdd_patches);
+			break;
+
 		case MENU_ONLINE_DB: //Cheats Online Menu
 			if (!online_saves.list && !ReloadUserSaves(&online_saves))
 				return;
@@ -534,7 +558,7 @@ void SetMenu(int id)
 
 		case MENU_PATCHES: //Cheat Selection Menu
 			//if entering from game list, don't keep index, otherwise keep
-			if (menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB)
+			if (menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB || menu_id == MENU_HDD_PATCHES)
 				menu_old_sel[MENU_PATCHES] = 0;
 /*
 			char iconfile[256];
@@ -1043,6 +1067,10 @@ void drawScene()
 
 		case MENU_HDD_SAVES: //HDD Saves Menu
 			doSaveMenu(&hdd_saves);
+			break;
+
+		case MENU_HDD_PATCHES: //HDD Patches Menu
+			doSaveMenu(&hdd_patches);
 			break;
 
 		case MENU_ONLINE_DB: //Online Cheats Menu
