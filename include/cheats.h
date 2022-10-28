@@ -45,7 +45,7 @@ enum cmd_code_enum
 #define CHEAT_FLAG_PS2           16
 #define CHEAT_FLAG_PSP           32
 #define CHEAT_FLAG_SHN           64
-#define CHEAT_FLAG_TROPHY        128
+#define CHEAT_FLAG_PATCH         128
 #define CHEAT_FLAG_ONLINE        256
 #define CHEAT_FLAG_PS4           512
 #define CHEAT_FLAG_HDD           1024

@@ -126,6 +126,7 @@ int last_menu_id[TOTAL_MENU_IDS] = { 0 };						// Last menu id called (for retur
 const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x10 Select    \x13 Back    \x11 Refresh",							//Update
 								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//HDD list
+								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Patch list
 								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Online list
 								"\x10 Select    \x13 Back",											//Options
 								"\x13 Back",														//About
@@ -155,7 +156,7 @@ save_list_t hdd_patches = {
     .icon_id = header_ico_cht_png_index,
     .title = "HDD Patches",
     .list = NULL,
-    .path = GOLDCHEATS_PATCH_PATH,
+    .path = GOLDCHEATS_PATCH_PATH "json/",
     .ReadList = &ReadPatchList,
     .ReadCodes = &ReadPatches,
     .UpdatePath = NULL,
