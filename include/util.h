@@ -18,5 +18,7 @@ int calculate_hmac_hash(const u8 *data, u64 size, const u8 *key, u32 key_length,
 int calculate_file_hmac_hash(const char *file_path, const u8 *key, u32 key_length, u8 output[20]);
 
 u64 align_to_pow2(u64 offset, u64 alignment);
+u64 hash(const char *str);
+u64 patch_hash_calc(const char* input_str);
 
 #endif /* !_UTIL_H_ */
