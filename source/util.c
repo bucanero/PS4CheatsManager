@@ -149,3 +149,21 @@ int write_buffer(const char *file_path, uint8_t *buf, size_t size)
 
         return 0;
 }
+
+// http://www.cse.yorku.ca/~oz/hash.html
+u64 hash(const char *str) {
+    u64 hash = 5381;
+    u32 c;
+    while ((c = *str++))
+        hash = hash * 33 ^ c;
+    LOG("output %016lx", hash);
+    return hash;
+}
+
+u64 patch_hash_calc(const char* input_str) {
+    u64 output_hash = 0;
+    output_hash = hash(input_str);
+    LOG("input \"%s\"", input_str);
+    LOG("output: 0x%016lx", output_hash);
+    return output_hash;
+}
