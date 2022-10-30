@@ -53,7 +53,7 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
     if (!option->name || !option->value)
         return;
     
-    int c = 0, yOff = 80, cIndex = 0;
+    int c = 0, yOff = 80;
     
     int maxPerPage = (SCREEN_HEIGHT - (yOff * 2)) / y_inc;
     int startDrawX = selIndex - (maxPerPage / 2);
@@ -75,8 +75,6 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
             {
                 DrawTexture(&menu_textures[mark_line_png_index], MENU_SPLIT_OFF, yOff, 0, SCREEN_WIDTH - MENU_SPLIT_OFF, menu_textures[mark_line_png_index].height * 2, 0xFFFFFF00 | alpha);
             }
-            
-            cIndex++;
         }
         yOff += y_inc;
     }
@@ -427,8 +425,7 @@ void DrawCheatsList(int selIndex, game_entry_t* game, u8 alpha)
                 
                 if (code->options_count > 0 && code->options)
                 {
-                    int od = 0;
-                    for (od = 0; od < code->options_count; od++)
+                    for (int od = 0; od < code->options_count; od++)
                     {
                         if (code->options[od].sel >= 0 && code->options[od].name && code->options[od].name[code->options[od].sel])
                         {
