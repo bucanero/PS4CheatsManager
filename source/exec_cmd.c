@@ -10,13 +10,46 @@
 #include "util.h"
 
 
+uint64_t patch_hash_calc(const game_entry_t* game, const code_entry_t* code)
+{
+    uint64_t output_hash = 0x1505;
+
+    output_hash = djb2_hash(game->name, output_hash);
+    output_hash = djb2_hash(code->name, output_hash);
+    output_hash = djb2_hash(game->version, output_hash);
+    output_hash = djb2_hash(game->path, output_hash);
+    output_hash = djb2_hash(code->file, output_hash);
+
+//    LOG("input: \"%s%s%s%s%s\"", game->name, code->name, game->version, game->path, code->file);
+//    LOG("output: 0x%016lx", output_hash);
+    return output_hash;
+}
+
+static void togglePatch(const game_entry_t* game, const code_entry_t* code)
+{
+	char hash_path[256];
+	uint8_t settings[2] = {0x30, 0x0A}; // "0\n"
+
+	uint64_t hash = patch_hash_calc(game, code);
+	snprintf(hash_path, sizeof(hash_path), GOLDCHEATS_PATCH_PATH "settings/0x%016lx.txt", hash);
+	LOG("Toggle patch (%d): %s", code->activated, hash_path);
+
+	settings[0] += code->activated;
+	if (write_buffer(hash_path, settings, sizeof(settings)) < 0)
+	{
+		LOG("Failed to write patch settings file %s", hash_path);
+		return;
+	}
+
+	show_message("Patch \"%s\" %s", code->name, code->activated ? "Enabled" : "Disabled");
+}
+
 void execCodeCommand(code_entry_t* code, const char* codecmd)
 {
 	switch (codecmd[0])
 	{
-		case CMD_DECRYPT_FILE:
-//			decryptSaveFile(code->options[0].name[code->options[0].sel]);
-			code->activated = 0;
+		case CMD_TOGGLE_PATCH:
+			togglePatch(selected_entry, code);
 			break;
 
 		default:

@@ -207,7 +207,7 @@ static code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
 
 	return entry;
 }
-
+/*
 static option_entry_t* _initOptions(int count)
 {
 	option_entry_t* options = (option_entry_t*)malloc(sizeof(option_entry_t));
@@ -233,7 +233,7 @@ static option_entry_t* _createOptions(int count, const char* name, char value)
 
 	return options;
 }
-
+*/
 static game_entry_t* _createSaveEntry(uint16_t flag, const char* name)
 {
 	game_entry_t* entry = (game_entry_t *)calloc(1, sizeof(game_entry_t));
@@ -434,6 +434,15 @@ list_t * ReadBackupList(const char* userPath)
 
 		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
 	}
+	if (http_download("http://assets.illusion0001.com/", "patch1.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
+	{
+		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_PATCH_PATH);
+		if (ret > 0)
+			show_message("Successfully installed %d patch files", ret);
+		else
+			show_message("Zip extraction error!");
+		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
+	}
 	else show_message("Download error!");
 
 	return NULL;
@@ -563,6 +572,150 @@ int ReadBackupCodes(game_entry_t * bup)
 	LOG("%d items loaded", list_count(bup->codes));
 
 	return list_count(bup->codes);
+}
+
+static int is_patch_enabled(const game_entry_t* game, const code_entry_t* code)
+{
+	char hash_path[256];
+	uint8_t settings[2];
+
+	uint64_t hash = patch_hash_calc(game, code);
+	snprintf(hash_path, sizeof(hash_path), GOLDCHEATS_PATCH_PATH "settings/0x%016lx.txt", hash);
+
+	if(read_file(hash_path, settings, sizeof(settings)) < 0 || settings[0] != 0x31)
+		return 0;
+
+	return 1;
+}
+
+list_t * ReadPatchList(const char* userPath)
+{
+	DIR *d;
+	list_t* list;
+	struct dirent *dir;
+	game_entry_t *item;
+	char fullPath[256];
+
+	d = opendir(userPath);
+
+	if (!d)
+		return NULL;
+
+	list = list_alloc();
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 || endsWith(dir->d_name, ".json") == NULL)
+			continue;
+
+		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
+		if (file_exists(fullPath) != SUCCESS)
+			continue;
+
+		LOG("Reading %s...", fullPath);
+
+		long bsize;
+		char ver[32] = "";
+		char *buffer = readTextFile(fullPath, &bsize);
+		cJSON *cheat = cJSON_Parse(buffer);
+
+		if (!cheat)
+		{
+			LOG("JSON parse Error: %s", buffer);
+			free(buffer);
+			continue;
+		}
+
+		const cJSON *game;
+		const cJSON *patchs = cJSON_GetObjectItemCaseSensitive(cheat, "patch");
+		cJSON_ArrayForEach(game, patchs)
+		{
+			const cJSON *app_name = cJSON_GetObjectItemCaseSensitive(game, "title");
+			const cJSON *app_ver = cJSON_GetObjectItemCaseSensitive(game, "app_ver");
+
+			if (!cJSON_IsString(app_name) || !cJSON_IsString(app_ver) || strcmp(app_ver->valuestring, ver) == 0)
+				continue;
+
+			strcpy(ver, app_ver->valuestring);
+			item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD | CHEAT_FLAG_PATCH, app_name->valuestring);
+			item->type = FILE_TYPE_PS4;
+			item->path = strdup(fullPath);
+			item->version = strdup(app_ver->valuestring);
+			item->title_id = strdup(dir->d_name);
+			*strrchr(item->title_id, '.') = 0;
+
+			LOG("[%s] F(%X) '%s' %s", item->title_id, item->flags, item->name, item->version);
+			list_append(list, item);
+		}
+
+		cJSON_Delete(cheat);
+		free(buffer);
+	}
+	
+	closedir(d);
+
+	LOG("%d items loaded", list_count(list));
+	if (!list_count(list))
+	{
+		list_free(list);
+		return NULL;
+	}
+
+	check_game_appdb(list);
+	return list;
+}
+
+int ReadPatches(game_entry_t * game)
+{
+	long bsize;
+	code_entry_t* cmd;
+	game->codes = list_alloc();
+
+	LOG("Loading patches from '%s'...", game->path);
+
+	char *buffer = readTextFile(game->path, &bsize);
+	cJSON *cheat = cJSON_Parse(buffer);
+
+	if (!cheat)
+	{
+		LOG("JSON parse Error: %s", buffer);
+		list_free(game->codes);
+		free(buffer);
+
+		return 0;
+	}
+
+	const cJSON *app;
+	const cJSON *patchs = cJSON_GetObjectItemCaseSensitive(cheat, "patch");
+	cJSON_ArrayForEach(app, patchs)
+	{
+		const cJSON *app_ver = cJSON_GetObjectItemCaseSensitive(app, "app_ver");
+
+		if (!cJSON_IsString(app_ver) || strcmp(app_ver->valuestring, game->version) != 0)
+			continue;
+
+		const cJSON *obj = cJSON_GetObjectItemCaseSensitive(app, "name");
+		cmd = (code_entry_t *)calloc(1, sizeof(code_entry_t));
+		cmd->type = PATCH_VIEW;
+		cmd->name = strdup(cJSON_IsString(obj) ? obj->valuestring : "");
+
+		obj = cJSON_GetObjectItemCaseSensitive(app, "app_elf");
+		cmd->file = strdup(cJSON_IsString(obj) ? obj->valuestring : "");
+
+		obj = cJSON_GetObjectItemCaseSensitive(app, "patch_list");
+		cmd->codes = cJSON_Print(obj);
+		cmd->activated = is_patch_enabled(game, cmd);
+
+		list_append(game->codes, cmd);
+		LOG("Added '%s' (%s)", cmd->name, cmd->file);
+	}
+
+	cJSON_Delete(cheat);
+	free(buffer);
+
+	LOG("%d items loaded", list_count(game->codes));
+
+	return list_count(game->codes);
 }
 
 /*

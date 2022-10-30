@@ -3,10 +3,18 @@
 #define LOG dbglogger_log
 
 #define GOLDCHEATS_PATH				"/data/GoldHEN/"
+
+#ifdef DEBUG_ENABLE_LOG
+#define GOLDCHEATS_APP_PATH			"/data/GoldHEN/debug/"
+#define GOLDCHEATS_SANDBOX_PATH		"/mnt/sandbox/LOAD00044_000%s/"
+#else
 #define GOLDCHEATS_APP_PATH			"/mnt/sandbox/GOLD00777_000/app0/assets/"
 #define GOLDCHEATS_SANDBOX_PATH		"/mnt/sandbox/GOLD00777_000%s/"
+#endif
+
 #define GOLDCHEATS_USER_PATH		GOLDCHEATS_PATH "%08x/"
 #define GOLDCHEATS_DATA_PATH		GOLDCHEATS_PATH "cheats/"
+#define GOLDCHEATS_PATCH_PATH		GOLDCHEATS_PATH "patches/"
 #define GOLDCHEATS_LOCAL_CACHE		GOLDCHEATS_PATH "temp/"
 #define GOLDCHEATS_UPDATE_URL		"https://api.github.com/repos/GoldHEN/GoldHEN_Cheat_Manager/releases/latest"
 
@@ -14,7 +22,6 @@
 #define USB0_PATH               "/mnt/usb0/"
 #define USB1_PATH               "/mnt/usb1/"
 #define USB_PATH                "/mnt/usb%d/"
-#define USER_PATH_HDD           "/data/GoldHEN/cheats/"
 
 #define ONLINE_URL				"https://goldhen.github.io/GoldHEN_Cheat_Repository/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
@@ -24,8 +31,8 @@ enum cmd_code_enum
 {
     CMD_CODE_NULL,
 
-// Save commands
-    CMD_DECRYPT_FILE,
+// Code commands
+    CMD_TOGGLE_PATCH,
     CMD_VIEW_RAW_PATCH,
     CMD_VIEW_DETAILS,
 };
@@ -38,7 +45,7 @@ enum cmd_code_enum
 #define CHEAT_FLAG_PS2           16
 #define CHEAT_FLAG_PSP           32
 #define CHEAT_FLAG_SHN           64
-#define CHEAT_FLAG_TROPHY        128
+#define CHEAT_FLAG_PATCH         128
 #define CHEAT_FLAG_ONLINE        256
 #define CHEAT_FLAG_PS4           512
 #define CHEAT_FLAG_HDD           1024
@@ -116,14 +123,14 @@ list_t * ReadUsbList(const char* userPath);
 list_t * ReadUserList(const char* userPath);
 list_t * ReadOnlineList(const char* urlPath);
 list_t * ReadBackupList(const char* userPath);
-list_t * ReadTrophyList(const char* userPath);
+list_t * ReadPatchList(const char* userPath);
 void UnloadGameList(list_t * list);
 char * readTextFile(const char * path, long* size);
 int sortGameList_Exists(const void* A, const void* B);
 int sortGameList_Compare(const void* A, const void* B);
 int sortCodeList_Compare(const void* A, const void* B);
 int ReadCodes(game_entry_t * save);
-int ReadTrophies(game_entry_t * game);
+int ReadPatches(game_entry_t * game);
 int ReadOnlineSaves(game_entry_t * game);
 int ReadBackupCodes(game_entry_t * bup);
 
@@ -145,6 +152,7 @@ int init_loading_screen(const char* msg);
 void stop_loading_screen();
 
 void execCodeCommand(code_entry_t* code, const char* codecmd);
+uint64_t patch_hash_calc(const game_entry_t* game, const code_entry_t* code);
 
 int get_save_details(const game_entry_t *save, char** details);
 int orbis_SaveUmount(const char* mountPath);

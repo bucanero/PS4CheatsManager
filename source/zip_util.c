@@ -106,6 +106,7 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 {
 	int n, ret = 0;
 	char fpath[256];
+	char extract_msg[256];
 	const char *name;
 	struct zip_t *zip = zip_open(zip_file, ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
 
@@ -125,8 +126,9 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 			snprintf(fpath, sizeof(fpath), "%s%s", dest_path, name + 1);
 			mkdirs(fpath);
 			LOG("Extracting %s", fpath);
+			snprintf(extract_msg, sizeof(extract_msg), "Extracting %s", name);
 
-			update_progress_bar(i, n, name);
+			update_progress_bar(i, n, extract_msg);
 			ret += (zip_entry_fread(zip, fpath) == SUCCESS);
 		}
 		zip_entry_close(zip);

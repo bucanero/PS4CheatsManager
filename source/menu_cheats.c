@@ -53,7 +53,7 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
     if (!option->name || !option->value)
         return;
     
-    int c = 0, yOff = 80, cIndex = 0;
+    int c = 0, yOff = 80;
     
     int maxPerPage = (SCREEN_HEIGHT - (yOff * 2)) / y_inc;
     int startDrawX = selIndex - (maxPerPage / 2);
@@ -75,8 +75,6 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
             {
                 DrawTexture(&menu_textures[mark_line_png_index], MENU_SPLIT_OFF, yOff, 0, SCREEN_WIDTH - MENU_SPLIT_OFF, menu_textures[mark_line_png_index].height * 2, 0xFFFFFF00 | alpha);
             }
-            
-            cIndex++;
         }
         yOff += y_inc;
     }
@@ -101,7 +99,7 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), icon_a);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, 0, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT, icon_a);
 		DrawHeader(header_ico_cht_png_index, left, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		//DrawOptions(selected_centry->options[option_index], game_a, 18, menu_old_sel[7]);
@@ -134,7 +132,7 @@ void Draw_CheatsMenu_Options_Ani(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), icon_a);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, 0, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT, icon_a);
 		DrawHeader(header_ico_cht_png_index, left, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
         
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
@@ -154,7 +152,7 @@ void Draw_CheatsMenu_Options(void)
 
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
-	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), 0x000000FF);
+	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].width * 1) + 1, 0, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT, 0x000000FF);
 	DrawHeader(header_ico_cht_png_index, MENU_SPLIT_OFF, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
 	DrawOptions(&selected_centry->options[option_index], 0xFF, APP_LINE_OFFSET, menu_sel);
@@ -246,7 +244,7 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), icon_a);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, 0, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT, icon_a);
 		DrawHeader(header_ico_cht_png_index, left, "Details", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		SDL_RenderPresent(renderer);
@@ -275,7 +273,7 @@ void Draw_CheatsMenu_View_Ani(const char* title)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), icon_a);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].width * 1) + 1, 0, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT, icon_a);
 		DrawHeader(header_ico_cht_png_index, left, title, selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
@@ -295,7 +293,7 @@ void Draw_CheatsMenu_View(const char* title)
     
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
-	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].width * 1) + 1, -gcm_config.marginV, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT + (gcm_config.marginV * 2), 0x000000FF);
+	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].width * 1) + 1, 0, 0, menu_textures[edit_shadow_png_index].width, SCREEN_HEIGHT, 0x000000FF);
 	DrawHeader(header_ico_cht_png_index, MENU_SPLIT_OFF, title, selected_centry->name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
     int nlines = DrawCodes(selected_centry, 0xFF, APP_LINE_OFFSET, MENU_SPLIT_OFF, menu_sel);
@@ -421,14 +419,13 @@ void DrawCheatsList(int selIndex, game_entry_t* game, u8 alpha)
                 SetFontSize((int)(y_inc * 1.0), (int)(y_inc * 0.6));
                 SetFontAlign(FONT_ALIGN_CENTER);
 				SetFontColor(APP_FONT_TAG_COLOR | a, 0);
-                DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 5, "select");
+                DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 5, "active");
                 SetFontAlign(FONT_ALIGN_LEFT);
                 SetFontSize(APP_FONT_SIZE_SELECTION);
                 
                 if (code->options_count > 0 && code->options)
                 {
-                    int od = 0;
-                    for (od = 0; od < code->options_count; od++)
+                    for (int od = 0; od < code->options_count; od++)
                     {
                         if (code->options[od].sel >= 0 && code->options[od].name && code->options[od].name[code->options[od].sel])
                         {

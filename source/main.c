@@ -30,6 +30,7 @@ enum menu_screen_ids
 	MENU_MAIN_SCREEN,
 	MENU_USER_BACKUP,
 	MENU_HDD_SAVES,
+	MENU_HDD_PATCHES,
 	MENU_ONLINE_DB,
 	MENU_SETTINGS,
 	MENU_CREDITS,
@@ -76,8 +77,6 @@ app_config_t gcm_config = {
     .doSort = 1,
     .doAni = 1,
     .update = 1,
-    .marginH = 0,
-    .marginV = 0,
     .user_id = 0,
     .psid = {0, 0},
     .packver = 0,
@@ -127,6 +126,7 @@ int last_menu_id[TOTAL_MENU_IDS] = { 0 };						// Last menu id called (for retur
 const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x10 Select    \x13 Back    \x11 Refresh",							//Update
 								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//HDD list
+								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Patch list
 								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Online list
 								"\x10 Select    \x13 Back",											//Options
 								"\x13 Back",														//About
@@ -143,9 +143,22 @@ save_list_t hdd_saves = {
 	.icon_id = header_ico_cht_png_index,
 	.title = "HDD Cheats",
     .list = NULL,
-    .path = USER_PATH_HDD,
+    .path = GOLDCHEATS_DATA_PATH,
     .ReadList = &ReadUserList,
     .ReadCodes = &ReadCodes,
+    .UpdatePath = NULL,
+};
+
+/*
+* HDD patches list
+*/
+save_list_t hdd_patches = {
+    .icon_id = header_ico_cht_png_index,
+    .title = "HDD Patches",
+    .list = NULL,
+    .path = GOLDCHEATS_PATCH_PATH "json/",
+    .ReadList = &ReadPatchList,
+    .ReadCodes = &ReadPatches,
     .UpdatePath = NULL,
 };
 
@@ -313,7 +326,7 @@ int LoadTextures_Menu()
 		return 0;
 	free_mem = (u32*) init_ttf_table((u8*) free_mem);
 
-	set_ttf_window(0, 0, SCREEN_WIDTH + gcm_config.marginH, SCREEN_HEIGHT + gcm_config.marginV, WIN_SKIP_LF);
+	set_ttf_window(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WIN_SKIP_LF);
 	
 	if (!menu_textures)
 		menu_textures = (png_texture *)malloc(sizeof(png_texture) * TOTAL_MENU_TEXTURES);
@@ -351,6 +364,7 @@ int LoadTextures_Menu()
 	load_menu_texture(scroll_lock, png);
 	load_menu_texture(titlescr_ico_abt, png);
 	load_menu_texture(titlescr_ico_cht, png);
+	load_menu_texture(titlescr_ico_pat, png);
 	load_menu_texture(titlescr_ico_net, png);
 	load_menu_texture(titlescr_ico_opt, png);
 	load_menu_texture(titlescr_ico_xmb, png);
@@ -470,6 +484,7 @@ void SetMenu(int id)
 	{
 		case MENU_MAIN_SCREEN: //Main Menu
 		case MENU_HDD_SAVES: //HHD Saves Menu
+		case MENU_HDD_PATCHES: //HHD Saves Menu
 		case MENU_ONLINE_DB: //Cheats Online Menu
 		case MENU_USER_BACKUP: //Backup Menu
 //			menu_textures[icon_png_file_index].size = 0;
@@ -507,6 +522,14 @@ void SetMenu(int id)
 				Draw_UserCheatsMenu_Ani(&hdd_saves);
 			break;
 
+		case MENU_HDD_PATCHES: //HDD patches Menu
+			if (!hdd_patches.list && !ReloadUserSaves(&hdd_patches))
+				return;
+			
+			if (gcm_config.doAni)
+				Draw_UserCheatsMenu_Ani(&hdd_patches);
+			break;
+
 		case MENU_ONLINE_DB: //Cheats Online Menu
 			if (!online_saves.list && !ReloadUserSaves(&online_saves))
 				return;
@@ -536,7 +559,7 @@ void SetMenu(int id)
 
 		case MENU_PATCHES: //Cheat Selection Menu
 			//if entering from game list, don't keep index, otherwise keep
-			if (menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB)
+			if (menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB || menu_id == MENU_HDD_PATCHES)
 				menu_old_sel[MENU_PATCHES] = 0;
 /*
 			char iconfile[256];
@@ -781,7 +804,7 @@ void doOptionsMenu()
 		else if (pad_check_button(ORBIS_PAD_BUTTON_CIRCLE))
 		{
 			save_app_settings(&gcm_config);
-			set_ttf_window(0, 0, SCREEN_WIDTH + gcm_config.marginH, SCREEN_HEIGHT + gcm_config.marginV, WIN_SKIP_LF);
+			set_ttf_window(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WIN_SKIP_LF);
 			SetMenu(MENU_MAIN_SCREEN);
 			return;
 		}
@@ -967,8 +990,12 @@ void doPatchMenu()
 		{
 			selected_centry = list_get_item(selected_entry->codes, menu_sel);
 
-			if (selected_centry->type != PATCH_NULL)
-//				selected_centry->activated = !selected_centry->activated;
+			if (selected_entry->flags & CHEAT_FLAG_PATCH && selected_centry->type != PATCH_NULL)
+			{
+				char code = CMD_TOGGLE_PATCH;
+				selected_centry->activated = !selected_centry->activated;
+				execCodeCommand(selected_centry, &code);
+			}
 
 			if (selected_centry->type == PATCH_COMMAND)
 				execCodeCommand(selected_centry, selected_centry->codes);
@@ -1045,6 +1072,10 @@ void drawScene()
 
 		case MENU_HDD_SAVES: //HDD Saves Menu
 			doSaveMenu(&hdd_saves);
+			break;
+
+		case MENU_HDD_PATCHES: //HDD Patches Menu
+			doSaveMenu(&hdd_patches);
 			break;
 
 		case MENU_ONLINE_DB: //Online Cheats Menu
@@ -1188,6 +1219,7 @@ s32 main(s32 argc, const char* argv[])
 
 	mkdirs(GOLDCHEATS_DATA_PATH);
 	mkdirs(GOLDCHEATS_LOCAL_CACHE);
+	mkdirs(GOLDCHEATS_PATCH_PATH "settings/");
 	
 	// Load freetype
 	if (sceSysmoduleLoadModule(ORBIS_SYSMODULE_FREETYPE_OL) < 0)
