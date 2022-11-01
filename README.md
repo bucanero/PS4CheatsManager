@@ -44,7 +44,7 @@ The application also provides direct access to the [Online Cheat database](https
 
 * [Bucanero](https://github.com/bucanero): Project developer
 * [Ctn123](https://github.com/ctn123): Cheat Engine
-* [ShininGami](https://github.com/ScriptSK): Cheat Engine
+* [Shiningami](https://github.com/ScriptSK): Cheat Engine
 * [SiSTRo](https://github.com/SiSTR0): [GoldHEN](https://github.com/GoldHEN/GoldHEN)
 * [Kameleon](https://github.com/kmeps4): QA Support
 
@@ -61,7 +61,7 @@ You need to have installed:
 - [cJSON](https://github.com/bucanero/cJSON) library
 - [Zip](https://github.com/bucanero/zip) library
 - [SDL2](https://github.com/PacBrew/SDL/tree/ps4) library
-- [libJbc](https://github.com/Al-Azif/ps4-skeleton/tree/main/libs) library
+- [libJbc](https://github.com/bucanero/ps4-libjbc) library
 - [Mini-XML](https://github.com/bucanero/mxml) library
 - [dbglogger](https://github.com/bucanero/dbglogger) library (required for debug logging)
 
@@ -77,10 +77,10 @@ UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat]
 
 # License
 
-[GoldHEN Cheats Manager](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/) - Copyright (C) 2022  Damian Parrino
+[GoldHEN Cheats Manager](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/) - Copyright (C) 2022  [Damian Parrino](https://twitter.com/dparrino)
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the [GNU General Public License](LICENSE) as published by
+it under the terms of the [GNU General Public License][app_license] as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 

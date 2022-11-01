@@ -574,12 +574,11 @@ int ReadBackupCodes(game_entry_t * bup)
 	return list_count(bup->codes);
 }
 
-static int is_patch_enabled(const game_entry_t* game, const code_entry_t* code)
+static int is_patch_enabled(uint64_t hash)
 {
 	char hash_path[256];
 	uint8_t settings[2];
 
-	uint64_t hash = patch_hash_calc(game, code);
 	snprintf(hash_path, sizeof(hash_path), GOLDCHEATS_PATCH_PATH "settings/0x%016lx.txt", hash);
 
 	if(read_file(hash_path, settings, sizeof(settings)) < 0 || settings[0] != 0x31)
@@ -704,7 +703,7 @@ int ReadPatches(game_entry_t * game)
 
 		obj = cJSON_GetObjectItemCaseSensitive(app, "patch_list");
 		cmd->codes = cJSON_Print(obj);
-		cmd->activated = is_patch_enabled(game, cmd);
+		cmd->activated = is_patch_enabled(patch_hash_calc(game, cmd));
 
 		list_append(game->codes, cmd);
 		LOG("Added '%s' (%s)", cmd->name, cmd->file);
