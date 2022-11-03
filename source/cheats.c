@@ -637,6 +637,7 @@ list_t * ReadPatchList(const char* userPath)
 
 			strcpy(ver, app_ver->valuestring);
 			item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD | CHEAT_FLAG_PATCH, app_name->valuestring);
+			item->title = strdup(app_name->valuestring);
 			item->type = FILE_TYPE_PS4;
 			item->path = strdup(fullPath);
 			item->version = strdup(app_ver->valuestring);
@@ -704,6 +705,10 @@ int ReadPatches(game_entry_t * game)
 		obj = cJSON_GetObjectItemCaseSensitive(app, "patch_list");
 		cmd->codes = cJSON_Print(obj);
 		cmd->activated = is_patch_enabled(patch_hash_calc(game, cmd));
+		obj = cJSON_GetObjectItemCaseSensitive(app, "note");
+		cmd->note = strdup(cJSON_IsString(obj) ? obj->valuestring : "");
+		obj = cJSON_GetObjectItemCaseSensitive(app, "title");
+		cmd->title = strdup(cJSON_IsString(obj) ? obj->valuestring : "");
 
 		list_append(game->codes, cmd);
 		LOG("Added '%s' (%s)", cmd->name, cmd->file);

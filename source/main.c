@@ -131,6 +131,7 @@ const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x10 Select    \x13 Back",											//Options
 								"\x13 Back",														//About
 								"\x10 Select    \x12 View Code    \x13 Back",						//Select Cheats
+								// "\x10 Select    \x11 View Details  \x12 View Code    \x13 Back",	//Select Patch
 								"\x13 Back",														//View Cheat
 								"\x10 Select    \x13 Back",											//Cheat Option
 								"\x13 Back",														//View Details
@@ -1054,6 +1055,15 @@ void doPatchMenu()
 			{
 				SetMenu(MENU_PATCH_VIEW);
 				return;
+			}
+		}
+		else if (pad_check_button(ORBIS_PAD_BUTTON_SQUARE))
+		{
+			selected_centry = list_get_item(selected_entry->codes, menu_sel);
+			if (selected_entry->flags & CHEAT_FLAG_PATCH && selected_centry->type != PATCH_NULL)
+			{
+				char code = CMD_VIEW_DETAILS;
+				execCodeCommand(selected_centry, &code);
 			}
 		}
 	}
