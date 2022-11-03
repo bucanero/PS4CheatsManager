@@ -102,7 +102,6 @@ typedef struct game_entry
     char * title_id;
     char * version;
     char * path;
-    char * title;
     uint16_t flags;
     uint16_t type;
     list_t * codes;

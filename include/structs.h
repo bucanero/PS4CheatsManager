@@ -33,10 +33,8 @@ typedef struct option_entry
 typedef struct code_entry
 {
     uint8_t type;
-    char * title;
     char * name;
     char * file;
-    char * note;
     uint8_t activated;
     int options_count;
     char * codes;
