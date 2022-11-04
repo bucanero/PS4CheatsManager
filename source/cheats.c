@@ -690,8 +690,10 @@ int ReadPatches(game_entry_t * game)
 	cJSON_ArrayForEach(app, patchs)
 	{
 		const cJSON *app_ver = cJSON_GetObjectItemCaseSensitive(app, "app_ver");
+		const cJSON *app_name = cJSON_GetObjectItemCaseSensitive(app, "title");
 
-		if (!cJSON_IsString(app_ver) || strcmp(app_ver->valuestring, game->version) != 0)
+		if (!cJSON_IsString(app_ver) || !cJSON_IsString(app_name) || 
+			strcmp(app_name->valuestring, game->name) != 0 || strcmp(app_ver->valuestring, game->version) != 0)
 			continue;
 
 		const cJSON *obj = cJSON_GetObjectItemCaseSensitive(app, "name");
