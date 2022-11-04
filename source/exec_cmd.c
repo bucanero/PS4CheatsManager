@@ -12,17 +12,20 @@
 
 uint64_t patch_hash_calc(const game_entry_t* game, const code_entry_t* code)
 {
-    uint64_t output_hash = 0x1505;
+	uint64_t output_hash = 0x1505;
 
-    output_hash = djb2_hash(game->name, output_hash);
-    output_hash = djb2_hash(code->name, output_hash);
-    output_hash = djb2_hash(game->version, output_hash);
-    output_hash = djb2_hash(game->path, output_hash);
-    output_hash = djb2_hash(code->file, output_hash);
+	output_hash = djb2_hash(game->name, output_hash);
+	output_hash = djb2_hash(code->name, output_hash);
+	output_hash = djb2_hash(game->version, output_hash);
+	output_hash = djb2_hash(game->path, output_hash);
+	output_hash = djb2_hash(code->file, output_hash);
 
-//    LOG("input: \"%s%s%s%s%s\"", game->name, code->name, game->version, game->path, code->file);
-//    LOG("output: 0x%016lx", output_hash);
-    return output_hash;
+#ifdef DEBUG_ENABLE_LOG
+	LOG("input: \"%s%s%s%s%s\"", game->name, code->name, game->version, game->path, code->file);
+	LOG("output: 0x%016lx", output_hash);
+#endif
+
+	return output_hash;
 }
 
 static void togglePatch(const game_entry_t* game, const code_entry_t* code)

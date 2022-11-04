@@ -703,9 +703,22 @@ int ReadPatches(game_entry_t * game)
 		obj = cJSON_GetObjectItemCaseSensitive(app, "app_elf");
 		cmd->file = strdup(cJSON_IsString(obj) ? obj->valuestring : "");
 
+		obj = cJSON_GetObjectItemCaseSensitive(app, "note");
+		char* note = cJSON_IsString(obj) ? obj->valuestring : "";
+
 		obj = cJSON_GetObjectItemCaseSensitive(app, "patch_list");
-		cmd->codes = cJSON_Print(obj);
+		char* code = cJSON_Print(obj);
 		cmd->activated = is_patch_enabled(patch_hash_calc(game, cmd));
+
+		asprintf(&cmd->codes, "Game Title: %s\n"
+			"Game Version: %s\n"
+			"Patch Name: %s\n"
+			"Patch Elf: %s\n"
+			"Patch Path: %s\n"
+			"Patch Note: %s\n"
+			"Patch Code: %s",
+			game->name, game->version, cmd->name, cmd->file, game->path, note, code);
+		free(code);
 
 		list_append(game->codes, cmd);
 		LOG("Added '%s' (%s)", cmd->name, cmd->file);
