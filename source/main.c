@@ -1347,7 +1347,7 @@ s32 main(s32 argc, const char* argv[])
 		// Propagate the updated window to the screen
 		SDL_RenderPresent(renderer);
 	}
-
+	if (gcm_config.doAni)
 	drawEndLogo();
 
     // Cleanup resources
