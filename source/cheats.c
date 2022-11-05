@@ -331,14 +331,15 @@ int set_shn_codes(game_entry_t* item)
 	{
 		mxml_node_t *value = mxmlFindElement(node, node, "Cheatline", NULL, NULL, MXML_DESCEND);
 
+		cmd = _createCmdCode(PATCH_VIEW, mxmlElementGetAttr(node, "Text"), CMD_CODE_NULL);
 		if (value)
 		{
-			cmd = _createCmdCode(PATCH_VIEW, mxmlElementGetAttr(node, "Text"), CMD_CODE_NULL);
+			free(cmd->codes);
 			cmd->codes = mxmlSaveAllocString(node, &xml_whitespace_cb);
-
-			LOG("Added '%s' (%d)", cmd->name, cmd->type);
-			list_append(item->codes, cmd);
 		}
+
+		LOG("Added '%s' (%d)", cmd->name, cmd->type);
+		list_append(item->codes, cmd);
 	}
 
 	/* free the document */
@@ -839,7 +840,7 @@ int sortGameList_Compare(const void* a, const void* b)
 	return strcasecmp(((game_entry_t*) a)->name, ((game_entry_t*) b)->name);
 }
 
-static void read_shn_games(const char* userPath, list_t *list)
+static void read_shn_games(const char* userPath, const char* fext, list_t *list)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -852,7 +853,7 @@ static void read_shn_games(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 || endsWith(dir->d_name, ".shn") == NULL)
+		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 || endsWith(dir->d_name, fext) == NULL)
 			continue;
 
 		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
@@ -1007,7 +1008,11 @@ list_t * ReadUserList(const char* userPath)
 
 	LOG("Loading SHN files...");
 	snprintf(fullPath, sizeof(fullPath), "%sshn/", userPath);
-	read_shn_games(fullPath, list);
+	read_shn_games(fullPath, ".shn", list);
+
+	LOG("Loading MC4 files...");
+	snprintf(fullPath, sizeof(fullPath), "%smc4/", userPath);
+	read_shn_games(fullPath, ".xml", list);
 
 	if (!list_count(list))
 	{
