@@ -439,7 +439,13 @@ list_t * ReadBackupList(const char* userPath)
 	{
 		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_PATCH_PATH);
 		if (ret > 0)
-			show_message("Successfully installed %d patch files", ret);
+		{
+			s64 bsize = 0;
+			char *path1 = GOLDCHEATS_PATCH_PATH "json/build.txt";
+			char *patch_ver = readTextFile(path1, &bsize);
+			show_message("Successfully installed %d patch files\n%s", ret, patch_ver);
+			free(patch_ver);
+		}
 		else
 			show_message("Zip extraction error!");
 		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
@@ -707,6 +713,9 @@ int ReadPatches(game_entry_t * game)
 		obj = cJSON_GetObjectItemCaseSensitive(app, "note");
 		char* note = cJSON_IsString(obj) ? obj->valuestring : "";
 
+		obj = cJSON_GetObjectItemCaseSensitive(app, "author");
+		char* author = cJSON_IsString(obj) ? obj->valuestring : "";
+
 		obj = cJSON_GetObjectItemCaseSensitive(app, "patch_list");
 		char* code = cJSON_Print(obj);
 		cmd->activated = is_patch_enabled(patch_hash_calc(game, cmd));
@@ -714,11 +723,12 @@ int ReadPatches(game_entry_t * game)
 		asprintf(&cmd->codes, "Game Title: %s\n"
 			"Game Version: %s\n"
 			"Patch Name: %s\n"
+			"Patch Author: %s\n"
 			"Patch Elf: %s\n"
 			"Patch Path: %s\n"
 			"Patch Note: %s\n"
-			"Patch Code: %s",
-			game->name, game->version, cmd->name, cmd->file, game->path, note, code);
+			"Patch Code: %s\n",
+			game->name, game->version, cmd->name, author, cmd->file, game->path, note, code);
 		free(code);
 
 		list_append(game->codes, cmd);
