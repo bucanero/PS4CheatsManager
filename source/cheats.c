@@ -615,7 +615,8 @@ list_t * ReadPatchList(const char* userPath)
 		LOG("Reading %s...", fullPath);
 
 		long bsize;
-		char ver[32] = "";
+		char *ver = fullPath;
+		char *app = fullPath;
 		char *buffer = readTextFile(fullPath, &bsize);
 		cJSON *cheat = cJSON_Parse(buffer);
 
@@ -633,10 +634,12 @@ list_t * ReadPatchList(const char* userPath)
 			const cJSON *app_name = cJSON_GetObjectItemCaseSensitive(game, "title");
 			const cJSON *app_ver = cJSON_GetObjectItemCaseSensitive(game, "app_ver");
 
-			if (!cJSON_IsString(app_name) || !cJSON_IsString(app_ver) || strcmp(app_ver->valuestring, ver) == 0)
+			if (!cJSON_IsString(app_name) || !cJSON_IsString(app_ver) || 
+				(strcmp(app_name->valuestring, app) == 0 && strcmp(app_ver->valuestring, ver) == 0))
 				continue;
 
-			strcpy(ver, app_ver->valuestring);
+			ver = app_ver->valuestring;
+			app = app_name->valuestring;
 			item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD | CHEAT_FLAG_PATCH, app_name->valuestring);
 			item->type = FILE_TYPE_PS4;
 			item->path = strdup(fullPath);
