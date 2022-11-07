@@ -550,10 +550,6 @@ void SetMenu(int id)
 			break;
 
 		case MENU_USER_BACKUP: //User Backup Menu
-			if (!show_dialog(1, "Updating will overwrite any old Cheats\\Patch files\nDo you want to continue?"))
-			{
-				return;
-			}
 			if (!user_backup.list && !ReloadUserSaves(&user_backup))
 				return;
 
