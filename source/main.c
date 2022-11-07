@@ -1352,7 +1352,7 @@ s32 main(s32 argc, const char* argv[])
 		SDL_RenderPresent(renderer);
 	}
 	if (gcm_config.doAni)
-	drawEndLogo();
+		drawEndLogo();
 
     // Cleanup resources
     SDL_DestroyRenderer(renderer);
