@@ -121,13 +121,12 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 		zip_entry_openbyindex(zip, i);
 		name = strchr(zip_entry_name(zip), '/');
 
-		if (!zip_entry_isdir(zip) && name && !(strncmp(name, "/json/", 6) && strncmp(name, "/shn/", 5)))
+		if (!zip_entry_isdir(zip) && name && !(strncmp(name, "/json/", 6) && strncmp(name, "/shn/", 5) && strncmp(name, "/mc4/", 5)))
 		{
 			snprintf(fpath, sizeof(fpath), "%s%s", dest_path, name + 1);
 			mkdirs(fpath);
-			LOG("Extracting %s", fpath);
-			snprintf(extract_msg, sizeof(extract_msg), "Extracting %s", name);
-
+			snprintf(extract_msg, sizeof(extract_msg), "Extracting %s", fpath);
+			LOG("%s", extract_msg);
 			update_progress_bar(i, n, extract_msg);
 			ret += (zip_entry_fread(zip, fpath) == SUCCESS);
 		}
