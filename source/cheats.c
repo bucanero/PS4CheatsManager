@@ -1120,6 +1120,9 @@ list_t * ReadOnlineList(const char* urlPath)
 	// PS4 SHN games
 	_ReadOnlineListEx(urlPath, "shn", CHEAT_FLAG_PS4 | CHEAT_FLAG_SHN, list);
 
+	// PS4 MC4 games
+	_ReadOnlineListEx(urlPath, "mc4", CHEAT_FLAG_PS4 | CHEAT_FLAG_SHN, list);
+
 	if (!list_count(list))
 	{
 		list_free(list);
