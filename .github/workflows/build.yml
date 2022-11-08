@@ -9,20 +9,58 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v3
+
+    - name: Checkout dbglogger
+      uses: actions/checkout@v3
       with:
-        fetch-depth: 0
+        repository: bucanero/dbglogger
+        path: dbglogger
+
+    - name: Checkout zip
+      uses: actions/checkout@v3
+      with:
+        repository: bucanero/zip
+        path: zip
+
+    - name: Checkout oosdk_libraries
+      uses: actions/checkout@v3
+      with:
+        repository: bucanero/oosdk_libraries
+        path: oosdk_libraries
+
+    - name: Checkout SDL-PS4
+      uses: actions/checkout@v3
+      with:
+        repository: bucanero/SDL-PS4
+        path: SDL-PS4
+        ref: ps4
+
+    - name: Checkout mxml
+      uses: actions/checkout@v3
+      with:
+        repository: bucanero/mxml
+        path: mxml
+
+    - name: Checkout cJSON
+      uses: actions/checkout@v3
+      with:
+        repository: bucanero/cJSON
+        path: cJSON
+
+    - name: Checkout libjbc
+      uses: actions/checkout@v3
+      with:
+        repository: bucanero/ps4-libjbc
+        path: ps4-libjbc
+
+    - name: Checkout Cheat repository
+      uses: actions/checkout@v3
+      with:
+        repository: GoldHEN/GoldHEN_Cheat_Repository
+        path: appdata
 
     - name: Checkout Dependecies
       run: |
-        git clone https://github.com/bucanero/dbglogger.git       --depth 1
-        git clone https://github.com/bucanero/apollo-lib.git      --depth 1
-        git clone https://github.com/bucanero/zip.git             --depth 1
-        git clone https://github.com/bucanero/oosdk_libraries.git --depth 1
-        git clone https://github.com/bucanero/mxml                --depth 1
-        git clone https://github.com/bucanero/cJSON               --depth 1
-        git clone https://github.com/bucanero/ps4-libjbc          --depth 1
-        git clone https://github.com/bucanero/SDL-PS4 -b ps4      --depth 1
-        git clone https://github.com/GoldHEN/GoldHEN_Cheat_Repository --depth 1
         curl -sL https://src.fedoraproject.org/repo/pkgs/mbedtls/mbedtls-2.16.6-apache.tgz/sha512/a0c48b694d7bc70256d26c44bfb2ac802428560b02e50fe2e47762bc595e2c7b8fac934badb3452acb01d8a54386eafae0ff2894320d24ab7554f1c8e6cb4bcf/mbedtls-2.16.6-apache.tgz | tar xvz -C ./
         curl -sL https://curl.se/download/curl-7.64.1.tar.bz2 | tar xvj -C ./
 
@@ -32,7 +70,6 @@ jobs:
         echo "commit_ver=$ver" >> $GITHUB_ENV
         echo "pkg_file=IV0000-GOLD00777_00-GOLDCHEATS000PS4.pkg" >> $GITHUB_ENV
         echo "llvm_ver=12.0" >> $GITHUB_ENV
-        mv GoldHEN_Cheat_Repository appdata
 
       # temporary release until 0.53 is released
     - name: Download OpenOrbis Toolchain
