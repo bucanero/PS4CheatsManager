@@ -1051,23 +1051,18 @@ static void _ReadOnlineListEx(const char* urlPath, const char* fext, uint16_t fl
 	game_entry_t *item;
 	char path[256];
 	char fname[64];
+	struct stat stats;
 
 	snprintf(path, sizeof(path), GOLDCHEATS_LOCAL_CACHE "%04X_games.txt", flag);
 	snprintf(fname, sizeof(fname), "%s.txt", fext);
 
-	if (file_exists(path) == SUCCESS)
-	{
-		struct stat stats;
-		stat(path, &stats);
-		// re-download if file is +1 day old
-		if ((stats.st_mtime + ONLINE_CACHE_TIMEOUT) < time(NULL))
-			http_download(urlPath, fname, path, 0);
-	}
-	else
-	{
+	if (stat(path, &stats) != SUCCESS && !http_download(urlPath, fname, path, 0))
+		return;
+
+	// re-download if file is +1 day old
+	if ((stats.st_mtime + ONLINE_CACHE_TIMEOUT) < time(NULL) || stats.st_size == 0)
 		if (!http_download(urlPath, fname, path, 0))
 			return;
-	}
 
 	long fsize;
 	char *data = readTextFile(path, &fsize);
@@ -1124,6 +1119,9 @@ list_t * ReadOnlineList(const char* urlPath)
 
 	// PS4 SHN games
 	_ReadOnlineListEx(urlPath, "shn", CHEAT_FLAG_PS4 | CHEAT_FLAG_SHN, list);
+
+	// PS4 MC4 games
+	_ReadOnlineListEx(urlPath, "mc4", CHEAT_FLAG_PS4 | CHEAT_FLAG_SHN, list);
 
 	if (!list_count(list))
 	{
