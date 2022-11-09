@@ -7,7 +7,7 @@ CONTENT_ID  := IV0000-GOLD00777_00-GOLDCHEATS000PS4
 # Libraries linked into the ELF.
 LIBS        := -lc -lkernel -lc++ -lSceAudioOut -lSceUserService -lScePigletv2VSH -lSceSysmodule -lSceFreeType \
                -lScePad -lSceSystemService -lSceSaveData -lSceCommonDialog -lSceMsgDialog -lSceNet \
-               -lSDL2 -lcjson -ldbglogger -lz -lzip -ljbc -lmxml -lcurl -lmbedtls -lmbedx509 -lmbedcrypto
+               -lSDL2 -lcjson -ldbglogger -lz -lzip -ljbc -lmxml -lcurl -lpolarssl
 
 # Additional compile flags.
 EXTRAFLAGS  := -fcolor-diagnostics -Wall -D__PS4__

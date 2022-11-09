@@ -59,11 +59,6 @@ jobs:
         repository: GoldHEN/GoldHEN_Cheat_Repository
         path: appdata
 
-    - name: Checkout Dependecies
-      run: |
-        curl -sL https://src.fedoraproject.org/repo/pkgs/mbedtls/mbedtls-2.16.6-apache.tgz/sha512/a0c48b694d7bc70256d26c44bfb2ac802428560b02e50fe2e47762bc595e2c7b8fac934badb3452acb01d8a54386eafae0ff2894320d24ab7554f1c8e6cb4bcf/mbedtls-2.16.6-apache.tgz | tar xvz -C ./
-        curl -sL https://curl.se/download/curl-7.64.1.tar.bz2 | tar xvj -C ./
-
     - name: Set env vars
       run: |
         ver="1.$(git rev-list HEAD --count)"
@@ -74,8 +69,7 @@ jobs:
       # temporary release until 0.53 is released
     - name: Download OpenOrbis Toolchain
       run: |
-        curl -fLO https://github.com/illusion0001/OpenOrbis-PS4-Toolchain/releases/download/0.0.1.416/toolchain.tar.gz
-        tar xf toolchain.tar.gz
+        curl -sL https://github.com/illusion0001/OpenOrbis-PS4-Toolchain/releases/download/0.0.1.416/toolchain.tar.gz | tar xvz -C ./
         echo "OO_PS4_TOOLCHAIN=${GITHUB_WORKSPACE}/OpenOrbis/PS4Toolchain" >> $GITHUB_ENV
         cp oosdk_libraries/build_rules.mk OpenOrbis/PS4Toolchain/build_rules.mk
 
@@ -135,21 +129,11 @@ jobs:
         make
         cp libSDL2.a "${OO_PS4_TOOLCHAIN}/lib"
 
-    - name: Install mbedtls library
-      working-directory: mbedtls-2.16.6
-      run: |
-        mkdir orbis && cd orbis
-        cmake --toolchain ../../SDL-PS4/cmake/openorbis.cmake .. -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=FALSE -DENABLE_PROGRAMS=FALSE -DMBEDTLS_FATAL_WARNINGS=0
-        make mbedtls
-        cp library/*.a "${OO_PS4_TOOLCHAIN}/lib"
-        cp -R ../include/mbedtls "${OO_PS4_TOOLCHAIN}/include/"
-
     - name: Install libcurl library
-      working-directory: curl-7.64.1
+      working-directory: oosdk_libraries/curl-7.64.1
       run: |
-        sed -i '54d' include/curl/curl.h
         mkdir orbis && cd orbis
-        cmake --toolchain ../../SDL-PS4/cmake/openorbis.cmake .. -DCMAKE_USE_MBEDTLS=1 -DUSE_UNIX_SOCKETS=0 -DENABLE_THREADED_RESOLVER=0 -DENABLE_IPV6=0
+        cmake --toolchain ../../../SDL-PS4/cmake/openorbis.cmake .. -DCMAKE_USE_POLARSSL=1 -DUSE_UNIX_SOCKETS=0 -DENABLE_THREADED_RESOLVER=0 -DENABLE_IPV6=0
         make libcurl
         cp lib/libcurl.a "${OO_PS4_TOOLCHAIN}/lib"
         cp -R ../include/curl "${OO_PS4_TOOLCHAIN}/include/"
