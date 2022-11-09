@@ -42,6 +42,12 @@ menu_option_t menu_options[] = {
 		.value = &gcm_config.update, 
 		.callback = update_callback 
 	},
+	{ .name = "Overwrite Files on Update", 
+		.options = NULL,
+		.type = APP_OPTION_BOOL,
+		.value = &gcm_config.overwrite,
+		.callback = overwrite_callback
+	},
 	{ .name = "\nClear Temp Folder", 
 		.options = NULL, 
 		.type = APP_OPTION_CALL, 
@@ -71,6 +77,11 @@ void sort_callback(int sel)
 void ani_callback(int sel)
 {
 	gcm_config.doAni = !sel;
+}
+
+void overwrite_callback(int sel)
+{
+	gcm_config.overwrite = !sel;
 }
 
 void clearcache_callback(int sel)
@@ -199,11 +210,6 @@ int load_app_settings(app_config_t* config)
 	OrbisSaveDataDirName dirName;
 	OrbisSaveDataMountResult mountResult;
 
-	sceUserServiceGetNpAccountId(config->user_id, &config->account_id);
-	sceKernelGetOpenPsIdForSystem(config->psid);
-	config->psid[0] = ES64(config->psid[0]);
-	config->psid[1] = ES64(config->psid[1]);
-
 	if (sceSaveDataInitialize3(0) != SUCCESS)
 	{
 		LOG("Failed to initialize save data library");
@@ -230,12 +236,10 @@ int load_app_settings(app_config_t* config)
 	if (read_buffer(filePath, (uint8_t**) &file_data, &file_size) == SUCCESS && file_size == sizeof(app_config_t))
 	{
 		file_data->user_id = config->user_id;
-		file_data->account_id = config->account_id;
-		file_data->psid[0] = config->psid[0];
-		file_data->psid[1] = config->psid[1];
 		memcpy(config, file_data, file_size);
 
-		LOG("Settings loaded: UserID (%08x) AccountID (%016lX)", config->user_id, config->account_id);
+		LOG("%s %s Settings loaded: UserID (%08x)", config->app_name, config->app_ver, config->user_id);
+		LOG("M[%d] A[%d] S[%d] U[%d]", config->music, config->doAni, config->doSort, config->update);
 		free(file_data);
 	}
 
