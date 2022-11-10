@@ -431,23 +431,23 @@ list_t * ReadBackupList(const char* userPath)
 		if (ret > 0)
 			show_message("Successfully installed %d cheat files", ret);
 		else
-			show_message("Zip extraction error!");
+			show_message("No files extracted!");
 
 		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
 	}
-	if (http_download("http://assets.illusion0001.com/", "patch1.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
+
+	if (http_download("https://github.com/illusion0001/console-game-patches/raw/gh-pages/", "patch1.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
 	{
 		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_PATCH_PATH);
 		if (ret > 0)
 		{
 			s64 bsize = 0;
-			char *path1 = GOLDCHEATS_PATCH_PATH "json/build.txt";
-			char *patch_ver = readTextFile(path1, &bsize);
+			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "json/build.txt", &bsize);
 			show_message("Successfully installed %d patch files\n%s", ret, patch_ver);
 			free(patch_ver);
 		}
 		else
-			show_message("Zip extraction error!");
+			show_message("No files extracted!");
 		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
 	}
 	else show_message("Download error!");

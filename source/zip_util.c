@@ -7,6 +7,7 @@
 
 #include "cheats.h"
 #include "common.h"
+#include "settings.h"
 
 
 void walk_zip_directory(const char* startdir, const char* inputdir, struct zip_t *zipper)
@@ -106,7 +107,6 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 {
 	int n, ret = 0;
 	char fpath[256];
-	char extract_msg[256];
 	const char *name;
 	struct zip_t *zip = zip_open(zip_file, ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
 
@@ -124,10 +124,15 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 		if (!zip_entry_isdir(zip) && name && !(strncmp(name, "/json/", 6) && strncmp(name, "/shn/", 5) && strncmp(name, "/mc4/", 5)))
 		{
 			snprintf(fpath, sizeof(fpath), "%s%s", dest_path, name + 1);
+			if (!gcm_config.overwrite && file_exists(fpath) == SUCCESS)
+			{
+				zip_entry_close(zip);
+				continue;
+			}
+
+			LOG("Extracting %s", fpath);
 			mkdirs(fpath);
-			snprintf(extract_msg, sizeof(extract_msg), "Extracting %s", fpath);
-			LOG("%s", extract_msg);
-			update_progress_bar(i, n, extract_msg);
+			update_progress_bar(i, n, "Extracting files...");
 			ret += (zip_entry_fread(zip, fpath) == SUCCESS);
 		}
 		zip_entry_close(zip);

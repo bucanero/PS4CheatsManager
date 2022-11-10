@@ -239,7 +239,7 @@ int load_app_settings(app_config_t* config)
 		memcpy(config, file_data, file_size);
 
 		LOG("%s %s Settings loaded: UserID (%08x)", config->app_name, config->app_ver, config->user_id);
-		LOG("M[%d] A[%d] S[%d] U[%d]", config->music, config->doAni, config->doSort, config->update);
+		LOG("M[%d] A[%d] S[%d] U[%d] W[%d]", config->music, config->doAni, config->doSort, config->update, config->overwrite);
 		free(file_data);
 	}
 
