@@ -73,14 +73,14 @@ OrbisPadData padA[MAX_PADS];
 void drawScene();
 
 app_config_t gcm_config = {
+    .app_name = "GOLDHEN",
+    .app_ver = {0},
     .music = 1,
     .doSort = 1,
     .doAni = 1,
     .update = 1,
+    .overwrite = 1,
     .user_id = 0,
-    .psid = {0, 0},
-    .packver = 0,
-    .account_id = 0,
 };
 
 int menu_options_maxopt = 0;
@@ -1262,12 +1262,12 @@ s32 main(s32 argc, const char* argv[])
 	load_app_settings(&gcm_config);
 
 	// Unpack application data on first run
-	if (gcm_config.packver < GOLDCHEATS_DATA_VERSION)
+	if (strncmp(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver)) != 0)
 	{
 		if (extract_zip(GOLDCHEATS_APP_PATH "misc/appdata.zip", GOLDCHEATS_DATA_PATH))
 			show_message("Successfully installed local application data");
 
-		gcm_config.packver = GOLDCHEATS_DATA_VERSION;
+		strncpy(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver));
 		save_app_settings(&gcm_config);
 	}
 
