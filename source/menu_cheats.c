@@ -328,7 +328,7 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
         if (x >= 0 && node)
         {
 			item = list_get(node);
-			u8 a = ((alpha * CalculateAlphaList(x, selIndex, maxPerPage)) / 0xFF);
+			u8 a = ((alpha * CalculateAlphaList(x, selIndex, maxPerPage - 1)) / 0xFF);
 
             if (!a)
                 goto skip_draw;
