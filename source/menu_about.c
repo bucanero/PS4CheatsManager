@@ -1,48 +1,81 @@
 #include <unistd.h>
 #include <string.h>
+#include <math.h>
 
 #include "cheats.h"
 #include "menu.h"
 #include "menu_gui.h"
 #include "libfont.h"
 
+#define FONT_W  32
+#define FONT_H  64
+#define STEP_X  -8         // horizontal displacement
+
+static int sx = SCREEN_WIDTH;
+
+/***********************************************************************
+* Draw a string of chars, amplifing y by sin(x)
+***********************************************************************/
+static void draw_sinetext(int y, const char* string)
+{
+    int x = sx;       // every call resets the initial x
+    int sl = strlen(string);
+    char tmp[2] = {0, 0};
+    float amp;
+
+    SetFontSize(FONT_W, FONT_H);
+    for(int i = 0; i < sl; i++)
+    {
+        amp = sinf(x      // testing sinf() from math.h
+                 * 0.02)  // it turns out in num of bends
+                 * 10;    // +/- vertical bounds over y
+
+        if(x > 0 && x < SCREEN_WIDTH - FONT_W)
+        {
+            tmp[0] = string[i];
+            DrawStringMono(x, y + amp, tmp);
+        }
+
+        x += FONT_W;
+    }
+
+    //* Move string by defined step
+    sx += STEP_X;
+
+    if(sx + (sl * FONT_W) < 0)           // horizontal bound, then loop
+        sx = SCREEN_WIDTH + FONT_W;
+}
+
 static void _draw_AboutMenu(u8 alpha)
 {
-	int cnt = 0;
-	u8 alp2 = ((alpha*2) > 0xFF) ? 0xFF : (alpha * 2); 
-    
 	//------------- About Menu Contents
-	DrawTextureCenteredX(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, 110, 0, menu_textures[titlescr_logo_png_index].width, menu_textures[titlescr_logo_png_index].height, 0xFFFFFF00 | alp2);
+	DrawTextureCenteredX(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, 110, 0, menu_textures[titlescr_logo_png_index].width, menu_textures[titlescr_logo_png_index].height, 0xFFFFFF00 | alpha);
 
 	SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 	SetCurrentFont(font_console_regular);
 	SetFontColor(APP_FONT_MENU_COLOR | alpha, 0);
 	SetFontSize(APP_FONT_SIZE_JARS);
 	DrawStringMono(0, 250, "PlayStation 4 Cheats Manager");
-    
-    for (cnt = 0; menu_about_strings[cnt] != NULL; cnt += 2)
-    {
-        SetFontAlign(FONT_ALIGN_RIGHT);
+
+	for (int cnt = 0; menu_about_strings[cnt] != NULL; cnt += 2)
+	{
+		SetFontAlign(FONT_ALIGN_RIGHT);
 		DrawStringMono((SCREEN_WIDTH / 2) - 20, 350 + (cnt * 25), menu_about_strings[cnt]);
-        
+
 		SetFontAlign(FONT_ALIGN_LEFT);
 		DrawStringMono((SCREEN_WIDTH / 2) + 20, 350 + (cnt * 25), menu_about_strings[cnt + 1]);
-    }
+	}
 
-	DrawTexture(&menu_textures[help_png_index], help_png_x, 830, 0, help_png_w, 104, 0xFFFFFF00 | alp2);
+	DrawTexture(&menu_textures[help_png_index], 0, 830, 0, SCREEN_WIDTH, 104, 0xFFFFFF00 | 0xFF);
 
-	SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
-	SetCurrentFont(font_console_regular);
-	SetFontColor(APP_FONT_MENU_COLOR | alp2, 0);
-	SetFontSize(APP_FONT_SIZE_JARS);
-	DrawStringMono(0, 850, "\xB0\xB1\xB2\xDB\xB3 www.bucanero.com.ar \xB3\xDB\xB2\xB1\xB0");
+	SetFontColor(APP_FONT_MENU_COLOR | 0xFF, 0);
+	draw_sinetext(850, "\xB0\xB1\xB2\xDB\xB3 www.bucanero.com.ar \xB3\xDB\xB2\xB1\xB0");
 	SetFontAlign(FONT_ALIGN_LEFT);
 }
 
 void Draw_AboutMenu_Ani()
 {
-	int ani = 0;
-	for (ani = 0; ani < MENU_ANI_MAX; ani++)
+	for (int ani = 0; ani < MENU_ANI_MAX; ani++)
 	{
 		SDL_RenderClear(renderer);
 		DrawBackground2D(0xFFFFFFFF);
@@ -50,11 +83,11 @@ void Draw_AboutMenu_Ani()
 		DrawHeader_Ani(header_ico_abt_png_index, "About", "v" GOLDCHEATS_VERSION, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
 
 		//------------- About Menu Contents
-
-		int rate = (0x100 / (MENU_ANI_MAX - 0x60));
-		u8 about_a = (u8)((((ani - 0x60) * rate) > 0xFF) ? 0xFF : ((ani - 0x60) * rate));
-		if (ani < 0x60)
-			about_a = 0;
+		u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
+		int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
+		if (_game_a > 0xFF)
+			_game_a = 0xFF;
+		u8 about_a = (u8)(_game_a < 0 ? 0 : _game_a);
 
 		_draw_AboutMenu(about_a);
 

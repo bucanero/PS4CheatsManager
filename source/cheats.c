@@ -86,8 +86,10 @@ void check_game_appdb(list_t* list)
 
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
 	{
-		char* query = sqlite3_mprintf("SELECT titleId, val FROM tbl_appinfo WHERE key = 'APP_VER' AND "
-			" titleId = %Q AND val = %Q", item->title_id, item->version);
+		char* query = sqlite3_mprintf("SELECT A.titleId, A.val, B.val FROM tbl_appinfo AS A INNER JOIN tbl_appinfo AS B"
+			" WHERE A.key = 'APP_VER' AND B.key = 'VERSION' AND A.titleId = %Q AND B.titleId = %Q"
+			" AND (((A.val >= B.val) AND A.val = %Q) OR ((A.val < B.val) AND B.val = %Q))",
+			item->title_id, item->title_id, item->version, item->version);
 
 		if (sqlite3_prepare_v2(db, query, -1, &res, NULL) == SQLITE_OK && sqlite3_step(res) == SQLITE_ROW)
 		{
@@ -1053,7 +1055,7 @@ static void _ReadOnlineListEx(const char* urlPath, const char* fext, uint16_t fl
 	char fname[64];
 	struct stat stats;
 
-	snprintf(path, sizeof(path), GOLDCHEATS_LOCAL_CACHE "%04X_games.txt", flag);
+	snprintf(path, sizeof(path), GOLDCHEATS_LOCAL_CACHE "%s_games.txt", fext);
 	snprintf(fname, sizeof(fname), "%s.txt", fext);
 
 	if (stat(path, &stats) != SUCCESS && !http_download(urlPath, fname, path, 0))

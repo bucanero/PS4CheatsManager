@@ -15,6 +15,7 @@ enum texture_index
 {
 //Artemis assets
 	bgimg_png_index,
+	bglist_png_index,
 	cheat_png_index,
 	goldhen_png_index,
 	circle_error_dark_png_index,
@@ -131,7 +132,7 @@ void DrawTextureCenteredX(png_texture* tex, int x, int y, int z, int w, int h, u
 void DrawTextureCenteredY(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba);
 void DrawHeader(int icon, int xOff, const char * headerTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int mode);
 void DrawHeader_Ani(int icon, const char * headerTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int ani, int div);
-void DrawBackgroundTexture(int x, u8 alpha);
+void DrawBackgroundTexture(int x, int id, u8 alpha);
 void DrawTextureRotated(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba, float angle);
 void Draw_MainMenu();
 void Draw_MainMenu_Ani();

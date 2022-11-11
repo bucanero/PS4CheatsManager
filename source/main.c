@@ -333,6 +333,7 @@ int LoadTextures_Menu()
 	
 	//Init Main Menu textures
 	load_menu_texture(bgimg, png);
+	load_menu_texture(bglist, png);
 	load_menu_texture(cheat, png);
 	load_menu_texture(goldhen, png);
 	load_menu_texture(circle_error_dark, png);
@@ -1264,7 +1265,7 @@ s32 main(s32 argc, const char* argv[])
 	// Unpack application data on first run
 	if (strncmp(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver)) != 0)
 	{
-		if (extract_zip(GOLDCHEATS_APP_PATH "misc/appdata.zip", GOLDCHEATS_DATA_PATH))
+		if (gcm_config.overwrite && extract_zip(GOLDCHEATS_APP_PATH "misc/appdata.zip", GOLDCHEATS_PATH))
 			show_message("Successfully installed local application data");
 
 		strncpy(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver));

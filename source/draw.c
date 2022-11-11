@@ -93,7 +93,7 @@ void DrawHeader_Ani(int icon, const char * hdrTitle, const char * headerSubTitle
 	//------------ Backgrounds
 	
 	//Background
-	DrawBackgroundTexture(0, (u8)bgrgba);
+	DrawBackgroundTexture(0, icon, (u8)bgrgba);
 
 	_drawListBackground(0, icon);
 	//------------- Menu Bar
@@ -132,7 +132,7 @@ void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSu
 	snprintf(headerTitle, sizeof(headerTitle), "%.40s%s", hdrTitle, (strlen(hdrTitle) > 40 ? "..." : ""));
 
 	//Background
-	DrawBackgroundTexture(xOff, (u8)bgrgba);
+	DrawBackgroundTexture(xOff, icon, (u8)bgrgba);
 
 	_drawListBackground(xOff, icon);
 	//------------ Menu Bar
@@ -173,9 +173,9 @@ void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSu
 	}
 }
 
-void DrawBackgroundTexture(int x, u8 alpha)
+void DrawBackgroundTexture(int x, int id, u8 alpha)
 {
-	DrawTexture(&menu_textures[bgimg_png_index], x, 0, 0, SCREEN_WIDTH - x, SCREEN_HEIGHT, 0xFFFFFF00 | alpha);
+	DrawTexture(&menu_textures[(id && id != header_ico_abt_png_index) ? bglist_png_index : bgimg_png_index], x, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFF00 | alpha);
 }
 
 void DrawTexture(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba)
@@ -335,7 +335,7 @@ static void _draw_MainMenu(uint8_t alpha)
 	//------------ Backgrounds
 
 	//Background
-	DrawBackgroundTexture(0, 0xFF);
+	DrawBackgroundTexture(0, 0, 0xFF);
 	
 	//App logo
 	DrawTextureCenteredX(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, 250, 0, menu_textures[titlescr_logo_png_index].width *3/2, menu_textures[titlescr_logo_png_index].height *3/2, 0xFFFFFFFF);
@@ -365,7 +365,7 @@ void Draw_MainMenu_Ani()
 		u8 logo_a = (u8)logo_a_t;
 		
 		//Background
-		DrawBackgroundTexture(0, bg_a);
+		DrawBackgroundTexture(0, 0, bg_a);
 		
 		//App logo
 		DrawTextureCenteredX(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, 250, 0, menu_textures[titlescr_logo_png_index].width *3/2, menu_textures[titlescr_logo_png_index].height *3/2, 0xFFFFFF00 | logo_a);
