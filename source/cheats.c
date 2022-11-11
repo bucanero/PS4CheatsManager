@@ -436,7 +436,7 @@ list_t * ReadBackupList(const char* userPath)
 		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
 	}
 
-	if (http_download("https://github.com/illusion0001/console-game-patches/raw/gh-pages/", "patch1.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
+	if (http_download("https://goldhen.github.io/GoldHEN_Patch_Repository/", "patch1.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
 	{
 		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_PATCH_PATH);
 		if (ret > 0)
