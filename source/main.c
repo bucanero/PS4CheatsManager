@@ -154,7 +154,7 @@ save_list_t hdd_saves = {
 */
 save_list_t hdd_patches = {
     .icon_id = header_ico_cht_png_index,
-    .title = "HDD Patches",
+    .title = "Game Patches",
     .list = NULL,
     .path = GOLDCHEATS_PATCH_PATH "json/",
     .ReadList = &ReadPatchList,

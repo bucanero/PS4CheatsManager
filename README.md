@@ -63,6 +63,8 @@ You need to have installed:
 - [SDL2](https://github.com/PacBrew/SDL/tree/ps4) library
 - [libJbc](https://github.com/bucanero/ps4-libjbc) library
 - [Mini-XML](https://github.com/bucanero/mxml) library
+- [PolarSSL](https://github.com/bucanero/oosdk_libraries/tree/master/polarssl-1.3.9) library
+- [libcurl](https://github.com/bucanero/oosdk_libraries/tree/master/curl-7.64.1) library
 - [dbglogger](https://github.com/bucanero/dbglogger) library (required for debug logging)
 
 Run `make` to create a release build. If you want to include the latest save patches in your `.pkg` file, run `make createzip`.

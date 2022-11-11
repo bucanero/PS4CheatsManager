@@ -196,10 +196,12 @@ char * readTextFile(const char * path, long* size)
 	fclose(f);
 
 	string[fsize] = 0;
-	*size = fsize;
+	if (size)
+		*size = fsize;
+
 	return string;
 }
-
+/*
 static code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
 {
 	code_entry_t* entry = (code_entry_t *)calloc(1, sizeof(code_entry_t));
@@ -209,7 +211,7 @@ static code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
 
 	return entry;
 }
-/*
+
 static option_entry_t* _initOptions(int count)
 {
 	option_entry_t* options = (option_entry_t*)malloc(sizeof(option_entry_t));
@@ -255,8 +257,7 @@ int set_json_codes(game_entry_t* item)
 
 	LOG("Parsing \"%s\"...", item->path);
 
-	long bsize;
-	char *buffer = readTextFile(item->path, &bsize);
+	char *buffer = readTextFile(item->path, NULL);
 	cJSON *cheat = cJSON_Parse(buffer);
 
 	if (!cheat)
@@ -270,6 +271,7 @@ int set_json_codes(game_entry_t* item)
 
 	const cJSON *mod;
 	const cJSON *mods = cJSON_GetObjectItemCaseSensitive(cheat, "mods");
+	const cJSON *proc = cJSON_GetObjectItemCaseSensitive(cheat, "process");
 	cJSON_ArrayForEach(mod, mods)
 	{
 		cJSON *mod_name = cJSON_GetObjectItemCaseSensitive(mod, "name");
@@ -278,10 +280,15 @@ int set_json_codes(game_entry_t* item)
 		if (!cJSON_IsString(mod_name) || !cJSON_IsString(mod_type))
 			continue;
 
-		cmd = _createCmdCode(PATCH_VIEW, mod_name->valuestring, CMD_CODE_NULL);
+		cmd = (code_entry_t *)calloc(1, sizeof(code_entry_t));
+		cmd->type = PATCH_VIEW;
+		cmd->name = strdup(mod_name->valuestring);
+		cmd->file = strdup(cJSON_IsString(proc) ? proc->valuestring : "");
 		
 		const cJSON *mem = cJSON_GetObjectItemCaseSensitive(mod, "memory");
-		cmd->codes = cJSON_Print(mem);
+		char* code = cJSON_Print(mem);
+		asprintf(&cmd->codes, "Path: %s\n\nCode: %s\n", item->path, code);
+		free(code);
 
 		LOG("Added '%s' (%s)", mod_name->valuestring, mod_type->valuestring);
 		list_append(item->codes, cmd);
@@ -311,9 +318,7 @@ int set_shn_codes(game_entry_t* item)
 
 	LOG("Parsing %s...", item->path);
 
-	long bsize;
-	char *buffer = readTextFile(item->path, &bsize);
-
+	char *buffer = readTextFile(item->path, NULL);
 	mxml_node_t *node, *tree = NULL;
 
 	/* parse the file and get the DOM */
@@ -327,18 +332,23 @@ int set_shn_codes(game_entry_t* item)
 		return 0;
 	}
 
+	node = mxmlFindElement(tree, tree, "Trainer", "Game", NULL, MXML_DESCEND);
+	const char* author = mxmlElementGetAttr(node, "Moder");
+	const char* procfn = mxmlElementGetAttr(node, "Process");
+
 	/* Get the cheat element nodes */
 	for (node = mxmlFindElement(tree, tree, "Cheat", "Text", NULL, MXML_DESCEND); node != NULL;
 		node = mxmlFindElement(node, tree, "Cheat", "Text", NULL, MXML_DESCEND))
 	{
 		mxml_node_t *value = mxmlFindElement(node, node, "Cheatline", NULL, NULL, MXML_DESCEND);
+		char* code = value ? mxmlSaveAllocString(node, &xml_whitespace_cb) : calloc(1, 1);
 
-		cmd = _createCmdCode(PATCH_VIEW, mxmlElementGetAttr(node, "Text"), CMD_CODE_NULL);
-		if (value)
-		{
-			free(cmd->codes);
-			cmd->codes = mxmlSaveAllocString(node, &xml_whitespace_cb);
-		}
+		cmd = (code_entry_t *)calloc(1, sizeof(code_entry_t));
+		cmd->type = PATCH_VIEW;
+		cmd->name = strdup(mxmlElementGetAttr(node, "Text"));
+		cmd->file = strdup(procfn);
+		asprintf(&cmd->codes, "Path: %s\nAuthor: %s\n\n%s", item->path, author, code);
+		free(code);
 
 		LOG("Added '%s' (%d)", cmd->name, cmd->type);
 		list_append(item->codes, cmd);
@@ -443,8 +453,7 @@ list_t * ReadBackupList(const char* userPath)
 		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_PATCH_PATH);
 		if (ret > 0)
 		{
-			s64 bsize = 0;
-			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "json/build.txt", &bsize);
+			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "json/build.txt", NULL);
 			show_message("Successfully installed %d patch files\n%s", ret, patch_ver);
 			free(patch_ver);
 		}
@@ -622,10 +631,9 @@ list_t * ReadPatchList(const char* userPath)
 
 		LOG("Reading %s...", fullPath);
 
-		long bsize;
 		char *ver = fullPath;
 		char *app = fullPath;
-		char *buffer = readTextFile(fullPath, &bsize);
+		char *buffer = readTextFile(fullPath, NULL);
 		cJSON *cheat = cJSON_Parse(buffer);
 
 		if (!cheat)
@@ -678,13 +686,12 @@ list_t * ReadPatchList(const char* userPath)
 
 int ReadPatches(game_entry_t * game)
 {
-	long bsize;
 	code_entry_t* cmd;
 	game->codes = list_alloc();
 
 	LOG("Loading patches from '%s'...", game->path);
 
-	char *buffer = readTextFile(game->path, &bsize);
+	char *buffer = readTextFile(game->path, NULL);
 	cJSON *cheat = cJSON_Parse(buffer);
 
 	if (!cheat)
@@ -877,9 +884,7 @@ static void read_shn_games(const char* userPath, const char* fext, list_t *list)
 
 		LOG("Reading %s...", dir->d_name);
 
-		long bsize;
-		char *buffer = readTextFile(fullPath, &bsize);
-
+		char *buffer = readTextFile(fullPath, NULL);
 		mxml_node_t *node, *tree = NULL;
 
 		/* parse the file and get the DOM */
@@ -941,8 +946,7 @@ static void read_json_games(const char* userPath, list_t *list)
 
 		LOG("Reading %s...", dir->d_name);
 
-		long bsize;
-		char *buffer = readTextFile(fullPath, &bsize);
+		char *buffer = readTextFile(fullPath, NULL);
 		cJSON *cheat = cJSON_Parse(buffer);
 		const cJSON *jobject;
 
@@ -1070,7 +1074,7 @@ static void _ReadOnlineListEx(const char* urlPath, const char* fext, uint16_t fl
 	char *data = readTextFile(path, &fsize);
 	
 	char *ptr = data;
-	char *end = data + fsize + 1;
+	char *end = data + fsize;
 
 	while (ptr < end && *ptr)
 	{

@@ -23,7 +23,7 @@ See the [latest changes here](CHANGELOG.md).
 
 # Donations
 
-My GitHub projects are open to a [sponsor program](https://patreon.com/dparrino). If you feel that my tools helped you in some way or you would like to support it, you can consider a [PayPal donation](https://www.paypal.me/bucanerodev).
+My GitHub projects are open to a [Patreon sponsor program](https://patreon.com/dparrino). If you feel that my tools helped you in some way or you would like to support future developments, you can consider a [PayPal donation](https://www.paypal.me/bucanerodev).
 
 # Setup instructions
 
@@ -67,6 +67,8 @@ You need to have installed:
 - [SDL2](https://github.com/PacBrew/SDL/tree/ps4) library
 - [libJbc](https://github.com/bucanero/ps4-libjbc) library
 - [Mini-XML](https://github.com/bucanero/mxml) library
+- [PolarSSL](https://github.com/bucanero/oosdk_libraries/tree/master/polarssl-1.3.9) library
+- [libcurl](https://github.com/bucanero/oosdk_libraries/tree/master/curl-7.64.1) library
 - [dbglogger](https://github.com/bucanero/dbglogger) library (required for debug logging)
 
 Run `make` to create a release build. If you want to include the latest save patches in your `.pkg` file, run `make createzip`.
