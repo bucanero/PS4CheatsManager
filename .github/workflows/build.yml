@@ -59,7 +59,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         repository: GoldHEN/GoldHEN_Cheat_Repository
-        path: appdata
+        path: cheats
 
     - name: Checkout Patch repository
       uses: actions/checkout@v3
