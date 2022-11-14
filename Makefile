@@ -94,5 +94,4 @@ createzip:
 	@echo "creating appdata.zip ..."
 	@[ -d assets/misc ] || mkdir -p assets/misc
 	@rm -fr assets/misc/appdata.zip
-	@cp -r patches/* appdata
-	@cd appdata && zip -r ../assets/misc/appdata.zip json/ shn/ && cd .. 
+	@zip -r assets/misc/appdata.zip cheats/json/ cheats/shn/ cheats/mc4/ patches/json/
