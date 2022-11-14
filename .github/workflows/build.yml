@@ -9,8 +9,6 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
 
     - name: Checkout dbglogger
       uses: actions/checkout@v3
@@ -70,8 +68,6 @@ jobs:
 
     - name: Set env vars
       run: |
-        ver="1.$(git rev-list HEAD --count)"
-        echo "commit_ver=$ver" >> $GITHUB_ENV
         echo "pkg_file=IV0000-GOLD00777_00-GOLDCHEATS000PS4.pkg" >> $GITHUB_ENV
         echo "llvm_ver=12.0" >> $GITHUB_ENV
 
@@ -156,7 +152,7 @@ jobs:
     - name: Push package artifact
       uses: actions/upload-artifact@v3
       with:
-        name: goldcheats-build_${{ env.commit_ver }}
+        name: goldcheats-pkg
         path: ${{ env.pkg_file }}
         if-no-files-found: error
         retention-days: 7 # don't keep artifacts for too long
