@@ -64,6 +64,7 @@ jobs:
       with:
         repository: GoldHEN/GoldHEN_Patch_Repository
         path: appdata1
+        ref: gh-pages
 
     - name: Set env vars
       run: |
@@ -146,6 +147,7 @@ jobs:
 
     - name: Build Gold Cheats App Package
       run: |
+        unzip appdata1/patch1.zip
         make createzip
         make
 
