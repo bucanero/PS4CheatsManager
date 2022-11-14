@@ -59,6 +59,12 @@ jobs:
         repository: GoldHEN/GoldHEN_Cheat_Repository
         path: appdata
 
+    - name: Checkout Patch repository
+      uses: actions/checkout@v3
+      with:
+        repository: GoldHEN/GoldHEN_Patch_Repository
+        path: appdata1
+
     - name: Set env vars
       run: |
         ver="1.$(git rev-list HEAD --count)"
