@@ -149,7 +149,7 @@ jobs:
 
     - name: Build Gold Cheats App Package
       run: |
-        unzip appdata1/patch1.zip
+        unzip -q appdata1/patch1.zip
         make createzip
         make
 
