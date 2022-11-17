@@ -117,7 +117,7 @@ typedef struct
     void (*UpdatePath)(char *);
     int (*ReadCodes)(game_entry_t *);
     list_t* (*ReadList)(const char*);
-} save_list_t;
+} game_list_t;
 
 list_t * ReadUsbList(const char* userPath);
 list_t * ReadUserList(const char* userPath);

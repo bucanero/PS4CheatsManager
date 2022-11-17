@@ -10,6 +10,22 @@
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 
+enum menu_screen_ids
+{
+	MENU_MAIN_SCREEN,		/* 0 - Main Menu */
+	MENU_UPDATE_CHEATS,		/* 1 - Update Menu (User List) */
+	MENU_HDD_CHEATS,		/* 2 - HDD Menu (User List) */
+	MENU_HDD_PATCHES,		/* 3 - Patch Menu (User List) */
+	MENU_ONLINE_DB,			/* 4 - Online Menu (Online List) */
+	MENU_SETTINGS,			/* 5 - Options Menu */
+	MENU_CREDITS,			/* 6 - About Menu */
+	MENU_PATCHES,			/* 7 - Code Menu (Select Cheats) */
+	MENU_PATCH_VIEW,		/* 8 - Code Menu (View Cheat) */
+	MENU_CODE_OPTIONS,		/* 9 - Code Menu (View Cheat Options) */
+	MENU_SAVE_DETAILS,
+	TOTAL_MENU_IDS
+};
+
 //Textures
 enum texture_index
 {
@@ -113,8 +129,6 @@ extern png_texture * menu_textures;				// png_texture array for main menu, initi
 extern int highlight_alpha;						// Alpha of the selected
 extern int idle_time;							// Set by readPad
 
-extern const char * menu_about_strings[];
-
 extern int menu_id;
 extern int menu_sel;
 extern int menu_old_sel[]; 
@@ -138,6 +152,7 @@ void Draw_MainMenu();
 void Draw_MainMenu_Ani();
 int LoadMenuTexture(const char* path, int idx);
 
+void drawScene();
 void drawSplashLogo(int m);
 void drawEndLogo();
 
@@ -148,6 +163,6 @@ int reset_app_settings(app_config_t* config);
 int initialize_jbc();
 void terminate_jbc();
 int patch_save_libraries();
-int unpatch_SceShellCore();
+void initMenuOptions();
 
 #endif

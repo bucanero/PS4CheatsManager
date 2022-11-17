@@ -499,7 +499,7 @@ void Draw_CheatsMenu_Selection(int menuSel, u32 rgba)
 /*
  * User Cheats Game Selection Menu
  */
-void Draw_UserCheatsMenu_Ani(save_list_t * list)
+void Draw_UserCheatsMenu_Ani(game_list_t * list)
 {
     char subtitle[0x40];
 
@@ -526,7 +526,7 @@ void Draw_UserCheatsMenu_Ani(save_list_t * list)
     }
 }
 
-void Draw_UserCheatsMenu(save_list_t * list, int menuSel, u8 alpha)
+void Draw_UserCheatsMenu(game_list_t * list, int menuSel, u8 alpha)
 {
     char subtitle[0x40];
 

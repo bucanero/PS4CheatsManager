@@ -430,7 +430,7 @@ int ReadOnlineSaves(game_entry_t * game)
 
 list_t * ReadBackupList(const char* userPath)
 {
-	if (extract_zip_gh("/mnt/usb0/GoldHEN_Cheat_Repository-main.zip", GOLDCHEATS_DATA_PATH))
+	if (extract_zip_gh(USB0_PATH "GoldHEN_Cheat_Repository-main.zip", GOLDCHEATS_DATA_PATH))
 		show_message("Successfully installed offline data from USB");
 
 	else if (extract_zip_gh("/data/GoldHEN_Cheat_Repository-main.zip", GOLDCHEATS_DATA_PATH))

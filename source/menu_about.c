@@ -12,6 +12,16 @@
 #define STEP_X  -8         // horizontal displacement
 
 static int sx = SCREEN_WIDTH;
+const char *menu_about_strings[] = { "Bucanero", "PS4 Cheats Manager",
+									"Ctn123", "Cheat Engine",
+									"Shiningami", "Cheat Engine",
+									"SiSTRo", "GoldHEN, Cheat Menu",
+									"Kameleon", "QA Support",
+									"", "",
+									"PS3", "credits",
+									"Berion", "GUI design",
+									"Dnawrkshp", "Artemis code",
+									NULL };
 
 /***********************************************************************
 * Draw a string of chars, amplifing y by sin(x)
