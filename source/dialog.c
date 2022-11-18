@@ -9,8 +9,6 @@
 #define MDIALOG_OK		0
 #define MDIALOG_YESNO	1
 
-void drawDialogBackground();
-
 
 static inline void _orbisCommonDialogSetMagicNumber(uint32_t* magic, const OrbisCommonDialogBaseParam* param)
 {
@@ -82,8 +80,6 @@ void init_progress_bar(const char* msg)
 
     if (sceMsgDialogOpen(&param) < 0)
         return;
-
-    drawDialogBackground();
 }
 
 void end_progress_bar(void)
@@ -101,8 +97,6 @@ void update_progress_bar(uint64_t progress, const uint64_t total_size, const cha
         sceMsgDialogProgressBarSetMsg(0, msg);
         sceMsgDialogProgressBarSetValue(0, (uint32_t) bar_value);
     }
-
-    drawDialogBackground();
 }
 
 int init_loading_screen(const char* message)

@@ -39,7 +39,7 @@ static int32_t audio = 0;
 
 
 #define load_menu_texture(name, type) \
-			if (!LoadFileTexture(GOLDCHEATS_APP_PATH "images/" #name "." #type , name##_##type##_index)) return 0;
+			if (!LoadMenuTexture(GOLDCHEATS_APP_PATH "images/" #name "." #type , name##_##type##_index)) return 0;
 
 
 //Pad stuff
@@ -246,23 +246,13 @@ int pad_check_button(uint32_t button)
 	return 0;
 }
 
-static int LoadFileTexture(const char* fname, int idx)
-{
-	LOG("Loading '%s'", fname);
-	if (menu_textures[idx].texture)
-		SDL_DestroyTexture(menu_textures[idx].texture);
-
-	menu_textures[idx].size = 0;
-	menu_textures[idx].texture = NULL;
-	return (LoadMenuTexture(fname, idx));
-}
-
 // Used only in initialization. Allocates 64 mb for textures and loads the font
 static int LoadTextures_Menu()
 {
 	texture_mem = malloc(256 * 32 * 32 * 4);
+	menu_textures = (png_texture *)calloc(TOTAL_MENU_TEXTURES, sizeof(png_texture));
 	
-	if(!texture_mem)
+	if(!texture_mem || !menu_textures)
 		return 0; // fail!
 	
 	ResetFont();
@@ -271,12 +261,9 @@ static int LoadTextures_Menu()
 	if (TTFLoadFont(0, "/preinst/common/font/DFHEI5-SONY.ttf", NULL, 0) != SUCCESS ||
 		TTFLoadFont(1, "/system_ex/app/NPXS20113/bdjstack/lib/fonts/SCE-PS3-RD-R-LATIN.TTF", NULL, 0) != SUCCESS)
 		return 0;
-	free_mem = (u32*) init_ttf_table((u8*) free_mem);
 
+	free_mem = (u32*) init_ttf_table((u8*) free_mem);
 	set_ttf_window(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, WIN_SKIP_LF);
-	
-	if (!menu_textures)
-		menu_textures = (png_texture *)malloc(sizeof(png_texture) * TOTAL_MENU_TEXTURES);
 	
 	//Init Main Menu textures
 	load_menu_texture(bgimg, png);
