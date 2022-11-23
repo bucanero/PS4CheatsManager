@@ -441,7 +441,11 @@ list_t * ReadBackupList(const char* userPath)
 		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_DATA_PATH);
 
 		if (ret > 0)
-			show_message("Successfully installed %d cheat files", ret);
+		{
+			char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
+			show_message("Successfully installed %d %s files\n%s", ret, "cheat", cheat_ver);
+			free(cheat_ver);
+		}
 		else
 			show_message("No files extracted!");
 
@@ -453,8 +457,8 @@ list_t * ReadBackupList(const char* userPath)
 		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_PATCH_PATH);
 		if (ret > 0)
 		{
-			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "json/build.txt", NULL);
-			show_message("Successfully installed %d patch files\n%s", ret, patch_ver);
+			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
+			show_message("Successfully installed %d %s files\n%s", ret, "patch", patch_ver);
 			free(patch_ver);
 		}
 		else

@@ -134,11 +134,15 @@ jobs:
         cp lib/libcurl.a "${OO_PS4_TOOLCHAIN}/lib"
         cp -R ../include/curl "${OO_PS4_TOOLCHAIN}/include/"
 
-    - name: Build Gold Cheats App Package
+    - name: Add current cheats and patches data into Package
       run: |
         unzip -q appdata1/patch1.zip
+        cat cheats/misc/cheat_ver.txt
+        cat patches/misc/patch_ver.txt
         make createzip
-        make
+
+    - name: Build Gold Cheats App Package
+      run: make
 
     - name: Push package artifact
       uses: actions/upload-artifact@v3
