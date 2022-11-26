@@ -121,7 +121,11 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 		zip_entry_openbyindex(zip, i);
 		name = strchr(zip_entry_name(zip), '/');
 
-		if (!zip_entry_isdir(zip) && name && !(strncmp(name, "/json/", 6) && strncmp(name, "/shn/", 5) && strncmp(name, "/mc4/", 5)))
+		if (!zip_entry_isdir(zip) && name && 
+ 			!(strncmp(name, "/json/", 6) &&
+ 			strncmp(name, "/shn/", 5) && 
+			strncmp(name, "/mc4/", 5) &&
+			strncmp(name, "/misc/", 6)))
 		{
 			snprintf(fpath, sizeof(fpath), "%s%s", dest_path, name + 1);
 			if (!gcm_config.overwrite && file_exists(fpath) == SUCCESS)

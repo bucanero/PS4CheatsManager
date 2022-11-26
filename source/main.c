@@ -512,7 +512,13 @@ s32 main(s32 argc, const char* argv[])
 	if (strncmp(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver)) != 0)
 	{
 		if (gcm_config.overwrite && extract_zip(GOLDCHEATS_APP_PATH "misc/appdata.zip", GOLDCHEATS_PATH))
-			show_message("Successfully installed local application data");
+		{
+			char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
+			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
+			show_message("Successfully installed local application data:\n\n- %s- %s", cheat_ver, patch_ver);
+			free(cheat_ver);
+			free(patch_ver);
+		}
 
 		strncpy(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver));
 		save_app_settings(&gcm_config);

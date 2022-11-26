@@ -95,9 +95,15 @@ void clearcache_callback(int sel)
 void unzip_app_data(const char* zip_file)
 {
 	if (extract_zip(zip_file, GOLDCHEATS_DATA_PATH))
-		show_message("Successfully installed local application data");
-
+	{
+		char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
+		char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
+		show_message("Successfully installed local application data:\n\n- %s- %s", cheat_ver, patch_ver);
+		free(cheat_ver);
+		free(patch_ver);
+	}
 	unlink_secure(zip_file);
+	return;
 }
 
 void update_callback(int sel)
