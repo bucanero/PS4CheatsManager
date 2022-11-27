@@ -431,12 +431,30 @@ int ReadOnlineSaves(game_entry_t * game)
 list_t * ReadBackupList(const char* userPath)
 {
 	if (extract_zip_gh(USB0_PATH "GoldHEN_Cheat_Repository-main.zip", GOLDCHEATS_DATA_PATH))
-		show_message("Successfully installed offline data from USB");
-
+	{
+		char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
+		show_message("Successfully installed offline %s data from USB\n%s", "cheat", cheat_ver);
+		free(cheat_ver);
+	}
 	else if (extract_zip_gh("/data/GoldHEN_Cheat_Repository-main.zip", GOLDCHEATS_DATA_PATH))
-		show_message("Successfully installed offline data from HDD");
-
-	else if (http_download("https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/", "main.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
+	{
+		char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
+		show_message("Successfully installed offline %s data from HDD\n%s", "cheat", cheat_ver);
+		free(cheat_ver);
+	}
+	if (extract_zip_gh(USB0_PATH "patch1.zip", GOLDCHEATS_PATCH_PATH))
+	{
+		char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
+		show_message("Successfully installed offline %s data from USB\n%s", "patch", patch_ver);
+		free(patch_ver);
+	}
+	else if (extract_zip_gh("/data/patch1.zip", GOLDCHEATS_PATCH_PATH))
+	{
+		char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
+		show_message("Successfully installed offline %s data from HDD\n%s", "patch", patch_ver);
+		free(patch_ver);
+	}
+	if (http_download("https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/", "main.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
 	{
 		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_DATA_PATH);
 
