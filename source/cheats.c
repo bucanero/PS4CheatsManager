@@ -435,6 +435,7 @@ void DownloadChmod(void)
 	sceKernelChmod(GOLDCHEATS_LOCAL_CACHE, 0777);
 	return;
 }
+
 list_t * ReadBackupList(const char* userPath)
 {
 	DownloadChmod();
