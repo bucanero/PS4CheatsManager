@@ -428,8 +428,16 @@ int ReadOnlineSaves(game_entry_t * game)
 	return (list_count(game->codes));
 }
 
+void DownloadChmod(void)
+{
+	sceKernelChmod(GOLDCHEATS_DATA_PATH, 0777);
+	sceKernelChmod(GOLDCHEATS_PATCH_PATH, 0777);
+	sceKernelChmod(GOLDCHEATS_LOCAL_CACHE, 0777);
+	return;
+}
 list_t * ReadBackupList(const char* userPath)
 {
+	DownloadChmod();
 	if (extract_zip_gh(USB0_PATH "GoldHEN_Cheat_Repository-main.zip", GOLDCHEATS_DATA_PATH))
 	{
 		char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
