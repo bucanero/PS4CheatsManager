@@ -8,9 +8,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <stdbool.h>
-#include <orbis/Pad.h>
 #include <orbis/Sysmodule.h>
-#include <orbis/UserService.h>
 #include <orbis/AudioOut.h>
 #include <orbis/CommonDialog.h>
 #include <orbis/Sysmodule.h>
@@ -19,7 +17,7 @@
 #include "cheats.h"
 #include "util.h"
 #include "common.h"
-//#include "notifi.h"
+#include "orbisPad.h"
 
 //Menus
 #include "menu.h"
@@ -40,19 +38,6 @@ static int32_t audio = 0;
 
 #define load_menu_texture(name, type) \
 			if (!LoadMenuTexture(GOLDCHEATS_APP_PATH "images/" #name "." #type , name##_##type##_index)) return 0;
-
-
-//Pad stuff
-#define ANALOG_CENTER       0x78
-#define ANALOG_THRESHOLD    0x68
-#define ANALOG_MIN          (ANALOG_CENTER - ANALOG_THRESHOLD)
-#define ANALOG_MAX          (ANALOG_CENTER + ANALOG_THRESHOLD)
-#define MAX_PADS            1
-
-static int padhandle;
-pad_input_t pad_data;
-static OrbisPadData padA[MAX_PADS];
-
 
 app_config_t gcm_config = {
     .app_name = "GOLDHEN",
@@ -142,108 +127,20 @@ game_list_t update_cheats = {
 
 static int initPad()
 {
-	int userID;
-
 	if (sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_PAD) < 0)
 		return 0;
 
-    // Initialize the Pad library
-    if (scePadInit() != 0)
-    {
-        LOG("[ERROR] Failed to initialize pad library!");
-        return 0;
-    }
+	// Initialize the Pad library
+	if (orbisPadInit() < 0)
+	{
+		LOG("[ERROR] Failed to initialize pad library!");
+		return 0;
+	}
 
-    // Get the user ID
-	OrbisUserServiceInitializeParams param;
-	param.priority = ORBIS_KERNEL_PRIO_FIFO_LOWEST;
-	sceUserServiceInitialize(&param);
-	sceUserServiceGetInitialUser(&userID);
+	// Get the user ID
+	gcm_config.user_id = orbisPadGetConf()->userId;
 
-    // Open a handle for the controller
-    padhandle = scePadOpen(userID, 0, 0, NULL);
-	gcm_config.user_id = userID;
-
-    if (padhandle < 0)
-    {
-        LOG("[ERROR] Failed to open pad!");
-        return 0;
-    }
-    
-    return 1;
-}
-
-static int g_padSync = 0;
-
-int pad_sync()
-{
-	for (g_padSync++; g_padSync;);
 	return 1;
-}
-
-int pad_input_update(void *data)
-{
-	pad_input_t* input = data;
-	int button_frame_count = 0;
-
-	while (!close_app)
-	{
-		scePadReadState(padhandle, &padA[0]);
-
-		if(padA[0].connected && g_padSync)
-		{
-			uint32_t previous = input->down;
-
-			input->down = padA[0].buttons;
-			g_padSync = 0;
-
-			if (!input->down)
-				input->idle += 10;
-			else
-				input->idle = 0;
-
-			if (padA[0].leftStick.y < ANALOG_MIN)
-				input->down |= ORBIS_PAD_BUTTON_UP;
-
-			if (padA[0].leftStick.y > ANALOG_MAX)
-				input->down |= ORBIS_PAD_BUTTON_DOWN;
-
-			if (padA[0].leftStick.x < ANALOG_MIN)
-				input->down |= ORBIS_PAD_BUTTON_LEFT;
-
-			if (padA[0].leftStick.x > ANALOG_MAX)
-				input->down |= ORBIS_PAD_BUTTON_RIGHT;
-
-			input->pressed = input->down & ~previous;
-			input->active = input->pressed;
-
-			if (input->down == previous)
-			{
-				if (button_frame_count > 30)
-				{
-					input->active = input->down;
-				}
-				button_frame_count++;
-			}
-			else
-			{
-				button_frame_count = 0;
-			}
-		}
-	}
-	
-    return 1;
-}
-
-int pad_check_button(uint32_t button)
-{
-	if (pad_data.pressed & button)
-	{
-		pad_data.pressed ^= button;
-		return 1;
-	}
-
-	return 0;
 }
 
 // Used only in initialization. Allocates 64 mb for textures and loads the font
@@ -538,7 +435,6 @@ s32 main(s32 argc, const char* argv[])
 	//Set options
 	update_callback(!gcm_config.update);
 
-	SDL_CreateThread(&pad_input_update, "input_thread", &pad_data);
 	SDL_CreateThread(&LoadSounds, "audio_thread", &gcm_config.music);
 
 	Draw_MainMenu_Ani();
@@ -553,16 +449,16 @@ s32 main(s32 argc, const char* argv[])
 		// Clear the canvas
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
 		SDL_RenderClear(renderer);
-
+		orbisPadUpdate();
 		drawScene();
 
 		//Draw help
 		if (menu_pad_help[menu_id])
 		{
 			u8 alpha = 0xFF;
-			if (pad_data.idle > 0x800)
+			if (orbisPadGetConf()->idle > 0x100)
 			{
-				int dec = (pad_data.idle - 0x800) * 2;
+				int dec = (orbisPadGetConf()->idle - 0x100) * 2;
 				if (dec > alpha)
 					dec = alpha;
 				alpha -= dec;
@@ -594,6 +490,6 @@ s32 main(s32 argc, const char* argv[])
     // Stop all SDL sub-systems
     SDL_Quit();
 	http_end();
-
+	orbisPadFinish();
 	return 0;
 }
