@@ -4,6 +4,7 @@
 
 #include "orbisPad.h"
 #include "cheats.h"
+#include "common.h"
 #include "menu.h"
 #include "menu_gui.h"
 #include "libfont.h"
@@ -147,6 +148,13 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_HDD_PATCHES: //HDD patches Menu
+			if(file_exists(GOLDCHEATS_PLUGINS_PATH "game_patch.prx"))
+			{
+				show_message(
+					"Game Patch Plugin is not installed!\n"
+					"You can install the plugin from\n\n"
+					"https://github.com/GoldHEN/GoldHEN_Plugins_Repository");
+			}
 			if (!hdd_patches.list && !ReloadUserGames(&hdd_patches))
 				return;
 			
