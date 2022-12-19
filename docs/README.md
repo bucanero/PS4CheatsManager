@@ -5,7 +5,7 @@
 
 An open-source PlayStation 4 cheat code manager for GoldHEN.
 
-![image](./screenshots/main-menu2.jpg)
+![image](./screenshots/main-menu.jpg)
 
 ![image](./screenshots/game-list.jpg)
 
@@ -42,7 +42,7 @@ It will open the context menu on the screen. Press ![O button](https://github.co
 
 # Online Database
 
-The application also provides direct access to the [Online Cheat database](https://github.com/GoldHEN/GoldHEN_Cheat_Repository), the official GoldHEN repository of cheat files for PlayStation 4 games.
+The application also provides direct access to the Online [Cheat](https://github.com/GoldHEN/GoldHEN_Cheat_Repository) and [Patch](https://github.com/GoldHEN/GoldHEN_Patch_Repository) databases, the official GoldHEN repositories of cheats and custom game patches for PlayStation 4 games.
 
 # Credits
 
@@ -79,7 +79,9 @@ This will allow you to use `make run` and send `eboot.bin` directly to the [PS4L
 To enable debug logging, build it with `make DEBUGLOG=1`. The application will send debug messages to
 UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat][] on your computer:
 
-    $ socat udp4-recv:30000,ip-add-membership=239.255.0.100:0.0.0.0 -
+```
+$ socat udp4-recv:30000,ip-add-membership=239.255.0.100:0.0.0.0 -
+```
 
 # License
 
