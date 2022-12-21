@@ -15,7 +15,7 @@
 
 #define ORBIS_USER_SERVICE_USER_ID_INVALID	-1
 
-uint8_t owner_sel = 0;
+static char * sort_opt[] = {"Disabled", "by Name", "by Title ID", NULL};
 
 menu_option_t menu_options[] = {
 	{ .name = "Background Music", 
@@ -25,8 +25,8 @@ menu_option_t menu_options[] = {
 		.callback = music_callback 
 	},
 	{ .name = "Sort Games", 
-		.options = NULL, 
-		.type = APP_OPTION_BOOL, 
+		.options = sort_opt,
+		.type = APP_OPTION_LIST,
 		.value = &gcm_config.doSort, 
 		.callback = sort_callback 
 	},
@@ -71,7 +71,7 @@ void music_callback(int sel)
 
 void sort_callback(int sel)
 {
-	gcm_config.doSort = !sel;
+	gcm_config.doSort = sel;
 }
 
 void ani_callback(int sel)

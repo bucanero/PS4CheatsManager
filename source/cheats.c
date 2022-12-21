@@ -884,6 +884,20 @@ int sortGameList_Compare(const void* a, const void* b)
 	return strcasecmp(((game_entry_t*) a)->name, ((game_entry_t*) b)->name);
 }
 
+int sortGameList_Compare_TitleID(const void* a, const void* b)
+{
+	char* ta = ((game_entry_t*) a)->title_id;
+	char* tb = ((game_entry_t*) b)->title_id;
+
+	if (!ta)
+		return (-1);
+
+	if (!tb)
+		return (1);
+
+	return strcasecmp(ta, tb);
+}
+
 static void read_shn_games(const char* userPath, const char* fext, list_t *list)
 {
 	DIR *d;

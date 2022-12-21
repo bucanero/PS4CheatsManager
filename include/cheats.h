@@ -97,6 +97,13 @@ enum code_type_enum
     PATCH_COMMAND,
 };
 
+enum save_sort_enum
+{
+    SORT_DISABLED,
+    SORT_BY_NAME,
+    SORT_BY_TITLE_ID,
+};
+
 typedef struct game_entry
 {
     char * name;
@@ -129,6 +136,7 @@ void UnloadGameList(list_t * list);
 char * readTextFile(const char * path, long* size);
 int sortGameList_Exists(const void* A, const void* B);
 int sortGameList_Compare(const void* A, const void* B);
+int sortGameList_Compare_TitleID(const void* a, const void* b);
 int sortCodeList_Compare(const void* A, const void* B);
 int ReadCodes(game_entry_t * save);
 int ReadPatches(game_entry_t * game);
