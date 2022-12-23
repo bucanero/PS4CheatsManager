@@ -26,6 +26,8 @@
 
 #define ONLINE_URL				"https://goldhen.github.io/GoldHEN_Cheat_Repository/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
+#define LOCAL_PKG_PATH "/data/pkg/"
+#define GOLDCHEATS_PKG LOCAL_PKG_PATH "goldcheats.pkg"
 
 
 enum cmd_code_enum

@@ -158,8 +158,8 @@ void update_callback(int sel)
 
 	if (show_dialog(1, "New version available! Download update?"))
 	{
-		if (http_download(url->valuestring, "", "/data/goldcheats.pkg", 1))
-			show_message("Update downloaded to /data/goldcheats.pkg");
+		if (http_download(url->valuestring, "", GOLDCHEATS_PKG, 1))
+			show_message("Update downloaded to " GOLDCHEATS_PKG);
 		else
 			show_message("Download error!");
 	}
