@@ -4,6 +4,29 @@ All notable changes to the `GoldHEN Cheats Manager` project will be documented i
 
 ## [Unreleased]()
 
+## [v1.0.2](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.0.2) - 2022-12-24
+
+_dedicated to Leon ~ in loving memory (2009 - 2022)_ :heart:
+
+### Added
+
+- Sort Games settings
+  - by Name, by Title ID
+- Offline installation for patches:
+  - Download https://github.com/GoldHEN/GoldHEN_Patch_Repository/raw/gh-pages/patch1.zip
+  - Copy `patch1.zip` to root of USB drive. (Do not rename it)
+  - Open GoldHEN Cheat Manager and click Update
+- Updating Cheats will now show the cheat database version.
+
+### Changed
+
+- Improved UI pad controls
+- Patches will be downloaded from https://github.com/GoldHEN/GoldHEN_Patch_Repository
+
+### Misc
+
+- Includes latest official cheat+patch pack (2022-12-24)
+
 ## [v1.0.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.0.0) - 2022-11-12
 
 ### Added
