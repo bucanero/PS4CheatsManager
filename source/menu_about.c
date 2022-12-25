@@ -21,8 +21,7 @@ const char *menu_about_strings[] = {
 									"Kameleon", "QA Support",
 									"", "",
 									"PS3", "credits",
-									"Berion", "GUI design",
-									"Dnawrkshp", "Artemis code",
+									"Dnawrkshp (Artemis)", "Berion (GUI design)",
 									NULL };
 
 /***********************************************************************

@@ -150,7 +150,7 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_HDD_PATCHES: //HDD patches Menu
-			if(file_exists(GOLDCHEATS_PLUGINS_PATH "game_patch.prx") != SUCCESS)
+			if(!hdd_patches.list && file_exists(GOLDCHEATS_PLUGINS_PATH "game_patch.prx") != SUCCESS)
 			{
 				show_message(
 					"Game Patch Plugin is not installed!\n"
