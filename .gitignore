@@ -57,3 +57,5 @@ dkms.conf
 *.elf
 *.oelf
 *.self
+
+*.zip

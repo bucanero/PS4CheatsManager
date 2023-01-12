@@ -391,7 +391,24 @@ s32 main(s32 argc, const char* argv[])
 
 	// register exit callback
 	atexit(terminate);
-	
+
+	if(file_exists(GOLDCHEATS_APP_PATH) != SUCCESS)
+	{
+		mkdirs(GOLDCHEATS_APP_PATH);
+		copy_directory("/mnt/sandbox/GOLD00777_000/app0/assets/", "/mnt/sandbox/GOLD00777_000/app0/assets/", GOLDCHEATS_APP_PATH );
+	}
+
+	if (file_exists(GOLDCHEATS_UPDATE_PATH GOLDCHEATS_SELF) == SUCCESS && argv[0][0] == '\0') // launching app from home is always blank
+	{
+		const char* arg[] = { "run_app", NULL };
+		terminate_jbc();
+		chmod(GOLDCHEATS_UPDATE_PATH GOLDCHEATS_SELF, 0777);
+		sceSystemServiceLoadExec(GOLDCHEATS_UPDATE_PATH GOLDCHEATS_SELF, arg);
+	}
+
+	if (strcmp(argv[0], "show_update") == 0) // argv is only populated using `sceSystemServiceLoadExec`
+		show_message("Application has been updated to " GOLDCHEATS_VERSION "!");
+
 	// Load texture
 	if (!LoadTextures_Menu())
 	{

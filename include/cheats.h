@@ -3,12 +3,15 @@
 #define LOG dbglogger_log
 
 #define GOLDCHEATS_PATH				"/data/GoldHEN/"
+#define GOLDCHEATS_SELF				"goldcheats.elf"
+#define GOLDCHEATS_UPDATE_PATH      GOLDCHEATS_PATH "goldcheats_data/"
+#define GOLDCHEATS_UPDATE_FILE      "/data/goldcheats.zip"
 
 #ifdef DEBUG_ENABLE_LOG
 #define GOLDCHEATS_APP_PATH			"/data/GoldHEN/debug/"
 #define GOLDCHEATS_SANDBOX_PATH		"/mnt/sandbox/LOAD00044_000%s/"
 #else
-#define GOLDCHEATS_APP_PATH			"/mnt/sandbox/GOLD00777_000/app0/assets/"
+#define GOLDCHEATS_APP_PATH			GOLDCHEATS_UPDATE_PATH "assets/"
 #define GOLDCHEATS_SANDBOX_PATH		"/mnt/sandbox/GOLD00777_000%s/"
 #endif
 

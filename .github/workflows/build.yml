@@ -181,7 +181,16 @@ jobs:
         make createzip
 
     - name: Build Gold Cheats App Package
-      run: make
+      run: make appzip
+
+    - name: Push package update zip
+      uses: actions/upload-artifact@v3
+      with:
+        name: goldcheats-zip_${{ env.sha_name }}
+        path: |
+          assets/*
+          goldcheats.elf
+        if-no-files-found: error
 
     - name: Push package artifact
       uses: actions/upload-artifact@v3

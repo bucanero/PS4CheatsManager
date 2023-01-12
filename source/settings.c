@@ -6,6 +6,7 @@
 #include <orbis/libkernel.h>
 #include <orbis/SaveData.h>
 #include <orbis/UserService.h>
+#include <orbis/SystemService.h>
 #include <cjson/cJSON.h>
 
 #include "types.h"
@@ -138,7 +139,9 @@ void update_callback(int sel)
 
 	const cJSON *ver = cJSON_GetObjectItemCaseSensitive(json, "tag_name");
 	const cJSON *url = cJSON_GetObjectItemCaseSensitive(json, "assets");
-	url = cJSON_GetObjectItemCaseSensitive(cJSON_GetArrayItem(url, 0), "browser_download_url");
+	// array 0 is pkg asset
+	// lets assume 1 is always going to be the data zip file
+	url = cJSON_GetObjectItemCaseSensitive(cJSON_GetArrayItem(url, 1), "browser_download_url");
 
 	if (!cJSON_IsString(ver) || !cJSON_IsString(url))
 	{
@@ -156,10 +159,17 @@ void update_callback(int sel)
 
 	LOG("download URL is %s", url->valuestring);
 
-	if (show_dialog(1, "New version available! Download update?"))
+	if (show_dialog(1, "New version %s is available! Download update?", ver->valuestring))
 	{
-		if (http_download(url->valuestring, "", "/data/goldcheats.pkg", 1))
-			show_message("Update downloaded to /data/goldcheats.pkg");
+		if (http_download(url->valuestring, "", GOLDCHEATS_UPDATE_FILE, 1))
+		{
+			mkdirs(GOLDCHEATS_UPDATE_PATH);
+			extract_zip(GOLDCHEATS_UPDATE_FILE, GOLDCHEATS_UPDATE_PATH);
+			terminate_jbc();
+			chmod(GOLDCHEATS_UPDATE_PATH GOLDCHEATS_SELF, 0777);
+			const char* arg[] = { "show_update", NULL };
+			sceSystemServiceLoadExec(GOLDCHEATS_UPDATE_PATH GOLDCHEATS_SELF, arg);
+		}
 		else
 			show_message("Download error!");
 	}
