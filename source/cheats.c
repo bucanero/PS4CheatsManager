@@ -340,8 +340,8 @@ int set_shn_codes(game_entry_t* item)
 	}
 
 	node = mxmlFindElement(tree, tree, "Trainer", "Game", NULL, MXML_DESCEND);
-	const char* author = mxmlElementGetAttr(node, "Moder");
-	const char* procfn = mxmlElementGetAttr(node, "Process");
+	const char* author = GetXMLAttr(node, "Moder");
+	const char* procfn = GetXMLAttr(node, "Process");
 
 	/* Get the cheat element nodes */
 	for (node = mxmlFindElement(tree, tree, "Cheat", "Text", NULL, MXML_DESCEND); node != NULL;
@@ -352,7 +352,7 @@ int set_shn_codes(game_entry_t* item)
 
 		cmd = (code_entry_t *)calloc(1, sizeof(code_entry_t));
 		cmd->type = PATCH_VIEW;
-		cmd->name = strdup(mxmlElementGetAttr(node, "Text"));
+		cmd->name = strdup(GetXMLAttr(node, "Text"));
 		cmd->file = strdup(procfn);
 		asprintf(&cmd->codes, "Path: %s\nAuthor: %s\n\n%s", item->path, author, code);
 		free(code);
@@ -942,11 +942,11 @@ static void read_shn_games(const char* userPath, const char* fext, list_t *list)
 			continue;
 		}
 
-		item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD, mxmlElementGetAttr(node, "Game"));
+		item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD, GetXMLAttr(node, "Game"));
 		item->type = FILE_TYPE_PS4;
 		item->path = strdup(fullPath);
-		item->version = strdup(mxmlElementGetAttr(node, "Version"));
-		item->title_id = strdup(mxmlElementGetAttr(node, "Cusa"));
+		item->version = strdup(GetXMLAttr(node, "Version"));
+		item->title_id = strdup(GetXMLAttr(node, "Cusa"));
 		item->flags |= CHEAT_FLAG_SHN;
 
 		/* free the document */
