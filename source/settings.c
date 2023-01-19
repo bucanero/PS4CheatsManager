@@ -156,10 +156,13 @@ void update_callback(int sel)
 
 	LOG("download URL is %s", url->valuestring);
 
+	char* download_path = "/data/goldcheats.pkg";
 	if (show_dialog(1, "New version available! Download update?"))
 	{
-		if (http_download(url->valuestring, "", "/data/goldcheats.pkg", 1))
-			show_message("Update downloaded to /data/goldcheats.pkg");
+		if (dir_exists("/data/pkg/") == SUCCESS)
+			download_path = "/data/pkg/goldcheats.pkg";
+		if (http_download(url->valuestring, "", download_path, 1))
+			show_message("Update downloaded to %s", download_path);
 		else
 			show_message("Download error!");
 	}
