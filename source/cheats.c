@@ -308,6 +308,13 @@ static const char* xml_whitespace_cb(mxml_node_t *node, int where)
 	return (NULL);
 }
 
+static const char* GetXMLAttr(mxml_node_t *node, const char *name)
+{
+	const char* AttrData = mxmlElementGetAttr(node, name);
+	if (AttrData == NULL) AttrData = "";
+	return AttrData;
+}
+
 int set_shn_codes(game_entry_t* item)
 {
 	code_entry_t* cmd;
@@ -333,8 +340,8 @@ int set_shn_codes(game_entry_t* item)
 	}
 
 	node = mxmlFindElement(tree, tree, "Trainer", "Game", NULL, MXML_DESCEND);
-	const char* author = mxmlElementGetAttr(node, "Moder");
-	const char* procfn = mxmlElementGetAttr(node, "Process");
+	const char* author = GetXMLAttr(node, "Moder");
+	const char* procfn = GetXMLAttr(node, "Process");
 
 	/* Get the cheat element nodes */
 	for (node = mxmlFindElement(tree, tree, "Cheat", "Text", NULL, MXML_DESCEND); node != NULL;
@@ -345,7 +352,7 @@ int set_shn_codes(game_entry_t* item)
 
 		cmd = (code_entry_t *)calloc(1, sizeof(code_entry_t));
 		cmd->type = PATCH_VIEW;
-		cmd->name = strdup(mxmlElementGetAttr(node, "Text"));
+		cmd->name = strdup(GetXMLAttr(node, "Text"));
 		cmd->file = strdup(procfn);
 		asprintf(&cmd->codes, "Path: %s\nAuthor: %s\n\n%s", item->path, author, code);
 		free(code);
@@ -644,7 +651,7 @@ list_t * ReadPatchList(const char* userPath)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 || endsWith(dir->d_name, ".json") == NULL)
+		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 || endsWith(dir->d_name, ".xml") == NULL)
 			continue;
 
 		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
@@ -656,32 +663,31 @@ list_t * ReadPatchList(const char* userPath)
 		char *ver = fullPath;
 		char *app = fullPath;
 		char *buffer = readTextFile(fullPath, NULL);
-		cJSON *cheat = cJSON_Parse(buffer);
+		mxml_node_t *node, *tree = NULL;
+		tree = mxmlLoadString(NULL, buffer, MXML_NO_CALLBACK);
 
-		if (!cheat)
+		if (!tree)
 		{
-			LOG("JSON parse Error: %s", buffer);
+			LOG("XML: could not parse XML:\n%s\n", buffer);
+			mxmlDelete(tree);
 			free(buffer);
 			continue;
 		}
 
-		const cJSON *game;
-		const cJSON *patchs = cJSON_GetObjectItemCaseSensitive(cheat, "patch");
-		cJSON_ArrayForEach(game, patchs)
-		{
-			const cJSON *app_name = cJSON_GetObjectItemCaseSensitive(game, "title");
-			const cJSON *app_ver = cJSON_GetObjectItemCaseSensitive(game, "app_ver");
+		for (node = mxmlFindElement(tree, tree, "Metadata", NULL, NULL, MXML_DESCEND); node != NULL;
+			node = mxmlFindElement(node, tree, "Metadata", NULL, NULL, MXML_DESCEND)) {
+			const char *TitleData = GetXMLAttr(node, "Title");
+			const char *AppVerData = GetXMLAttr(node, "AppVer");
 
-			if (!cJSON_IsString(app_name) || !cJSON_IsString(app_ver) || 
-				(strcmp(app_name->valuestring, app) == 0 && strcmp(app_ver->valuestring, ver) == 0))
+			if ((strcmp(TitleData, app) == 0 && strcmp(AppVerData, ver) == 0))
 				continue;
 
-			ver = app_ver->valuestring;
-			app = app_name->valuestring;
-			item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD | CHEAT_FLAG_PATCH, app_name->valuestring);
+			ver = strdup(AppVerData);
+			app = strdup(TitleData);
+			item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD | CHEAT_FLAG_PATCH, TitleData);
 			item->type = FILE_TYPE_PS4;
 			item->path = strdup(fullPath);
-			item->version = strdup(app_ver->valuestring);
+			item->version = strdup(AppVerData);
 			item->title_id = strdup(dir->d_name);
 			*strrchr(item->title_id, '.') = 0;
 
@@ -689,7 +695,8 @@ list_t * ReadPatchList(const char* userPath)
 			list_append(list, item);
 		}
 
-		cJSON_Delete(cheat);
+		mxmlDelete(node);
+		mxmlDelete(tree);
 		free(buffer);
 	}
 	
@@ -714,62 +721,57 @@ int ReadPatches(game_entry_t * game)
 	LOG("Loading patches from '%s'...", game->path);
 
 	char *buffer = readTextFile(game->path, NULL);
-	cJSON *cheat = cJSON_Parse(buffer);
+	mxml_node_t *node, *tree = NULL;
+	tree = mxmlLoadString(NULL, buffer, MXML_NO_CALLBACK);
 
-	if (!cheat)
+	if (!tree)
 	{
-		LOG("JSON parse Error: %s", buffer);
-		list_free(game->codes);
+		LOG("XML: could not parse XML:\n%s\n", buffer);
+		mxmlDelete(tree);
 		free(buffer);
 
 		return 0;
 	}
 
-	const cJSON *app;
-	const cJSON *patchs = cJSON_GetObjectItemCaseSensitive(cheat, "patch");
-	cJSON_ArrayForEach(app, patchs)
-	{
-		const cJSON *app_ver = cJSON_GetObjectItemCaseSensitive(app, "app_ver");
-		const cJSON *app_name = cJSON_GetObjectItemCaseSensitive(app, "title");
+	for (node = mxmlFindElement(tree, tree, "Metadata", NULL, NULL, MXML_DESCEND); node != NULL;
+		 node = mxmlFindElement(node, tree, "Metadata", NULL, NULL, MXML_DESCEND)) {
+		const char *TitleData = GetXMLAttr(node, "Title");
+		const char *AppVerData = GetXMLAttr(node, "AppVer");
+		const char *NameData = GetXMLAttr(node, "Name");
+		const char *AuthorData = GetXMLAttr(node, "Author");
+		const char *NoteData = GetXMLAttr(node, "Note");
+		const char *AppElfData = GetXMLAttr(node, "AppElf");
 
-		if (!cJSON_IsString(app_ver) || !cJSON_IsString(app_name) || 
-			strcmp(app_name->valuestring, game->name) != 0 || strcmp(app_ver->valuestring, game->version) != 0)
+		if (strcmp(TitleData, game->name) != 0 || strcmp(AppVerData, game->version) != 0)
 			continue;
 
-		const cJSON *obj = cJSON_GetObjectItemCaseSensitive(app, "name");
 		cmd = (code_entry_t *)calloc(1, sizeof(code_entry_t));
 		cmd->type = PATCH_VIEW;
-		cmd->name = strdup(cJSON_IsString(obj) ? obj->valuestring : "");
+		cmd->name = strdup(NameData);
+		cmd->file = strdup(AppElfData);
 
-		obj = cJSON_GetObjectItemCaseSensitive(app, "app_elf");
-		cmd->file = strdup(cJSON_IsString(obj) ? obj->valuestring : "");
-
-		obj = cJSON_GetObjectItemCaseSensitive(app, "note");
-		char* note = cJSON_IsString(obj) ? obj->valuestring : "";
-
-		obj = cJSON_GetObjectItemCaseSensitive(app, "author");
-		char* author = cJSON_IsString(obj) ? obj->valuestring : "";
-
-		obj = cJSON_GetObjectItemCaseSensitive(app, "patch_list");
-		char* code = cJSON_Print(obj);
+		mxml_node_t *Patchlist_node = mxmlFindElement(node, node, "PatchList", NULL, NULL, MXML_DESCEND);
+		char *code = Patchlist_node ? mxmlSaveAllocString(Patchlist_node, &xml_whitespace_cb) : calloc(1, 1);
 		cmd->activated = is_patch_enabled(patch_hash_calc(game, cmd));
 
-		asprintf(&cmd->codes, "Game Title: %s\n"
+		asprintf(&cmd->codes,
+			"Game Title: %s\n"
 			"Game Version: %s\n"
 			"Patch Name: %s\n"
 			"Patch Author: %s\n"
 			"Patch Elf: %s\n"
 			"Patch Path: %s\n"
 			"Patch Note: %s\n"
-			"Patch Code: %s\n",
-			game->name, game->version, cmd->name, author, cmd->file, game->path, note, code);
+			"Patch Code:\n\n%s\n",
+			game->name, game->version, cmd->name, AuthorData, cmd->file, game->path, NoteData, code);
 		free(code);
 
 		list_append(game->codes, cmd);
 		LOG("Added '%s' (%s)", cmd->name, cmd->file);
 	}
 
-	cJSON_Delete(cheat);
+	mxmlDelete(node);
+	mxmlDelete(tree);
 	free(buffer);
 
 	LOG("%d items loaded", list_count(game->codes));
@@ -940,11 +942,11 @@ static void read_shn_games(const char* userPath, const char* fext, list_t *list)
 			continue;
 		}
 
-		item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD, mxmlElementGetAttr(node, "Game"));
+		item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD, GetXMLAttr(node, "Game"));
 		item->type = FILE_TYPE_PS4;
 		item->path = strdup(fullPath);
-		item->version = strdup(mxmlElementGetAttr(node, "Version"));
-		item->title_id = strdup(mxmlElementGetAttr(node, "Cusa"));
+		item->version = strdup(GetXMLAttr(node, "Version"));
+		item->title_id = strdup(GetXMLAttr(node, "Cusa"));
 		item->flags |= CHEAT_FLAG_SHN;
 
 		/* free the document */

@@ -123,6 +123,7 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 
 		if (!zip_entry_isdir(zip) && name && 
  			!(strncmp(name, "/json/", 6) &&
+ 			strncmp(name, "/xml/", 5) && 
  			strncmp(name, "/shn/", 5) && 
 			strncmp(name, "/mc4/", 5) &&
 			strncmp(name, "/misc/", 6)))
