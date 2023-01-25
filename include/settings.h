@@ -1,4 +1,4 @@
-#define GOLDCHEATS_VERSION          "1.0.2"     //GoldCheats PS4 version (about menu)
+#define GOLDCHEATS_VERSION          "1.0.3"     //GoldCheats PS4 version (about menu)
 
 #define MENU_TITLE_OFF			45			//Offset of menu title text from menu mini icon
 #define MENU_ICON_OFF 			105         //X Offset to start printing menu mini icon

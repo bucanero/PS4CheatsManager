@@ -4,6 +4,16 @@ All notable changes to the `GoldHEN Cheats Manager` project will be documented i
 
 ## [Unreleased]()
 
+## [v1.0.3](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.0.3) - 2023-01-25
+
+### Added
+
+- Support downloading updates to `/data/pkg/` if the folder exists. (For use with GoldHEN 2.3+)
+
+### Changed
+
+- Dropped support for Patch Engine's JSON format in favor of XML. (Plugins will have to be updated to at least 1.163)
+
 ## [v1.0.2](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.0.2) - 2022-12-24
 
 _dedicated to Leon ~ in loving memory (2009 - 2022)_ :heart:
