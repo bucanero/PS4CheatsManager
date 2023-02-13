@@ -8,12 +8,12 @@
 #include <orbis/SaveData.h>
 #include <cjson/cJSON.h>
 #include <mxml.h>
+#include <sqlite3.h>
 
 #include "cheats.h"
 #include "common.h"
 #include "settings.h"
 #include "util.h"
-#include "sqlite3.h"
 
 #define UTF8_CHAR_GROUP		"\xe2\x97\x86"
 #define UTF8_CHAR_ITEM		"\xe2\x94\x97"
@@ -27,49 +27,23 @@
 #define CHAR_ICON_WARN		"\x0F"
 
 
-const void* sqlite3_get_sqlite3Apis();
-int sqlite3_memvfs_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi);
-
 static sqlite3* open_sqlite_db(const char* db_path)
 {
-	uint8_t* db_buf;
-	size_t db_size;
 	sqlite3 *db;
-	const sqlite3_api_routines* api = sqlite3_get_sqlite3Apis();
+	static int init = -1;
 
-	// Open an in-memory database to use as a handle for loading the memvfs extension
-	if (sqlite3_open(":memory:", &db) != SQLITE_OK)
+	if (init > 0 || (init < 0 && (init = sqlite3_os_init()) != SQLITE_OK))
 	{
-		LOG("open :memory: %s", sqlite3_errmsg(db));
+		LOG("Error loading extension: %s", "orbis_rw");
 		return NULL;
 	}
 
-	sqlite3_enable_load_extension(db, 1);
-	if (sqlite3_memvfs_init(db, NULL, api) != SQLITE_OK_LOAD_PERMANENTLY)
-	{
-		LOG("Error loading extension: %s", "memvfs");
-		return NULL;
-	}
-
-	// Done with this database
-	sqlite3_close(db);
-
-	if (read_buffer(db_path, &db_buf, &db_size) != SUCCESS)
-	{
-		LOG("Cannot open database file: %s", db_path);
-		return NULL;
-	}
-
-	// And open that memory with memvfs now that it holds a valid database
-	char *memuri = sqlite3_mprintf("file:memdb?ptr=0x%p&sz=%lld&freeonclose=1", db_buf, db_size);
-	LOG("Opening '%s'...", memuri);
-
-	if (sqlite3_open_v2(memuri, &db, SQLITE_OPEN_READONLY | SQLITE_OPEN_URI, "memvfs") != SQLITE_OK)
+	LOG("Opening '%s'...", db_path);
+	if (sqlite3_open_v2(db_path, &db, SQLITE_OPEN_READONLY, "orbis_rw") != SQLITE_OK)
 	{
 		LOG("Error open memvfs: %s", sqlite3_errmsg(db));
 		return NULL;
 	}
-	sqlite3_free(memuri);
 
 	return db;
 }

@@ -54,6 +54,12 @@ jobs:
         repository: bucanero/dbglogger
         path: dbglogger
 
+    - name: Checkout SQLite
+      uses: actions/checkout@v3
+      with:
+        repository: bucanero/libSQLite-ps4
+        path: libSQLite-ps4
+
     - name: Checkout zip
       uses: actions/checkout@v3
       with:
@@ -121,6 +127,10 @@ jobs:
 
     - name: Install zip
       working-directory: zip
+      run: make install
+
+    - name: Install SQLite
+      working-directory: libSQLite-ps4
       run: make install
 
     - name: Install dbglogger
