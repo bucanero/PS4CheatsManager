@@ -54,6 +54,12 @@ menu_option_t menu_options[] = {
 		.value = NULL, 
 		.callback = clearcache_callback 
 	},
+	{ .name = "Clear Patch Settings Folder", 
+		.options = NULL, 
+		.type = APP_OPTION_CALL, 
+		.value = NULL, 
+		.callback = clearpatch_callback
+	},
 	{ .name = "Enable Debug Log",
 		.options = NULL,
 		.type = APP_OPTION_CALL,
@@ -90,6 +96,13 @@ void clearcache_callback(int sel)
 	clean_directory(GOLDCHEATS_LOCAL_CACHE);
 
 	show_message("Local cache folder cleaned:\n" GOLDCHEATS_LOCAL_CACHE);
+}
+
+void clearpatch_callback(int sel)
+{
+	LOG("Cleaning folder '" GOLDCHEATS_PATCH_SETTINGS_PATH "'...");
+	clean_directory(GOLDCHEATS_PATCH_SETTINGS_PATH);
+	show_message("Patch settings folder cleaned:\n" GOLDCHEATS_PATCH_SETTINGS_PATH);
 }
 
 void unzip_app_data(const char* zip_file)

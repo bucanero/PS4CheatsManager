@@ -12,12 +12,13 @@
 #define GOLDCHEATS_SANDBOX_PATH		"/mnt/sandbox/GOLD00777_000%s/"
 #endif
 
-#define GOLDCHEATS_USER_PATH		GOLDCHEATS_PATH "%08x/"
-#define GOLDCHEATS_DATA_PATH		GOLDCHEATS_PATH "cheats/"
-#define GOLDCHEATS_PATCH_PATH		GOLDCHEATS_PATH "patches/"
-#define GOLDCHEATS_PLUGINS_PATH		GOLDCHEATS_PATH "plugins/"
-#define GOLDCHEATS_LOCAL_CACHE		GOLDCHEATS_PATH "temp/"
-#define GOLDCHEATS_UPDATE_URL		"https://api.github.com/repos/GoldHEN/GoldHEN_Cheat_Manager/releases/latest"
+#define GOLDCHEATS_USER_PATH	    	GOLDCHEATS_PATH "%08x/"
+#define GOLDCHEATS_DATA_PATH	    	GOLDCHEATS_PATH "cheats/"
+#define GOLDCHEATS_PATCH_PATH		    GOLDCHEATS_PATH "patches/"
+#define GOLDCHEATS_PATCH_SETTINGS_PATH  GOLDCHEATS_PATCH_PATH "settings/"
+#define GOLDCHEATS_PLUGINS_PATH		    GOLDCHEATS_PATH "plugins/"
+#define GOLDCHEATS_LOCAL_CACHE  		GOLDCHEATS_PATH "temp/"
+#define GOLDCHEATS_UPDATE_URL	    	"https://api.github.com/repos/GoldHEN/GoldHEN_Cheat_Manager/releases/latest"
 
 #define MAX_USB_DEVICES         6
 #define USB0_PATH               "/mnt/usb0/"
