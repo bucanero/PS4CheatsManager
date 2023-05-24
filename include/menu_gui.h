@@ -3,6 +3,8 @@ void Draw_AboutMenu(void);
 
 void Draw_UserCheatsMenu_Ani(game_list_t * list);
 void Draw_UserCheatsMenu(game_list_t * list, int menuSel, u8 alpha);
+void Draw_UserUpdateMenu_Ani(game_list_t * list);
+void Draw_UserUpdateMenu(game_list_t * list, int menuSel, u8 alpha);
 void Draw_CheatsMenu_Selection_Ani();
 void Draw_CheatsMenu_Selection(int menuSel, u32 rgba);
 void Draw_CheatsMenu_View_Ani_Exit(void);
