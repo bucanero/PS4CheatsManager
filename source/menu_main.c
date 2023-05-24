@@ -188,7 +188,12 @@ static void SetMenu(int id)
 				return;
 
 			if (gcm_config.doAni)
-				Draw_UserCheatsMenu_Ani(&update_cheats);
+				Draw_UserUpdateMenu_Ani(&update_cheats);
+			break;
+
+		case MENU_UPDATE_SELECT:
+			if (gcm_config.doAni)
+				Draw_CheatsMenu_Selection_Ani();
 			break;
 
 		case MENU_PATCHES: //Cheat Selection Menu
@@ -379,6 +384,88 @@ static void doSaveMenu(game_list_t * save_list)
 	}
 
 	Draw_UserCheatsMenu(save_list, menu_sel, 0xFF);
+}
+
+static void doUpdateMenu(game_list_t * save_list)
+{
+	if(orbisPadGetButtonHold(ORBIS_PAD_BUTTON_UP))
+		move_selection_back(list_count(save_list->list), 1);
+
+	else if(orbisPadGetButtonHold(ORBIS_PAD_BUTTON_DOWN))
+		move_selection_fwd(list_count(save_list->list), 1);
+
+	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_LEFT))
+		move_selection_back(list_count(save_list->list), 5);
+
+	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_L1))
+		move_selection_back(list_count(save_list->list), 25);
+
+	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_L2))
+		move_letter_back(save_list->list);
+
+	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_RIGHT))
+		move_selection_fwd(list_count(save_list->list), 5);
+
+	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_R1))
+		move_selection_fwd(list_count(save_list->list), 25);
+
+	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_R2))
+		move_letter_fwd(save_list->list);
+
+	else if (orbisPadGetButtonPressed(ORBIS_PAD_BUTTON_CIRCLE))
+	{
+		SetMenu(MENU_MAIN_SCREEN);
+		return;
+	}
+	else if (orbisPadGetButtonPressed(ORBIS_PAD_BUTTON_CROSS))
+	{
+		selected_entry = list_get_item(save_list->list, menu_sel);
+		if (!save_list->ReadCodes(selected_entry))
+		{
+			return;
+		}
+		SetMenu(MENU_UPDATE_SELECT);
+		return;
+	}
+
+	Draw_UserUpdateMenu(save_list, menu_sel, 0xFF);
+}
+
+static void doUpdateSelectionMenu()
+{
+	// Check the pads.
+	if(orbisPadGetButtonHold(ORBIS_PAD_BUTTON_UP))
+		move_selection_back(list_count(selected_entry->codes), 1);
+
+	else if(orbisPadGetButtonHold(ORBIS_PAD_BUTTON_DOWN))
+		move_selection_fwd(list_count(selected_entry->codes), 1);
+
+	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_LEFT))
+		move_selection_back(list_count(selected_entry->codes), 5);
+
+	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_RIGHT))
+		move_selection_fwd(list_count(selected_entry->codes), 5);
+
+	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_L1))
+		move_selection_back(list_count(selected_entry->codes), 25);
+
+	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_R1))
+		move_selection_fwd(list_count(selected_entry->codes), 25);
+
+	else if (orbisPadGetButtonPressed(ORBIS_PAD_BUTTON_CIRCLE))
+	{
+		SetMenu(last_menu_id[MENU_UPDATE_SELECT]);
+		return;
+	}
+	else if (orbisPadGetButtonPressed(ORBIS_PAD_BUTTON_CROSS))
+	{
+		selected_centry = list_get_item(selected_entry->codes, menu_sel);
+		if (selected_centry->type == PATCH_COMMAND)
+		{
+			execCodeCommand(selected_centry, selected_centry->codes);
+		}
+	}
+	Draw_CheatsMenu_Selection(menu_sel, 0xFFFFFFFF);
 }
 
 static void doMainMenu()
@@ -701,7 +788,11 @@ void drawScene()
 			break;
 
 		case MENU_UPDATE_CHEATS: //User Backup Menu
-			doSaveMenu(&update_cheats);
+			doUpdateMenu(&update_cheats);
+			break;
+
+		case MENU_UPDATE_SELECT: //User Backup Menu
+			doUpdateSelectionMenu();
 			break;
 
 		case MENU_PATCHES: //Cheats Selection Menu

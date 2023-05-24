@@ -60,7 +60,7 @@ uint32_t* texture_mem;                      // Pointers to texture memory
 uint32_t* free_mem;                         // Pointer after last texture
 
 const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
-								"\x10 Select    \x13 Back    \x11 Refresh",							//Update
+								"\x10 Select    \x13 Back",											//Update
 								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//HDD list
 								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Patch list
 								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Online list
@@ -70,6 +70,7 @@ const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x13 Back",														//View Cheat
 								"\x10 Select    \x13 Back",											//Cheat Option
 								"\x13 Back",														//View Details
+								"\x10 Select    \x13 Back",											//Update Selection
 								};
 
 /*
@@ -116,7 +117,7 @@ game_list_t online_cheats = {
 */
 game_list_t update_cheats = {
     .icon_id = header_ico_xmb_png_index,
-    .title = "Update Cheats",
+    .title = "Update Cheats/Patches",
     .list = NULL,
     .path = "",
     .ReadList = &ReadBackupList,
@@ -409,7 +410,7 @@ s32 main(s32 argc, const char* argv[])
 	// Unpack application data on first run
 	if (strncmp(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver)) != 0)
 	{
-		if (gcm_config.overwrite && extract_zip(GOLDCHEATS_APP_PATH "misc/appdata.zip", GOLDCHEATS_PATH))
+		if (gcm_config.overwrite && extract_zip(GOLDCHEATS_APP_PATH "misc/" LOCAL_TEMP_ZIP, GOLDCHEATS_PATH))
 		{
 			char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
 			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
