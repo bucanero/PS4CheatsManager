@@ -64,6 +64,7 @@ void check_game_appdb(list_t* list)
 			" WHERE A.key = 'APP_VER' AND B.key = 'VERSION' AND A.titleId = %Q AND B.titleId = %Q"
 			" AND (((A.val >= B.val) AND A.val = %Q) OR ((A.val < B.val) AND B.val = %Q))",
 			item->title_id, item->title_id, item->version, item->version);
+		
 		if (sqlite3_prepare_v2(db, query, -1, &res, NULL) == SQLITE_OK && sqlite3_step(res) == SQLITE_ROW)
 		{
 			LOG("Found game: %s %s", item->title_id, item->version);
