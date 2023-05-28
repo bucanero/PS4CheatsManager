@@ -67,8 +67,19 @@ void check_game_appdb(list_t* list)
 
 		if (sqlite3_prepare_v2(db, query, -1, &res, NULL) == SQLITE_OK && sqlite3_step(res) == SQLITE_ROW)
 		{
-			LOG("Found game: %s v%s", item->title_id, item->version);
+			LOG("Found game: %s %s", item->title_id, item->version);
 			item->flags |= CHEAT_FLAG_OWNER;
+		}
+		if (!strncmp(item->version, "mask", 4) || !strncmp(item->version, "all", 3))
+		{
+			char* query = sqlite3_mprintf("SELECT A.titleId, A.val, B.val FROM tbl_appinfo AS A INNER JOIN tbl_appinfo AS B"
+							" WHERE A.key = 'APP_VER' AND B.key = 'VERSION' AND A.titleId = %Q AND B.titleId = %Q",
+							item->title_id, item->title_id);
+			if ((sqlite3_prepare_v2(db, query, -1, &res, NULL) == SQLITE_OK && sqlite3_step(res) == SQLITE_ROW))
+			{
+				LOG("Found game: %s %s", item->title_id, item->version);
+				item->flags |= CHEAT_FLAG_OWNER;
+			}
 		}
 		
 		sqlite3_free(query);
