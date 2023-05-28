@@ -400,7 +400,8 @@ s32 main(s32 argc, const char* argv[])
 	}
 
 	// Splash screen logo (fade-in)
-	drawSplashLogo(1);
+	if (gcm_config.doAni)
+		drawSplashLogo(1);
 
 	// Load application settings
 	load_app_settings(&gcm_config);
@@ -429,7 +430,9 @@ s32 main(s32 argc, const char* argv[])
 	initMenuOptions();
 
 	// Splash screen logo (fade-out)
-	drawSplashLogo(-1);
+	if (gcm_config.doAni)
+		drawSplashLogo(-1);
+
 	SDL_DestroyTexture(menu_textures[goldhen_png_index].texture);
 	
 	//Set options
@@ -437,7 +440,8 @@ s32 main(s32 argc, const char* argv[])
 
 	SDL_CreateThread(&LoadSounds, "audio_thread", &gcm_config.music);
 
-	Draw_MainMenu_Ani();
+	if (gcm_config.doAni)
+		Draw_MainMenu_Ani();
 
 	while (!close_app)
 	{
