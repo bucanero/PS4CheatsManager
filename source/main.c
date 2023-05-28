@@ -399,12 +399,12 @@ s32 main(s32 argc, const char* argv[])
 		return (-1);
 	}
 
-	// Load application settings
-	load_app_settings(&gcm_config);
-
 	// Splash screen logo (fade-in)
 	if (gcm_config.doAni)
 		drawSplashLogo(1);
+
+	// Load application settings
+	load_app_settings(&gcm_config);
 
 	// Unpack application data on first run
 	if (strncmp(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver)) != 0)
@@ -431,10 +431,9 @@ s32 main(s32 argc, const char* argv[])
 
 	// Splash screen logo (fade-out)
 	if (gcm_config.doAni)
-	{
 		drawSplashLogo(-1);
-		SDL_DestroyTexture(menu_textures[goldhen_png_index].texture);
-	}
+
+	SDL_DestroyTexture(menu_textures[goldhen_png_index].texture);
 	
 	//Set options
 	update_callback(!gcm_config.update);
