@@ -401,10 +401,10 @@ s32 main(s32 argc, const char* argv[])
 
 	// Load application settings
 	load_app_settings(&gcm_config);
-
+#ifdef DEBUG_ENABLE_LOG
 	// Splash screen logo (fade-in)
-	if (gcm_config.doAni)
-		drawSplashLogo(1);
+	drawSplashLogo(1);
+#endif
 
 	// Unpack application data on first run
 	if (strncmp(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver)) != 0)
@@ -428,10 +428,10 @@ s32 main(s32 argc, const char* argv[])
 
 	registerSpecialChars();
 	initMenuOptions();
-
+#ifdef DEBUG_ENABLE_LOG
 	// Splash screen logo (fade-out)
-	if (gcm_config.doAni)
-		drawSplashLogo(-1);
+	drawSplashLogo(-1);
+#endif
 
 	SDL_DestroyTexture(menu_textures[goldhen_png_index].texture);
 	
@@ -439,9 +439,10 @@ s32 main(s32 argc, const char* argv[])
 	update_callback(!gcm_config.update);
 
 	SDL_CreateThread(&LoadSounds, "audio_thread", &gcm_config.music);
-
+#ifdef DEBUG_ENABLE_LOG
 	if (gcm_config.doAni)
 		Draw_MainMenu_Ani();
+#endif
 
 	while (!close_app)
 	{
@@ -485,8 +486,10 @@ s32 main(s32 argc, const char* argv[])
 		SDL_RenderPresent(renderer);
 	}
 
+#ifdef DEBUG_ENABLE_LOG
 	if (gcm_config.doAni)
 		drawEndLogo();
+#endif
 
     // Cleanup resources
     SDL_DestroyRenderer(renderer);
