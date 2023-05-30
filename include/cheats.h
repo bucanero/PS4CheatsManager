@@ -20,12 +20,12 @@
 #define GOLDCHEATS_UPDATE_URL		"https://api.github.com/repos/GoldHEN/GoldHEN_Cheat_Manager/releases/latest"
 #define GOLDCHEATS_PATCH_SETTINGS_PATH  GOLDCHEATS_PATCH_PATH "settings/"
 
-#define LOCAL_TEMP_ZIP "appdata.zip"
-#define GOLDCHEATS_LOCAL_FILE "GoldHEN_Cheat_Repository-main.zip"
-#define GOLDCHEATS_URL "https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/"
-#define GOLDCHEATS_FILE "main.zip"
-#define GOLDPATCH_URL "https://github.com/GoldHEN/GoldHEN_Patch_Repository/raw/gh-pages/"
-#define GOLDPATCH_FILE "patch1.zip"
+#define LOCAL_TEMP_ZIP              "appdata.zip"
+#define GOLDCHEATS_LOCAL_FILE       "GoldHEN_Cheat_Repository-main.zip"
+#define GOLDCHEATS_URL              "https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/"
+#define GOLDCHEATS_FILE             "main.zip"
+#define GOLDPATCH_URL               "https://github.com/GoldHEN/GoldHEN_Patch_Repository/raw/gh-pages/"
+#define GOLDPATCH_FILE              "patch1.zip"
 
 #define MAX_USB_DEVICES         6
 #define USB0_PATH               "/mnt/usb0/"
@@ -52,6 +52,12 @@ enum cmd_code_enum
     CMD_UPD_LOCAL_PATCHES_USB,
     CMD_UPD_LOCAL_CHEATS_HDD,
     CMD_UPD_LOCAL_PATCHES_HDD,
+
+// Backup commands
+    CMD_BACKUP_CHEATS_USB,
+    CMD_BACKUP_CHEATS_HDD,
+    CMD_BACKUP_PATCHES_USB,
+    CMD_BACKUP_PATCHES_HDD,
 };
 
 // Save flags

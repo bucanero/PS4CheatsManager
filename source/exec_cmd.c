@@ -119,6 +119,40 @@ static void updLocalPatches(const char* upd_path)
 	free(patch_ver);
 }
 
+static void backupCheats(const char* dst_path)
+{
+	char zip_path[256];
+	struct tm t;
+
+	// build file path
+	t = *gmtime(&(time_t){time(NULL)});
+	snprintf(zip_path, sizeof(zip_path), "%sGH-cheats_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+	if (!zip_directory(GOLDCHEATS_DATA_PATH, GOLDCHEATS_DATA_PATH, dst_path))
+	{
+		show_message("Failed to backup cheats to %s", zip_path);
+		return;
+	};
+
+	show_message("Created cheats backup successfully:\n%s", zip_path);
+}
+
+static void backupPatches(const char* dst_path)
+{
+	char zip_path[256];
+	struct tm t;
+
+	// build file path
+	t = *gmtime(&(time_t){time(NULL)});
+	snprintf(zip_path, sizeof(zip_path), "%sGH-patches_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+	if (!zip_directory(GOLDCHEATS_PATCH_PATH, GOLDCHEATS_PATCH_PATH, dst_path))
+	{
+		show_message("Failed to backup patches to %s", zip_path);
+		return;
+	};
+
+	show_message("Created patches backup successfully:\n%s", zip_path);
+}
+
 void execCodeCommand(code_entry_t* code, const char* codecmd)
 {
 	switch (codecmd[0])
@@ -154,6 +188,18 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_UPD_LOCAL_PATCHES_HDD:
 			updLocalPatches(GOLDCHEATS_PATH GOLDPATCH_FILE);
+			code->activated = 0;
+			break;
+
+		case CMD_BACKUP_CHEATS_HDD:
+		case CMD_BACKUP_CHEATS_USB:
+			backupCheats(codecmd[0] == CMD_BACKUP_CHEATS_USB ? USB0_PATH : GOLDCHEATS_PATH);
+			code->activated = 0;
+			break;
+
+		case CMD_BACKUP_PATCHES_HDD:
+		case CMD_BACKUP_PATCHES_USB:
+			backupPatches(codecmd[0] == CMD_BACKUP_PATCHES_USB ? USB0_PATH : GOLDCHEATS_PATH);
 			code->activated = 0;
 			break;
 
