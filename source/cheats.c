@@ -427,13 +427,12 @@ list_t * ReadBackupList(const char* userPath)
 	game_entry_t * item;
 	list_t *list = list_alloc();
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats/Patches from Internet");
-	item->path = "";
-	item->type = UPDATE_INTERNET;
+	item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_ONLINE, "Update Cheats/Patches from Internet");
+	item->type = TYPE_UPDATE_INTERNET;
 	list_append(list, item);
+
 	item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats/Patches from HDD/USB");
-	item->path = "";
-	item->type = UPDATE_LOCAL;
+	item->type = TYPE_UPDATE_LOCAL;
 	list_append(list, item);
 
 	return list;
@@ -442,99 +441,35 @@ list_t * ReadBackupList(const char* userPath)
 int ReadBackupCodes(game_entry_t * bup)
 {
 	code_entry_t * cmd;
-	char fext[5] = "";
 
 	switch(bup->type)
 	{
-	case FILE_TYPE_NULL:
+	case TYPE_UPDATE_INTERNET:
 		bup->codes = list_alloc();
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from GitHub", CMD_UPD_INTERNET_CHEATS);
+		list_append(bup->codes, cmd);
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from GitHub", CMD_UPD_INTERNET_PATCHES);
+		list_append(bup->codes, cmd);
+		return list_count(bup->codes);
 
-//		cmd = _createCmdCode(account ? PATCH_NULL : PATCH_COMMAND, tmp, CMD_CODE_NULL); //CMD_CREATE_ACT_DAT
-//		list_append(bup->codes, cmd);
+	case TYPE_UPDATE_LOCAL:
+		bup->codes = list_alloc();
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from USB (/" GOLDCHEATS_LOCAL_FILE ")", CMD_UPD_LOCAL_CHEATS_USB);
+		list_append(bup->codes, cmd);
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from USB (/patch1.zip)", CMD_UPD_LOCAL_PATCHES_USB);
+		list_append(bup->codes, cmd);
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from HDD (" GOLDCHEATS_PATH GOLDCHEATS_LOCAL_FILE ")", CMD_UPD_LOCAL_CHEATS_HDD);
+		list_append(bup->codes, cmd);
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from HDD (" GOLDCHEATS_PATH "patch1.zip)", CMD_UPD_LOCAL_PATCHES_HDD);
+		list_append(bup->codes, cmd);
+		return list_count(bup->codes);
 
-		return list_count(bup->codes);
-	case UPDATE_INTERNET:
-		bup->codes = list_alloc();
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from GitHub", UPDATE_INTERNET_CHEATS);
-		list_append(bup->codes, cmd);
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from GitHub", UPDATE_INTERNET_PATCHES);
-		list_append(bup->codes, cmd);
-		return list_count(bup->codes);
-	case UPDATE_LOCAL:
-		bup->codes = list_alloc();
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from USB (/" GOLDCHEATS_LOCAL_FILE ")", UPDATE_LOCAL_CHEATS_USB);
-		list_append(bup->codes, cmd);
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from USB (/patch1.zip)", UPDATE_LOCAL_PATCHES_USB);
-		list_append(bup->codes, cmd);
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from HDD (" GOLDCHEATS_PATH GOLDCHEATS_LOCAL_FILE ")", UPDATE_LOCAL_CHEATS_HDD);
-		list_append(bup->codes, cmd);
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from HDD (" GOLDCHEATS_PATH "patch1.zip)", UPDATE_LOCAL_PATCHES_HDD);
-		list_append(bup->codes, cmd);
-		return list_count(bup->codes);
 	default:
 		return 0;
 	}
 
 	bup->codes = list_alloc();
 
-	LOG("Loading %s files from '%s'...", fext, bup->path);
-/*
-	if (bup->type == FILE_TYPE_RIF)
-	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Backup All Licenses to .Zip", CMD_CODE_NULL);
-		cmd->options_count = 1;
-		cmd->options = _createOptions(2, "Save .Zip to USB", CMD_EXP_EXDATA_USB);
-		list_append(bup->codes, cmd);
-
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export All Licenses as .RAPs", CMD_CODE_NULL);
-		cmd->options_count = 1;
-		cmd->options = _createOptions(3, "Save .RAPs to USB", CMD_EXP_LICS_RAPS);
-		asprintf(&cmd->options->name[2], "Save .RAPs to HDD");
-		asprintf(&cmd->options->value[2], "%c%c", CMD_EXP_LICS_RAPS, 0x10);
-		list_append(bup->codes, cmd);
-	}
-
-	if (bup->type == FILE_TYPE_RAP)
-	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Import All .RAPs as .RIF Licenses", CMD_IMP_EXDATA_USB);
-		list_append(bup->codes, cmd);
-	}
-
-	DIR *d;
-	struct dirent *dir;
-	d = opendir(bup->path);
-
-	if (d)
-	{
-		while ((dir = readdir(d)) != NULL)
-		{
-			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0  &&
-				endsWith(dir->d_name, fext))
-			{
-				cmd = _createCmdCode(PATCH_COMMAND, dir->d_name, CMD_CODE_NULL);
-				*strrchr(cmd->name, '.') = 0;
-
-				if (bup->type == FILE_TYPE_RIF)
-				{
-					cmd->options_count = 1;
-					cmd->options = _createOptions(3, "Save .RAP to USB", CMD_EXP_LICS_RAPS);
-					asprintf(&cmd->options->name[2], "Save .RAP to HDD");
-					asprintf(&cmd->options->value[2], "%c%c", CMD_EXP_LICS_RAPS, 0x10);
-				}
-				else if (bup->type == FILE_TYPE_RAP)
-				{
-					sprintf(cmd->codes, "%c", CMD_IMP_EXDATA_USB);
-				}
-
-				cmd->file = strdup(dir->d_name);
-				list_append(bup->codes, cmd);
-
-				LOG("Added File '%s'", cmd->file);
-			}
-		}
-		closedir(d);
-	}
-*/
 	LOG("%d items loaded", list_count(bup->codes));
 
 	return list_count(bup->codes);
