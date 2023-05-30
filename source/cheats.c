@@ -186,7 +186,7 @@ char * readTextFile(const char * path, long* size)
 
 	return string;
 }
-/*
+
 static code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
 {
 	code_entry_t* entry = (code_entry_t *)calloc(1, sizeof(code_entry_t));
@@ -197,6 +197,7 @@ static code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
 	return entry;
 }
 
+/*
 static option_entry_t* _initOptions(int count)
 {
 	option_entry_t* options = (option_entry_t*)malloc(sizeof(option_entry_t));
@@ -223,6 +224,7 @@ static option_entry_t* _createOptions(int count, const char* name, char value)
 	return options;
 }
 */
+
 static game_entry_t* _createSaveEntry(uint16_t flag, const char* name)
 {
 	game_entry_t* entry = (game_entry_t *)calloc(1, sizeof(game_entry_t));
@@ -422,119 +424,44 @@ int ReadOnlineSaves(game_entry_t * game)
 
 list_t * ReadBackupList(const char* userPath)
 {
-	if (extract_zip_gh(USB0_PATH "GoldHEN_Cheat_Repository-main.zip", GOLDCHEATS_DATA_PATH))
-	{
-		char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
-		show_message("Successfully installed offline %s data from USB\n%s", "cheat", cheat_ver);
-		free(cheat_ver);
-	}
-	else if (extract_zip_gh("/data/GoldHEN_Cheat_Repository-main.zip", GOLDCHEATS_DATA_PATH))
-	{
-		char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
-		show_message("Successfully installed offline %s data from HDD\n%s", "cheat", cheat_ver);
-		free(cheat_ver);
-	}
-	if (extract_zip_gh(USB0_PATH "patch1.zip", GOLDCHEATS_PATCH_PATH))
-	{
-		char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
-		show_message("Successfully installed offline %s data from USB\n%s", "patch", patch_ver);
-		free(patch_ver);
-	}
-	else if (extract_zip_gh("/data/patch1.zip", GOLDCHEATS_PATCH_PATH))
-	{
-		char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
-		show_message("Successfully installed offline %s data from HDD\n%s", "patch", patch_ver);
-		free(patch_ver);
-	}
-	if (http_download("https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/", "main.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
-	{
-		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_DATA_PATH);
-
-		if (ret > 0)
-		{
-			char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
-			show_message("Successfully installed %d %s files\n%s", ret, "cheat", cheat_ver);
-			free(cheat_ver);
-		}
-		else
-			show_message("No files extracted!");
-
-		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
-	}
-
-	if (http_download("https://github.com/GoldHEN/GoldHEN_Patch_Repository/raw/gh-pages/", "patch1.zip", GOLDCHEATS_LOCAL_CACHE "appdata.zip", 1))
-	{
-		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE "appdata.zip", GOLDCHEATS_PATCH_PATH);
-		if (ret > 0)
-		{
-			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
-			show_message("Successfully installed %d %s files\n%s", ret, "patch", patch_ver);
-			free(patch_ver);
-		}
-		else
-			show_message("No files extracted!");
-		unlink_secure(GOLDCHEATS_LOCAL_CACHE "appdata.zip");
-	}
-	else show_message("Download error!");
-
-	return NULL;
-
-/*
-	char tmp[32];
 	game_entry_t * item;
-	code_entry_t * cmd;
 	list_t *list = list_alloc();
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4, CHAR_ICON_COPY " Export Licenses");
-	asprintf(&item->path, EXDATA_PATH_HDD, apollo_config.user_id);
-	item->type = FILE_TYPE_RIF;
+	item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_ONLINE, "Update Cheats & Patches from Internet");
+	item->type = TYPE_UPDATE_INTERNET;
 	list_append(list, item);
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4, CHAR_ICON_USER " Activate PS4 Accounts");
-//	asprintf(&item->path, EXDATA_PATH_HDD, apollo_config.user_id);
-	item->path = strdup("EXDATA_PATH_HDD");
-	item->type = FILE_TYPE_NULL;
+	item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats & Patches from HDD/USB");
+	item->type = TYPE_UPDATE_LOCAL;
 	list_append(list, item);
-
-	item = _createSaveEntry(CHEAT_FLAG_PS4, CHAR_ICON_LOCK " Show Parental Security Passcode");
-	item->codes = list_alloc();
-	cmd = _createCmdCode(PATCH_NULL, CHAR_ICON_LOCK " Security Passcode: ????????", CMD_CODE_NULL);
-//	regMgr_GetParentalPasscode(tmp);
-	strncpy(cmd->name + 21, tmp, 8);
-	list_append(item->codes, cmd);
-	list_append(list, item);
-
-	for (int i = 0; i <= MAX_USB_DEVICES; i++)
-	{
-		snprintf(tmp, sizeof(tmp), USB_PATH, i);
-
-		if (dir_exists(tmp) != SUCCESS)
-			continue;
-
-		snprintf(tmp, sizeof(tmp), CHAR_ICON_COPY " Import Licenses (USB %d)", i);
-		item = _createSaveEntry(CHEAT_FLAG_PS3, tmp);
-		asprintf(&item->path, IMPORT_RAP_PATH_USB, i);
-		item->type = FILE_TYPE_RAP;
-		list_append(list, item);
-	}
 
 	return list;
-*/
 }
 
 int ReadBackupCodes(game_entry_t * bup)
 {
-//	code_entry_t * cmd;
-	char fext[5] = "";
+	code_entry_t * cmd;
 
 	switch(bup->type)
 	{
-	case FILE_TYPE_NULL:
+	case TYPE_UPDATE_INTERNET:
 		bup->codes = list_alloc();
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from GitHub", CMD_UPD_INTERNET_CHEATS);
+		list_append(bup->codes, cmd);
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from GitHub", CMD_UPD_INTERNET_PATCHES);
+		list_append(bup->codes, cmd);
+		return list_count(bup->codes);
 
-//		cmd = _createCmdCode(account ? PATCH_NULL : PATCH_COMMAND, tmp, CMD_CODE_NULL); //CMD_CREATE_ACT_DAT
-//		list_append(bup->codes, cmd);
-
+	case TYPE_UPDATE_LOCAL:
+		bup->codes = list_alloc();
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from USB (/" GOLDCHEATS_LOCAL_FILE ")", CMD_UPD_LOCAL_CHEATS_USB);
+		list_append(bup->codes, cmd);
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from USB (/patch1.zip)", CMD_UPD_LOCAL_PATCHES_USB);
+		list_append(bup->codes, cmd);
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from HDD (" GOLDCHEATS_PATH GOLDCHEATS_LOCAL_FILE ")", CMD_UPD_LOCAL_CHEATS_HDD);
+		list_append(bup->codes, cmd);
+		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from HDD (" GOLDCHEATS_PATH "patch1.zip)", CMD_UPD_LOCAL_PATCHES_HDD);
+		list_append(bup->codes, cmd);
 		return list_count(bup->codes);
 
 	default:
@@ -543,64 +470,6 @@ int ReadBackupCodes(game_entry_t * bup)
 
 	bup->codes = list_alloc();
 
-	LOG("Loading %s files from '%s'...", fext, bup->path);
-/*
-	if (bup->type == FILE_TYPE_RIF)
-	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Backup All Licenses to .Zip", CMD_CODE_NULL);
-		cmd->options_count = 1;
-		cmd->options = _createOptions(2, "Save .Zip to USB", CMD_EXP_EXDATA_USB);
-		list_append(bup->codes, cmd);
-
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export All Licenses as .RAPs", CMD_CODE_NULL);
-		cmd->options_count = 1;
-		cmd->options = _createOptions(3, "Save .RAPs to USB", CMD_EXP_LICS_RAPS);
-		asprintf(&cmd->options->name[2], "Save .RAPs to HDD");
-		asprintf(&cmd->options->value[2], "%c%c", CMD_EXP_LICS_RAPS, 0x10);
-		list_append(bup->codes, cmd);
-	}
-
-	if (bup->type == FILE_TYPE_RAP)
-	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Import All .RAPs as .RIF Licenses", CMD_IMP_EXDATA_USB);
-		list_append(bup->codes, cmd);
-	}
-
-	DIR *d;
-	struct dirent *dir;
-	d = opendir(bup->path);
-
-	if (d)
-	{
-		while ((dir = readdir(d)) != NULL)
-		{
-			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0  &&
-				endsWith(dir->d_name, fext))
-			{
-				cmd = _createCmdCode(PATCH_COMMAND, dir->d_name, CMD_CODE_NULL);
-				*strrchr(cmd->name, '.') = 0;
-
-				if (bup->type == FILE_TYPE_RIF)
-				{
-					cmd->options_count = 1;
-					cmd->options = _createOptions(3, "Save .RAP to USB", CMD_EXP_LICS_RAPS);
-					asprintf(&cmd->options->name[2], "Save .RAP to HDD");
-					asprintf(&cmd->options->value[2], "%c%c", CMD_EXP_LICS_RAPS, 0x10);
-				}
-				else if (bup->type == FILE_TYPE_RAP)
-				{
-					sprintf(cmd->codes, "%c", CMD_IMP_EXDATA_USB);
-				}
-
-				cmd->file = strdup(dir->d_name);
-				list_append(bup->codes, cmd);
-
-				LOG("Added File '%s'", cmd->file);
-			}
-		}
-		closedir(d);
-	}
-*/
 	LOG("%d items loaded", list_count(bup->codes));
 
 	return list_count(bup->codes);
