@@ -62,7 +62,7 @@ int _sceKernelGetModuleInfo(OrbisKernelModule handle, OrbisKernelModuleInfo* inf
 int sceKernelGetModuleInfoByName(const char* name, OrbisKernelModuleInfo* info)
 {
     OrbisKernelModuleInfo tmpInfo;
-    OrbisKernelModule handles[256];
+    OrbisKernelModule handles[256] = {0};
     size_t numModules;
     int ret;
 

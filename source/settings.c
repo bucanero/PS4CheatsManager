@@ -192,7 +192,7 @@ void log_callback(int sel)
 
 int save_app_settings(app_config_t* config)
 {
-	char filePath[256];
+	char filePath[256] = {0};
 	OrbisSaveDataMount2 mount;
 	OrbisSaveDataDirName dirName;
 	OrbisSaveDataMountResult mountResult;
@@ -223,7 +223,7 @@ int save_app_settings(app_config_t* config)
 
 int load_app_settings(app_config_t* config)
 {
-	char filePath[256];
+	char filePath[256] = {0};
 	app_config_t* file_data;
 	size_t file_size;
 	OrbisSaveDataMount2 mount;
