@@ -34,7 +34,7 @@ int show_dialog(int tdialog, const char * format, ...)
     OrbisMsgDialogParam param;
     OrbisMsgDialogUserMessageParam userMsgParam;
     OrbisMsgDialogResult result;
-    char str[0x800] = {0};
+    char str[0x800];
     va_list	opt;
 
     memset(str, 0, sizeof(str));

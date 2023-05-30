@@ -30,7 +30,7 @@ uint64_t patch_hash_calc(const game_entry_t* game, const code_entry_t* code)
 
 static void togglePatch(const game_entry_t* game, const code_entry_t* code)
 {
-	char hash_path[256] = {0};
+	char hash_path[256];
 	uint8_t settings[2] = {0x30, 0x0A}; // "0\n"
 
 	uint64_t hash = patch_hash_calc(game, code);

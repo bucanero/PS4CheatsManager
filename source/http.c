@@ -36,7 +36,7 @@ static int update_progress(void *p, int64_t dltotal, int64_t dlnow, int64_t ulto
 
 int http_download(const char* url, const char* filename, const char* local_dst, int show_progress)
 {
-	char full_url[1024] = {0};
+	char full_url[1024];
 	CURL *curl;
 	CURLcode res;
 	FILE* fd;

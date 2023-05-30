@@ -71,7 +71,7 @@ int unlink_secure(const char *path)
 */
 int mkdirs(const char* dir)
 {
-    char path[256] = {0};
+    char path[256];
     snprintf(path, sizeof(path), "%s", dir);
 
     char* ptr = strrchr(path, '/');
@@ -142,7 +142,7 @@ int copy_file(const char* input, const char* output)
 
 uint32_t file_crc32(const char* input)
 {
-    char buffer[TMP_BUFF_SIZE] = {0};
+    char buffer[TMP_BUFF_SIZE];
     uLong crc = crc32(0L, Z_NULL, 0);
     size_t read;
 
@@ -165,8 +165,8 @@ uint32_t file_crc32(const char* input)
 
 int copy_directory(const char* startdir, const char* inputdir, const char* outputdir)
 {
-	char fullname[256] = {0};
-    char out_name[256] = {0};
+	char fullname[256];
+    char out_name[256];
 	struct dirent *dirp;
 	int len = strlen(startdir);
 	DIR *dp = opendir(inputdir);
@@ -199,7 +199,7 @@ int clean_directory(const char* inputdir)
 {
 	DIR *d;
 	struct dirent *dir;
-	char dataPath[256] = {0};
+	char dataPath[256];
 
 	d = opendir(inputdir);
 	if (!d)
