@@ -427,11 +427,11 @@ list_t * ReadBackupList(const char* userPath)
 	game_entry_t * item;
 	list_t *list = list_alloc();
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_ONLINE, "Update Cheats/Patches from Internet");
+	item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_ONLINE, "Update Cheats & Patches from Internet");
 	item->type = TYPE_UPDATE_INTERNET;
 	list_append(list, item);
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats/Patches from HDD/USB");
+	item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats & Patches from HDD/USB");
 	item->type = TYPE_UPDATE_LOCAL;
 	list_append(list, item);
 

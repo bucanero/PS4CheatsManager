@@ -495,6 +495,7 @@ void Draw_CheatsMenu_Selection(int menuSel, u32 rgba)
     DrawCheatsList(menuSel, selected_entry, (u8)rgba);
 }
 
+
 /*
  * User Cheats Game Selection Menu
  */
