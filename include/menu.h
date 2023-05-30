@@ -23,7 +23,6 @@ enum menu_screen_ids
 	MENU_PATCH_VIEW,		/* 8 - Code Menu (View Cheat) */
 	MENU_CODE_OPTIONS,		/* 9 - Code Menu (View Cheat Options) */
 	MENU_SAVE_DETAILS,
-	MENU_UPDATE_SELECT,
 	TOTAL_MENU_IDS
 };
 

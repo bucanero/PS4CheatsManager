@@ -495,37 +495,6 @@ void Draw_CheatsMenu_Selection(int menuSel, u32 rgba)
     DrawCheatsList(menuSel, selected_entry, (u8)rgba);
 }
 
-void Draw_UserUpdateMenu_Ani(game_list_t * list)
-{
-    for (int ani = 0; ani < MENU_ANI_MAX; ani++)
-    {
-        SDL_RenderClear(renderer);
-        DrawBackground2D(0xFFFFFFFF);
-        
-        u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
-        
-        DrawHeader_Ani(list->icon_id, list->title, "", APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
-        
-        int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
-        if (_game_a > 0xFF)
-            _game_a = 0xFF;
-        u8 game_a = (u8)(_game_a < 0 ? 0 : _game_a);
-        DrawGameList(menu_old_sel[1], list->list, game_a);
-        
-        SDL_RenderPresent(renderer);
-        
-        if (_game_a == 0xFF)
-            return;
-    }
-}
-
-void Draw_UserUpdateMenu(game_list_t * list, int menuSel, u8 alpha)
-{
-    DrawHeader(list->icon_id, 0, list->title, "", APP_FONT_TITLE_COLOR | 0xFF, 0xffffff00 | alpha, 0);
-    DrawGameList(menuSel, list->list, alpha);
-}
-
-
 /*
  * User Cheats Game Selection Menu
  */

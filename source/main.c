@@ -70,7 +70,6 @@ const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x13 Back",														//View Cheat
 								"\x10 Select    \x13 Back",											//Cheat Option
 								"\x13 Back",														//View Details
-								"\x10 Select    \x13 Back",											//Update Selection
 								};
 
 /*
@@ -117,7 +116,7 @@ game_list_t online_cheats = {
 */
 game_list_t update_cheats = {
     .icon_id = header_ico_xmb_png_index,
-    .title = "Update Cheats/Patches",
+    .title = "Update Cheats & Patches",
     .list = NULL,
     .path = "",
     .ReadList = &ReadBackupList,
