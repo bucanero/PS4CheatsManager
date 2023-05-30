@@ -152,7 +152,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-			case CMD_UPD_LOCAL_PATCHES_HDD:
+		case CMD_UPD_LOCAL_PATCHES_HDD:
 			updLocalPatches(GOLDCHEATS_PATH GOLDPATCH_FILE);
 			code->activated = 0;
 			break;
