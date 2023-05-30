@@ -469,10 +469,10 @@ s32 main(s32 argc, const char* argv[])
 			}
 
 			SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-			SetCurrentFont(0);
+			SetCurrentFont(font_console_regular);
 			SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 			SetFontColor(APP_FONT_MENU_COLOR | alpha, 0);
-			DrawString(0, SCREEN_HEIGHT - 94, (char *)menu_pad_help[menu_id]);
+			DrawString(0, SCREEN_HEIGHT - 94, (char *)menu_pad_help[(last_menu_id[menu_id] == MENU_UPDATE_CHEATS) ? MENU_UPDATE_CHEATS : menu_id]);
 			SetFontAlign(FONT_ALIGN_LEFT);
 		}
 
