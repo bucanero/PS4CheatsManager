@@ -501,10 +501,12 @@ void Draw_CheatsMenu_Selection(int menuSel, u32 rgba)
  */
 void Draw_UserCheatsMenu_Ani(game_list_t * list)
 {
-    char subtitle[0x40];
+    char subtitle[0x40] = {0};
 
-    snprintf(subtitle, sizeof(subtitle), "%zu Games", list_count(list->list));
-    if (list->icon_id == header_ico_xmb_png_index) subtitle[0] = 0;
+    if (list->icon_id != header_ico_xmb_png_index)
+    {
+        snprintf(subtitle, sizeof(subtitle), "%zu Games", list_count(list->list));
+    }
 
     for (int ani = 0; ani < MENU_ANI_MAX; ani++)
     {
@@ -529,10 +531,12 @@ void Draw_UserCheatsMenu_Ani(game_list_t * list)
 
 void Draw_UserCheatsMenu(game_list_t * list, int menuSel, u8 alpha)
 {
-    char subtitle[0x40];
+    char subtitle[0x40] = {0};
 
-    snprintf(subtitle, sizeof(subtitle), "%zu Games", list_count(list->list));
-    if (list->icon_id == header_ico_xmb_png_index) subtitle[0] = 0;
+    if (list->icon_id != header_ico_xmb_png_index)
+    {
+        snprintf(subtitle, sizeof(subtitle), "%zu Games", list_count(list->list));
+    }
 
     DrawHeader(list->icon_id, 0, list->title, subtitle, APP_FONT_TITLE_COLOR | 0xFF, 0xffffff00 | alpha, 0);
     DrawGameList(menuSel, list->list, alpha);
