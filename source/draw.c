@@ -93,7 +93,7 @@ void _drawListBackground(int off, int icon)
 void DrawHeader_Ani(int icon, const char * hdrTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int ani, int div)
 {
 	u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
-	char headerTitle[44];
+	char headerTitle[44] = {0};
 	snprintf(headerTitle, sizeof(headerTitle), "%.40s%s", hdrTitle, (strlen(hdrTitle) > 40 ? "..." : ""));
 
 	//------------ Backgrounds
@@ -134,7 +134,7 @@ void DrawHeader_Ani(int icon, const char * hdrTitle, const char * headerSubTitle
 
 void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int mode)
 {
-	char headerTitle[44];
+	char headerTitle[44] = {0};
 	snprintf(headerTitle, sizeof(headerTitle), "%.40s%s", hdrTitle, (strlen(hdrTitle) > 40 ? "..." : ""));
 
 	//Background

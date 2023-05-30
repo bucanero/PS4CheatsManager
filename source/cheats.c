@@ -391,7 +391,7 @@ int ReadCodes(game_entry_t * save)
 int ReadOnlineSaves(game_entry_t * game)
 {
 //	code_entry_t* item;
-	char path[256];
+	char path[256] = {0};
 	snprintf(path, sizeof(path), GOLDCHEATS_LOCAL_CACHE "%s", strrchr(game->path, '/') + 1);
 
 	if (file_exists(path) == SUCCESS)
@@ -477,7 +477,7 @@ int ReadBackupCodes(game_entry_t * bup)
 
 static int is_patch_enabled(uint64_t hash)
 {
-	char hash_path[256];
+	char hash_path[256] = {0};
 	uint8_t settings[2];
 
 	snprintf(hash_path, sizeof(hash_path), GOLDCHEATS_PATCH_PATH "settings/0x%016lx.txt", hash);
@@ -494,7 +494,7 @@ list_t * ReadPatchList(const char* userPath)
 	list_t* list;
 	struct dirent *dir;
 	game_entry_t *item;
-	char fullPath[256];
+	char fullPath[256] = {0};
 
 	d = opendir(userPath);
 
@@ -759,7 +759,7 @@ static void read_shn_games(const char* userPath, const char* fext, list_t *list)
 	DIR *d;
 	struct dirent *dir;
 	game_entry_t *item;
-	char fullPath[256];
+	char fullPath[256] = {0};
 
 	d = opendir(userPath);
 	if (!d)
@@ -820,7 +820,7 @@ static void read_json_games(const char* userPath, list_t *list)
 	DIR *d;
 	struct dirent *dir;
 	game_entry_t *item;
-	char fullPath[256];
+	char fullPath[256] = {0};
 
 	d = opendir(userPath);
 
@@ -886,7 +886,7 @@ list_t * ReadUserList(const char* userPath)
 //	game_entry_t *item;
 //	code_entry_t *cmd;
 	list_t *list;
-	char fullPath[256];
+	char fullPath[256] = {0};
 
 	if (file_exists(userPath) != SUCCESS)
 		return NULL;
@@ -947,8 +947,8 @@ list_t * ReadUserList(const char* userPath)
 static void _ReadOnlineListEx(const char* urlPath, const char* fext, uint16_t flag, list_t *list)
 {
 	game_entry_t *item;
-	char path[256];
-	char fname[64];
+	char path[256] = {0};
+	char fname[64] = {0};
 	struct stat stats;
 
 	snprintf(path, sizeof(path), GOLDCHEATS_LOCAL_CACHE "%s_games.txt", fext);
@@ -1034,7 +1034,7 @@ list_t * ReadOnlineList(const char* urlPath)
 int get_save_details(const game_entry_t* save, char **details)
 {
 /*
-	char sfoPath[256];
+	char sfoPath[256] = {0};
 	sqlite3 *db;
 	sqlite3_stmt *res;
 

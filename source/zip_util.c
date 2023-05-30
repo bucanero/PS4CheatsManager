@@ -12,7 +12,7 @@
 
 void walk_zip_directory(const char* startdir, const char* inputdir, struct zip_t *zipper)
 {
-	char fullname[256];	
+	char fullname[256] = {0};
 	struct dirent *dirp;
 	int len = strlen(startdir) + 1;
 	DIR *dp = opendir(inputdir);
@@ -84,7 +84,7 @@ int on_extract_entry(const char *filename, void *arg)
 int extract_zip(const char* zip_file, const char* dest_path)
 {
 	int ret;
-	uint64_t progress[2];
+	uint64_t progress[2] = {0};
 	struct zip_t *archive = zip_open(zip_file, ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
 
 	if (!archive)
@@ -106,7 +106,7 @@ int extract_zip(const char* zip_file, const char* dest_path)
 int extract_zip_gh(const char* zip_file, const char* dest_path)
 {
 	int n, ret = 0;
-	char fpath[256];
+	char fpath[256] = {0};
 	const char *name;
 	struct zip_t *zip = zip_open(zip_file, ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
 

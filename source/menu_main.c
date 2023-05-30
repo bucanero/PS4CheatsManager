@@ -81,8 +81,8 @@ static int ReloadUserGames(game_list_t* save_list)
 
 static code_entry_t* LoadRawPatch()
 {
-	size_t len;
-	char patchPath[256];
+	size_t len = 0;
+	char patchPath[256] = {0};
 	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
 
 	centry->name = strdup(selected_entry->title_id);
@@ -196,7 +196,7 @@ static void SetMenu(int id)
 			if (menu_id == MENU_HDD_CHEATS || menu_id == MENU_ONLINE_DB || menu_id == MENU_HDD_PATCHES)
 				menu_old_sel[MENU_PATCHES] = 0;
 /*
-			char iconfile[256];
+			char iconfile[256] = {0};
 			snprintf(iconfile, sizeof(iconfile), "%s" "sce_sys/icon0.png", selected_entry->path);
 
 			if (selected_entry->flags & CHEAT_FLAG_ONLINE)
