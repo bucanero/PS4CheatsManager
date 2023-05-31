@@ -127,7 +127,7 @@ static void backupCheats(const char* dst_path)
 	// build file path
 	t = *gmtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%sGH-cheats_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
-	if (!zip_directory(GOLDCHEATS_DATA_PATH, GOLDCHEATS_DATA_PATH, zip_path))
+	if (!zip_directory(GOLDCHEATS_PATH "cheats", GOLDCHEATS_DATA_PATH, zip_path))
 	{
 		show_message("Failed to backup cheats to %s", zip_path);
 		return;
@@ -144,7 +144,7 @@ static void backupPatches(const char* dst_path)
 	// build file path
 	t = *gmtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%sGH-patches_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
-	if (!zip_directory(GOLDCHEATS_PATCH_PATH, GOLDCHEATS_PATCH_PATH, zip_path))
+	if (!zip_directory(GOLDCHEATS_PATH "patches", GOLDCHEATS_PATCH_PATH, zip_path))
 	{
 		show_message("Failed to backup patches to %s", zip_path);
 		return;
