@@ -181,7 +181,6 @@ void end_progress_bar(void);
 
 int init_loading_screen(const char* msg);
 void stop_loading_screen();
-void init_loading_dialog(const char* msg);
 
 void execCodeCommand(code_entry_t* code, const char* codecmd);
 uint64_t patch_hash_calc(const game_entry_t* game, const code_entry_t* code);

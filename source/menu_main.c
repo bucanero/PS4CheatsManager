@@ -51,7 +51,7 @@ void initMenuOptions()
 
 static int ReloadUserGames(game_list_t* save_list)
 {
-    init_loading_dialog("Loading game cheats...");
+    init_loading_screen("Loading game cheats...");
 
 	if (save_list->list)
 	{
