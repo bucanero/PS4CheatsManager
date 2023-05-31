@@ -64,9 +64,11 @@ int zip_directory(const char* basedir, const char* inputdir, const char* output_
         return 0;
     }
 
+	init_loading_screen("Creating archive...");
     LOG("Zipping <%s> to %s...", inputdir, output_filename);
     walk_zip_directory(basedir, inputdir, archive);
     zip_close(archive);
+	stop_loading_screen();
 
     return (file_exists(output_filename) == SUCCESS);
 }
