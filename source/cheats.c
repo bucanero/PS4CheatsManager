@@ -424,15 +424,49 @@ int ReadOnlineSaves(game_entry_t * game)
 
 list_t * ReadBackupList(const char* userPath)
 {
+	code_entry_t * cmd;
 	game_entry_t * item;
 	list_t *list = list_alloc();
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_ONLINE, "Update Cheats & Patches from Internet");
-	item->type = TYPE_UPDATE_INTERNET;
+	item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_ONLINE, "Update Cheats & Patches");
+	item->title_id = strdup("Internet");
+	item->type = FILE_TYPE_MENU;
+	item->codes = list_alloc();
+
+	cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from GitHub", CMD_UPD_INTERNET_CHEATS);
+	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from GitHub", CMD_UPD_INTERNET_PATCHES);
+	list_append(item->codes, cmd);
 	list_append(list, item);
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats & Patches from HDD/USB");
-	item->type = TYPE_UPDATE_LOCAL;
+	item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats & Patches");
+	item->title_id = strdup("HDD/USB");
+	item->type = FILE_TYPE_MENU;
+	item->codes = list_alloc();
+
+	cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from USB (/" GOLDCHEATS_LOCAL_FILE ")", CMD_UPD_LOCAL_CHEATS_USB);
+	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from USB (/patch1.zip)", CMD_UPD_LOCAL_PATCHES_USB);
+	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from HDD (" GOLDCHEATS_PATH GOLDCHEATS_LOCAL_FILE ")", CMD_UPD_LOCAL_CHEATS_HDD);
+	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from HDD (" GOLDCHEATS_PATH "patch1.zip)", CMD_UPD_LOCAL_PATCHES_HDD);
+	list_append(item->codes, cmd);
+	list_append(list, item);
+
+	item = _createSaveEntry(CHEAT_FLAG_PS4, "Backup Cheats & Patches");
+	item->title_id = strdup("HDD/USB");
+	item->type = FILE_TYPE_MENU;
+	item->codes = list_alloc();
+
+	cmd = _createCmdCode(PATCH_COMMAND, "Backup Cheats to .Zip (HDD)", CMD_BACKUP_CHEATS_HDD);
+	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Backup Cheats to .Zip (USB)", CMD_BACKUP_CHEATS_USB);
+	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Backup Patches to .Zip (HDD)", CMD_BACKUP_PATCHES_HDD);
+	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Backup Patches to .Zip (USB)", CMD_BACKUP_PATCHES_USB);
+	list_append(item->codes, cmd);
 	list_append(list, item);
 
 	return list;
@@ -440,39 +474,7 @@ list_t * ReadBackupList(const char* userPath)
 
 int ReadBackupCodes(game_entry_t * bup)
 {
-	code_entry_t * cmd;
-
-	switch(bup->type)
-	{
-	case TYPE_UPDATE_INTERNET:
-		bup->codes = list_alloc();
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from GitHub", CMD_UPD_INTERNET_CHEATS);
-		list_append(bup->codes, cmd);
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from GitHub", CMD_UPD_INTERNET_PATCHES);
-		list_append(bup->codes, cmd);
-		return list_count(bup->codes);
-
-	case TYPE_UPDATE_LOCAL:
-		bup->codes = list_alloc();
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from USB (/" GOLDCHEATS_LOCAL_FILE ")", CMD_UPD_LOCAL_CHEATS_USB);
-		list_append(bup->codes, cmd);
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from USB (/patch1.zip)", CMD_UPD_LOCAL_PATCHES_USB);
-		list_append(bup->codes, cmd);
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from HDD (" GOLDCHEATS_PATH GOLDCHEATS_LOCAL_FILE ")", CMD_UPD_LOCAL_CHEATS_HDD);
-		list_append(bup->codes, cmd);
-		cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from HDD (" GOLDCHEATS_PATH "patch1.zip)", CMD_UPD_LOCAL_PATCHES_HDD);
-		list_append(bup->codes, cmd);
-		return list_count(bup->codes);
-
-	default:
-		return 0;
-	}
-
-	bup->codes = list_alloc();
-
-	LOG("%d items loaded", list_count(bup->codes));
-
-	return list_count(bup->codes);
+	return 0;
 }
 
 static int is_patch_enabled(uint64_t hash)

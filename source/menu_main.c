@@ -193,7 +193,7 @@ static void SetMenu(int id)
 
 		case MENU_PATCHES: //Cheat Selection Menu
 			//if entering from game list, don't keep index, otherwise keep
-			if (menu_id == MENU_HDD_CHEATS || menu_id == MENU_ONLINE_DB || menu_id == MENU_HDD_PATCHES)
+			if (menu_id == MENU_HDD_CHEATS || menu_id == MENU_ONLINE_DB || menu_id == MENU_HDD_PATCHES || menu_id == MENU_UPDATE_CHEATS)
 				menu_old_sel[MENU_PATCHES] = 0;
 /*
 			char iconfile[256];

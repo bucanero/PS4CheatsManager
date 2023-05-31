@@ -1,6 +1,6 @@
 # Package metadata.
 TITLE       := GoldHEN Cheats Manager
-VERSION     := 01.03
+VERSION     := 01.10
 TITLE_ID    := GOLD00777
 CONTENT_ID  := IV0000-GOLD00777_00-GOLDCHEATS000PS4
 
