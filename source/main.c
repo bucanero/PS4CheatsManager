@@ -120,7 +120,7 @@ game_list_t update_cheats = {
     .list = NULL,
     .path = "",
     .ReadList = &ReadBackupList,
-    .ReadCodes = &ReadBackupCodes,
+    .ReadCodes = NULL,
     .UpdatePath = NULL,
 };
 
