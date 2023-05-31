@@ -110,3 +110,20 @@ void stop_loading_screen()
 	update_progress_bar(1, 1, "");
 	end_progress_bar();
 }
+
+void init_loading_dialog(const char* msg)
+{
+    OrbisMsgDialogButtonsParam buttonsParam;
+    OrbisMsgDialogUserMessageParam messageParam;
+    OrbisMsgDialogParam dialogParam;
+    sceMsgDialogInitialize();
+    orbisMsgDialogParamInitialize(&dialogParam);
+    memset(&buttonsParam, 0, sizeof(buttonsParam));
+    memset(&messageParam, 0, sizeof(messageParam));
+    dialogParam.userMsgParam = &messageParam;
+    dialogParam.mode = ORBIS_MSG_DIALOG_MODE_USER_MSG;
+    messageParam.buttonType = ORBIS_MSG_DIALOG_BUTTON_TYPE_WAIT;
+    messageParam.msg = msg;
+    sceMsgDialogOpen(&dialogParam);
+    return;
+}
