@@ -3,7 +3,7 @@
 [![Downloads][img_downloads]][app_downloads] [![Release][img_latest]][app_latest] [![License][img_license]][app_license]
 [![Build package](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/actions/workflows/build.yml/badge.svg)](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/actions/workflows/build.yml)
 
-An open-source PlayStation 4 cheat code manager for GoldHEN.
+An open-source PlayStation 4 cheat code manager for [GoldHEN](https://github.com/GoldHEN/GoldHEN).
 
 ![image](./screenshots/main-menu.jpg)
 
@@ -19,7 +19,7 @@ Get the [latest version here][app_latest].
 
 ## Changelog
 
-See the [latest changes here](CHANGELOG.md).
+See the [latest changes here](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/blob/main/CHANGELOG.md).
 
 # Donations
 
@@ -48,6 +48,7 @@ The application also provides direct access to the Online [Cheat](https://github
 
 * [Bucanero](https://github.com/bucanero): Project developer
 * [Ctn123](https://github.com/ctn123): Cheat Engine
+* [illusion](https://github.com/illusion0001): Patch Engine
 * [Shiningami](https://github.com/ScriptSK): Cheat Engine
 * [SiSTRo](https://github.com/SiSTR0): [GoldHEN](https://github.com/GoldHEN/GoldHEN)
 * [Kameleon](https://github.com/kmeps4): QA Support
@@ -66,12 +67,13 @@ You need to have installed:
 - [Zip](https://github.com/bucanero/zip) library
 - [SDL2](https://github.com/PacBrew/SDL/tree/ps4) library
 - [libJbc](https://github.com/bucanero/ps4-libjbc) library
+- [SQLite](https://github.com/bucanero/libSQLite-ps4) library
 - [Mini-XML](https://github.com/bucanero/mxml) library
 - [PolarSSL](https://github.com/bucanero/oosdk_libraries/tree/master/polarssl-1.3.9) library
 - [libcurl](https://github.com/bucanero/oosdk_libraries/tree/master/curl-7.64.1) library
 - [dbglogger](https://github.com/bucanero/dbglogger) library (required for debug logging)
 
-Run `make` to create a release build. If you want to include the latest save patches in your `.pkg` file, run `make createzip`.
+Run `make` to create a release build. If you want to include the latest cheats and patches in your `.pkg` file, run `make createzip`.
 
 You can also set the `PS3LOAD` environment variable to your PS4 IP address: `export PS3LOAD=tcp:x.x.x.x`.
 This will allow you to use `make run` and send `eboot.bin` directly to the [PS4Load listener](https://github.com/bucanero/ps4load).
@@ -85,7 +87,7 @@ $ socat udp4-recv:30000,ip-add-membership=239.255.0.100:0.0.0.0 -
 
 # License
 
-[GoldHEN Cheats Manager](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/) - Copyright (C) 2022  [Damian Parrino](https://twitter.com/dparrino)
+[GoldHEN Cheats Manager](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/) - Copyright (C) 2022-2023 [Damian Parrino](https://twitter.com/dparrino)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the [GNU General Public License][app_license] as published by

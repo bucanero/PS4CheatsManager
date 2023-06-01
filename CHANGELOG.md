@@ -4,6 +4,18 @@ All notable changes to the `GoldHEN Cheats Manager` project will be documented i
 
 ## [Unreleased]()
 
+## [v1.1.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.0.3) - 2023-06-01
+
+### Added
+
+- Option to delete patch settings
+- Support for masked pattern patches for filtering
+- New Update Menu
+  - Update Cheats from Web, HDD, USB
+  - Update Patches from Web, HDD, USB
+  - Backup local cheat files to .Zip (HDD/USB)
+  - Backup local patch files to .Zip (HDD/USB)
+
 ## [v1.0.3](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.0.3) - 2023-01-25
 
 ### Added
