@@ -18,7 +18,13 @@
 #define GOLDCHEATS_PLUGINS_PATH		GOLDCHEATS_PATH "plugins/"
 #define GOLDCHEATS_LOCAL_CACHE		GOLDCHEATS_PATH "temp/"
 #define GOLDCHEATS_UPDATE_URL		"https://api.github.com/repos/GoldHEN/GoldHEN_Cheat_Manager/releases/latest"
+#define GOLDPLUGINS_UPDATE_URL		"https://api.github.com/repos/GoldHEN/GoldHEN_Plugins_Repository/releases/latest"
 #define GOLDCHEATS_PATCH_SETTINGS_PATH  GOLDCHEATS_PATCH_PATH "settings/"
+
+#define GOLDCHEATS_UPDATE_TITLE "Update Cheats & Patches & Plugins"
+
+#define GOLDCHEATS_BACKUP_PREFIX "GH-cheats"
+#define GOLDPATCH_BACKUP_PREFIX "GH-patches"
 
 #define LOCAL_TEMP_ZIP              "appdata.zip"
 #define GOLDCHEATS_LOCAL_FILE       "GoldHEN_Cheat_Repository-main.zip"
@@ -27,7 +33,7 @@
 #define GOLDPATCH_URL               "https://github.com/GoldHEN/GoldHEN_Patch_Repository/raw/gh-pages/"
 #define GOLDPATCH_FILE              "patch1.zip"
 
-#define MAX_USB_DEVICES         6
+#define MAX_USB_DEVICES         8
 #define USB0_PATH               "/mnt/usb0/"
 #define USB1_PATH               "/mnt/usb1/"
 #define USB_PATH                "/mnt/usb%d/"
@@ -48,16 +54,18 @@ enum cmd_code_enum
 // Update commands
     CMD_UPD_INTERNET_CHEATS,
     CMD_UPD_INTERNET_PATCHES,
-    CMD_UPD_LOCAL_CHEATS_USB,
-    CMD_UPD_LOCAL_PATCHES_USB,
-    CMD_UPD_LOCAL_CHEATS_HDD,
-    CMD_UPD_LOCAL_PATCHES_HDD,
+    CMD_UPD_INTERNET_PLUGINS,
+    CMD_UPD_LOCAL_CHEATS,
+    CMD_UPD_LOCAL_PATCHES,
+    CMD_UPD_LOCAL_PLUGINS,
 
 // Backup commands
     CMD_BACKUP_CHEATS_USB,
     CMD_BACKUP_CHEATS_HDD,
     CMD_BACKUP_PATCHES_USB,
     CMD_BACKUP_PATCHES_HDD,
+    CMD_BACKUP_PLUGINS_USB,
+    CMD_BACKUP_PLUGINS_HDD,
 };
 
 // Save flags
@@ -188,3 +196,6 @@ uint64_t patch_hash_calc(const game_entry_t* game, const code_entry_t* code);
 int get_save_details(const game_entry_t *save, char** details);
 int orbis_SaveUmount(const char* mountPath);
 int orbis_UpdateSaveParams(const char* mountPath, const char* title, const char* subtitle, const char* details);
+
+#define startsWith(str1, str2) strncmp(str1, str2, strlen(str2))
+#define STRING_SIZEOF(str) sizeof(str) / sizeof(const char*)

@@ -49,9 +49,12 @@ void initMenuOptions()
 	}
 }
 
-static int ReloadUserGames(game_list_t* save_list)
+static int ReloadUserGames(game_list_t* save_list, const char* message)
 {
-    init_loading_screen("Loading game cheats...");
+	if (message)
+	{
+		init_loading_screen(message);
+	}
 
 	if (save_list->list)
 	{
@@ -68,11 +71,14 @@ static int ReloadUserGames(game_list_t* save_list)
 	else if (gcm_config.doSort == SORT_BY_TITLE_ID)
 		list_bubbleSort(save_list->list, &sortGameList_Compare_TitleID);
 
-    stop_loading_screen();
+	if (message)
+	{
+		stop_loading_screen();
+	}
 
 	if (!save_list->list && save_list->icon_id != header_ico_xmb_png_index)
 	{
-		show_message("No cheat codes found");
+		show_message("No data found");
 		return 0;
 	}
 
@@ -142,7 +148,7 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_HDD_CHEATS: //HDD saves Menu
-			if (!hdd_cheats.list && !ReloadUserGames(&hdd_cheats))
+			if (!hdd_cheats.list && !ReloadUserGames(&hdd_cheats, "Loading Game Cheats..."))
 				return;
 			
 			if (gcm_config.doAni)
@@ -157,7 +163,7 @@ static void SetMenu(int id)
 					"You can install the plugin from\n\n"
 					"https://github.com/GoldHEN/GoldHEN_Plugins_Repository");
 			}
-			if (!hdd_patches.list && !ReloadUserGames(&hdd_patches))
+			if (!hdd_patches.list && !ReloadUserGames(&hdd_patches, "Loading Game Patches..."))
 				return;
 			
 			if (gcm_config.doAni)
@@ -165,7 +171,7 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_ONLINE_DB: //Cheats Online Menu
-			if (!online_cheats.list && !ReloadUserGames(&online_cheats))
+			if (!online_cheats.list && !ReloadUserGames(&online_cheats, "Loading Online Database..."))
 				return;
 
 			if (gcm_config.doAni)
@@ -184,7 +190,7 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_UPDATE_CHEATS: //User Backup Menu
-			if (!update_cheats.list && !ReloadUserGames(&update_cheats))
+			if (!update_cheats.list && !ReloadUserGames(&update_cheats, NULL))
 				return;
 
 			if (gcm_config.doAni)
@@ -375,7 +381,7 @@ static void doSaveMenu(game_list_t * save_list)
 	}
 	else if (orbisPadGetButtonPressed(ORBIS_PAD_BUTTON_SQUARE))
 	{
-		ReloadUserGames(save_list);
+		ReloadUserGames(save_list, "Reloading List...");
 	}
 
 	Draw_UserCheatsMenu(save_list, menu_sel, 0xFF);

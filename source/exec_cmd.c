@@ -2,6 +2,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <time.h>
+#include <cjson/cJSON.h>
 #include <orbis/SaveData.h>
 
 #include "cheats.h"
@@ -93,6 +94,68 @@ static void updNetPatches(void)
 	unlink_secure(GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP);
 }
 
+static void updNetPlugins(void)
+{
+	if (!http_download(GOLDPLUGINS_UPDATE_URL, "", GOLDCHEATS_LOCAL_CACHE "plugins.check", 0))
+	{
+		show_message("No internet connection to " GOLDPLUGINS_UPDATE_URL " or server not available!");
+		return;
+	}
+
+	char *buffer;
+	long size = 0;
+
+	buffer = readTextFile(GOLDCHEATS_LOCAL_CACHE "plugins.check", &size);
+	cJSON *json = cJSON_Parse(buffer);
+
+	if (!json)
+	{
+		show_message("Failed to parse json data");
+		LOG("JSON parse Error: %s\n", buffer);
+		free(buffer);
+		return;
+	}
+
+	LOG("received %u bytes", size);
+
+	const cJSON *ver = cJSON_GetObjectItemCaseSensitive(json, "tag_name");
+	const cJSON *url = cJSON_GetObjectItemCaseSensitive(json, "assets");
+	url = cJSON_GetObjectItemCaseSensitive(cJSON_GetArrayItem(url, 0), "browser_download_url");
+
+	if (!cJSON_IsString(ver) || !cJSON_IsString(url))
+	{
+		LOG("no tag name or version found");
+		goto end_update;
+	}
+
+	LOG("latest version is %s", ver->valuestring);
+	LOG("download URL is %s", url->valuestring);
+
+	if (http_download(url->valuestring, "", GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
+	{
+		LOG("Update version %s (%s) downloaded to %s", ver->valuestring, url->valuestring, GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP);
+		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP, GOLDCHEATS_PATH);
+		if (ret > 0)
+		{
+			show_message("Successfully installed %d plugins files\nPlugins version: %s", ret, ver->valuestring);
+		}
+		else
+		{
+			show_message("No plugins files extracted!");
+		}
+		unlink_secure(GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP);
+	}
+	else
+	{
+		show_message("Failed to download plugins from %s!", url->valuestring);
+	}
+
+end_update:
+	cJSON_Delete(json);
+	free(buffer);
+	return;
+}
+
 static void updLocalCheats(const char* upd_path)
 {
 	if (!extract_zip_gh(upd_path, GOLDCHEATS_DATA_PATH))
@@ -102,7 +165,7 @@ static void updLocalCheats(const char* upd_path)
 	}
 
 	char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
-	show_message("Successfully installed offline cheat data from %s\n%s", upd_path, cheat_ver);
+	show_message("Successfully installed offline cheat data from\n%s\n%s", upd_path, cheat_ver);
 	free(cheat_ver);
 }
 
@@ -115,8 +178,18 @@ static void updLocalPatches(const char* upd_path)
 	}
 
 	char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
-	show_message("Successfully installed offline patch data from %s\n%s", upd_path, patch_ver);
+	show_message("Successfully installed offline patch data from\n%s\n%s", upd_path, patch_ver);
 	free(patch_ver);
+}
+
+static void updLocalPlugins(const char* upd_path)
+{
+	if (!extract_zip_gh(upd_path, GOLDCHEATS_PATH))
+	{
+		show_message("Cannot open file %s", upd_path);
+		return;
+	}
+	show_message("Successfully installed offline plugin files from\n%s", upd_path);
 }
 
 static void backupCheats(const char* dst_path)
@@ -126,7 +199,7 @@ static void backupCheats(const char* dst_path)
 
 	// build file path
 	t = *gmtime(&(time_t){time(NULL)});
-	snprintf(zip_path, sizeof(zip_path), "%sGH-cheats_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+	snprintf(zip_path, sizeof(zip_path), "%s" GOLDCHEATS_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 	if (!zip_directory(GOLDCHEATS_PATH "cheats", GOLDCHEATS_DATA_PATH, zip_path))
 	{
 		show_message("Failed to backup cheats to %s", zip_path);
@@ -143,7 +216,7 @@ static void backupPatches(const char* dst_path)
 
 	// build file path
 	t = *gmtime(&(time_t){time(NULL)});
-	snprintf(zip_path, sizeof(zip_path), "%sGH-patches_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+	snprintf(zip_path, sizeof(zip_path), "%s" GOLDPATCH_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 	if (!zip_directory(GOLDCHEATS_PATH "patches", GOLDCHEATS_PATCH_PATH, zip_path))
 	{
 		show_message("Failed to backup patches to %s", zip_path);
@@ -159,53 +232,44 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 	{
 		case CMD_TOGGLE_PATCH:
 			togglePatch(selected_entry, code);
-			break;
+			return;
 
 		case CMD_UPD_INTERNET_CHEATS:
 			updNetCheats();
-			code->activated = 0;
 			break;
 
 		case CMD_UPD_INTERNET_PATCHES:
 			updNetPatches();
-			code->activated = 0;
 			break;
 
-		case CMD_UPD_LOCAL_CHEATS_USB:
-			updLocalCheats(USB0_PATH GOLDCHEATS_LOCAL_FILE);
-			code->activated = 0;
+		case CMD_UPD_INTERNET_PLUGINS:
+			updNetPlugins();
 			break;
 
-		case CMD_UPD_LOCAL_CHEATS_HDD:
-			updLocalCheats(GOLDCHEATS_PATH GOLDCHEATS_LOCAL_FILE);
-			code->activated = 0;
+		case CMD_UPD_LOCAL_CHEATS:
+			updLocalCheats(code->file);
 			break;
 
-		case CMD_UPD_LOCAL_PATCHES_USB:
-			updLocalPatches(USB0_PATH GOLDPATCH_FILE);
-			code->activated = 0;
+		case CMD_UPD_LOCAL_PATCHES:
+			updLocalPatches(code->file);
 			break;
 
-		case CMD_UPD_LOCAL_PATCHES_HDD:
-			updLocalPatches(GOLDCHEATS_PATH GOLDPATCH_FILE);
-			code->activated = 0;
+		case CMD_UPD_LOCAL_PLUGINS:
+			updLocalPlugins(code->file);
 			break;
 
 		case CMD_BACKUP_CHEATS_HDD:
 		case CMD_BACKUP_CHEATS_USB:
 			backupCheats(codecmd[0] == CMD_BACKUP_CHEATS_USB ? USB0_PATH : GOLDCHEATS_PATH);
-			code->activated = 0;
 			break;
 
 		case CMD_BACKUP_PATCHES_HDD:
 		case CMD_BACKUP_PATCHES_USB:
 			backupPatches(codecmd[0] == CMD_BACKUP_PATCHES_USB ? USB0_PATH : GOLDCHEATS_PATH);
-			code->activated = 0;
 			break;
 
 		default:
 			break;
 	}
-
-	return;
+	code->activated = 0;
 }
