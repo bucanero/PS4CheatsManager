@@ -2,7 +2,8 @@
 #include <dbglogger.h>
 #define LOG dbglogger_log
 
-#define GOLDCHEATS_PATH				"/data/GoldHEN/"
+#define _GOLDCHEATS_PATH				"/data/GoldHEN"
+#define GOLDCHEATS_PATH				_GOLDCHEATS_PATH "/"
 
 #ifdef DEBUG_ENABLE_LOG
 #define GOLDCHEATS_APP_PATH			"/data/GoldHEN/debug/"
@@ -25,6 +26,7 @@
 
 #define GOLDCHEATS_BACKUP_PREFIX "GH-cheats"
 #define GOLDPATCH_BACKUP_PREFIX "GH-patches"
+#define GOLDPLUGINS_BACKUP_PREFIX "GH-plugins"
 
 #define LOCAL_TEMP_ZIP              "appdata.zip"
 #define GOLDCHEATS_LOCAL_FILE       "GoldHEN_Cheat_Repository-main.zip"
@@ -198,4 +200,4 @@ int orbis_SaveUmount(const char* mountPath);
 int orbis_UpdateSaveParams(const char* mountPath, const char* title, const char* subtitle, const char* details);
 
 #define startsWith(str1, str2) strncmp(str1, str2, strlen(str2))
-#define STRING_SIZEOF(str) sizeof(str) / sizeof(const char*)
+#define ArrayStringSize(str) sizeof(str) / sizeof(const char*)

@@ -96,7 +96,7 @@ static void updNetPatches(void)
 
 static void updNetPlugins(void)
 {
-	if (!http_download(GOLDPLUGINS_UPDATE_URL, "", GOLDCHEATS_LOCAL_CACHE "plugins.check", 0))
+	if (!http_download(GOLDPLUGINS_UPDATE_URL, "", GOLDCHEATS_LOCAL_CACHE "plugins.json", 0))
 	{
 		show_message("No internet connection to " GOLDPLUGINS_UPDATE_URL " or server not available!");
 		return;
@@ -105,13 +105,13 @@ static void updNetPlugins(void)
 	char *buffer;
 	long size = 0;
 
-	buffer = readTextFile(GOLDCHEATS_LOCAL_CACHE "plugins.check", &size);
+	buffer = readTextFile(GOLDCHEATS_LOCAL_CACHE "plugins.json", &size);
 	cJSON *json = cJSON_Parse(buffer);
 
 	if (!json)
 	{
 		show_message("Failed to parse json data");
-		LOG("JSON parse Error: %s\n", buffer);
+		LOG("JSON parse Error: %s", buffer);
 		free(buffer);
 		return;
 	}
@@ -147,12 +147,13 @@ static void updNetPlugins(void)
 	}
 	else
 	{
-		show_message("Failed to download plugins from %s!", url->valuestring);
+		show_message("Failed to download plugins from\n%s!", url->valuestring);
 	}
 
 end_update:
 	cJSON_Delete(json);
 	free(buffer);
+	unlink_secure(GOLDCHEATS_LOCAL_CACHE "plugins.json");
 	return;
 }
 
@@ -194,15 +195,16 @@ static void updLocalPlugins(const char* upd_path)
 
 static void backupCheats(const char* dst_path)
 {
+	mkdirs(dst_path);
+
 	char zip_path[256];
 	struct tm t;
-
 	// build file path
 	t = *gmtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDCHEATS_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 	if (!zip_directory(GOLDCHEATS_PATH "cheats", GOLDCHEATS_DATA_PATH, zip_path))
 	{
-		show_message("Failed to backup cheats to %s", zip_path);
+		show_message("Failed to backup cheats to\n%s", zip_path);
 		return;
 	};
 
@@ -211,19 +213,39 @@ static void backupCheats(const char* dst_path)
 
 static void backupPatches(const char* dst_path)
 {
+	mkdirs(dst_path);
+
 	char zip_path[256];
 	struct tm t;
-
 	// build file path
 	t = *gmtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDPATCH_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 	if (!zip_directory(GOLDCHEATS_PATH "patches", GOLDCHEATS_PATCH_PATH, zip_path))
 	{
-		show_message("Failed to backup patches to %s", zip_path);
+		show_message("Failed to backup patches to\n%s", zip_path);
 		return;
-	};
+	}
 
 	show_message("Created patches backup successfully:\n%s", zip_path);
+}
+
+static void backupPlugins(const char* dst_path)
+{
+	mkdirs(dst_path);
+	
+	char zip_path[256] = {0};
+	struct tm t;
+	// build file path
+	t = *localtime(&(time_t){time(NULL)});
+	snprintf(zip_path, sizeof(zip_path), "%s" GOLDPLUGINS_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+
+	if (!zip_directory(_GOLDCHEATS_PATH, GOLDCHEATS_PLUGINS_PATH, zip_path))
+	{
+		show_message("Failed to backup plugins to\n%s", zip_path);
+		return;
+	}
+
+	show_message("Created plugins backup successfully:\n%s", zip_path);
 }
 
 void execCodeCommand(code_entry_t* code, const char* codecmd)
@@ -260,12 +282,17 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_BACKUP_CHEATS_HDD:
 		case CMD_BACKUP_CHEATS_USB:
-			backupCheats(codecmd[0] == CMD_BACKUP_CHEATS_USB ? USB0_PATH : GOLDCHEATS_PATH);
+			backupCheats(codecmd[0] == CMD_BACKUP_CHEATS_USB ? USB0_PATH "backup/cheats/" : GOLDCHEATS_PATH "backup/cheats/");
 			break;
 
 		case CMD_BACKUP_PATCHES_HDD:
 		case CMD_BACKUP_PATCHES_USB:
-			backupPatches(codecmd[0] == CMD_BACKUP_PATCHES_USB ? USB0_PATH : GOLDCHEATS_PATH);
+			backupPatches(codecmd[0] == CMD_BACKUP_PATCHES_USB ? USB0_PATH "backup/patches/" : GOLDCHEATS_PATH "backup/patches/");
+			break;
+
+		case CMD_BACKUP_PLUGINS_HDD:
+		case CMD_BACKUP_PLUGINS_USB:
+			backupPlugins(codecmd[0] == CMD_BACKUP_PLUGINS_USB ? USB0_PATH "backup/plugins/" : GOLDCHEATS_PATH "backup/plugins/");
 			break;
 
 		default:
