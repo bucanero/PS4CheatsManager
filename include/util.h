@@ -4,9 +4,6 @@
 #include "structs.h"
 #include "types.h"
 
-#include <dbglogger.h>
-#define LOG dbglogger_log
-
 #define ALIGN(_value, _alignment) (((_value) + (_alignment) - 1) & ~((_alignment) - 1))
 
 void dump_data(const u8 *data, u64 size);
