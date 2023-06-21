@@ -2,10 +2,15 @@
 #include "types.h"
 
 void dump_data(const u8 *data, u64 size) {
-	u64 i;
-	for (i = 0; i < size; i++)
-		dbglogger_printf("%02X", data[i]);
-	dbglogger_printf("\n");
+	if (!size || !data)
+	{
+		return;
+	}
+	for (u64 i = 0; i < size; i++)
+	{
+		LOG("%02X ", data[i]);
+	}
+	LOG("\n");
 }
 
 int get_file_size(const char *file_path, u64 *size) {
