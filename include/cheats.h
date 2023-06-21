@@ -198,4 +198,3 @@ int orbis_SaveUmount(const char* mountPath);
 int orbis_UpdateSaveParams(const char* mountPath, const char* title, const char* subtitle, const char* details);
 
 #define startsWith(str1, str2) (strncmp(str1, str2, strlen(str2))==0)
-#define ArrayStringSize(str) sizeof(str) / sizeof(const char*)

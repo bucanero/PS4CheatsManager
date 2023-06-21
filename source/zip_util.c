@@ -124,10 +124,12 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 	for (int i = 0; i < n; ++i)
 	{
 		zip_entry_openbyindex(zip, i);
-		name = strchr(zip_entry_name(zip), '/');
-		name = name ? (name + 1) : zip_entry_name(zip);
+		if ((name = zip_entry_name(zip)) == NULL)
+			continue;
 
-		if (zip_entry_isdir(zip) ||
+		name = (startsWith(name, "GoldHEN") || startsWith(name, "patches")) ? (strchr(name, '/') + 1) : name;
+
+		if (zip_entry_isdir(zip) || (name == 1) ||
 			!(startsWith(name, "json/") ||
 			startsWith(name, "xml/") ||
 			startsWith(name, "shn/") ||
@@ -135,20 +137,19 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 			startsWith(name, "plugins/") ||
 			startsWith(name, "misc/")))
 		{
-			LOG("Skip entry (%d/%d): %s", i, n, name);
+			LOG("Skip entry (%d/%d)", i, n);
 			zip_entry_close(zip);
 			continue;
 		}
 
 		snprintf(fpath, sizeof(fpath), "%s%s", dest_path, name);
-		LOG("Extracting (%i/%i) %s", i, n, fpath);
-
 		if (!gcm_config.overwrite && file_exists(fpath) == SUCCESS)
 		{
 			zip_entry_close(zip);
 			continue;
 		}
 
+		LOG("Extracting (%i/%i) %s", i, n, fpath);
 		mkdirs(fpath);
 		update_progress_bar(i, n, "Extracting files...");
 		ret += (zip_entry_fread(zip, fpath) == SUCCESS);
