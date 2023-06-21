@@ -124,12 +124,13 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 	for (int i = 0; i < n; ++i)
 	{
 		zip_entry_openbyindex(zip, i);
-		if ((name = zip_entry_name(zip)) == NULL)
-			continue;
+		if ((name = zip_entry_name(zip)) != NULL && (startsWith(name, "GoldHEN") || startsWith(name, "patches")))
+		{
+			name = strchr(name, '/');
+			name = name ? (name + 1) : NULL;
+		}
 
-		name = (startsWith(name, "GoldHEN") || startsWith(name, "patches")) ? (strchr(name, '/') + 1) : name;
-
-		if (zip_entry_isdir(zip) || (name == 1) ||
+		if (zip_entry_isdir(zip) || !name ||
 			!(startsWith(name, "json/") ||
 			startsWith(name, "xml/") ||
 			startsWith(name, "shn/") ||
