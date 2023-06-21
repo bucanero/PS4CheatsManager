@@ -22,8 +22,6 @@
 #define GOLDPLUGINS_UPDATE_URL		"https://api.github.com/repos/GoldHEN/GoldHEN_Plugins_Repository/releases/latest"
 #define GOLDCHEATS_PATCH_SETTINGS_PATH  GOLDCHEATS_PATCH_PATH "settings/"
 
-#define GOLDCHEATS_UPDATE_TITLE "Update Cheats & Patches & Plugins"
-
 #define GOLDCHEATS_BACKUP_PREFIX    "GH-cheats"
 #define GOLDPATCH_BACKUP_PREFIX     "GH-patches"
 #define GOLDPLUGINS_BACKUP_PREFIX   "GH-plugins"

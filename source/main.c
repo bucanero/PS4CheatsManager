@@ -116,7 +116,7 @@ game_list_t online_cheats = {
 */
 game_list_t update_cheats = {
     .icon_id = header_ico_xmb_png_index,
-    .title = GOLDCHEATS_UPDATE_TITLE,
+    .title = "Update Cheats, Patches & Plugins",
     .list = NULL,
     .path = "",
     .ReadList = &ReadBackupList,
