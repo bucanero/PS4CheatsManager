@@ -24,9 +24,9 @@
 
 #define GOLDCHEATS_UPDATE_TITLE "Update Cheats & Patches & Plugins"
 
-#define GOLDCHEATS_BACKUP_PREFIX "GH-cheats"
-#define GOLDPATCH_BACKUP_PREFIX "GH-patches"
-#define GOLDPLUGINS_BACKUP_PREFIX "GH-plugins"
+#define GOLDCHEATS_BACKUP_PREFIX    "GH-cheats"
+#define GOLDPATCH_BACKUP_PREFIX     "GH-patches"
+#define GOLDPLUGINS_BACKUP_PREFIX   "GH-plugins"
 
 #define LOCAL_TEMP_ZIP              "appdata.zip"
 #define GOLDCHEATS_LOCAL_FILE       "GoldHEN_Cheat_Repository-main.zip"
