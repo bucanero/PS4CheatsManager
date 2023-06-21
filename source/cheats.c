@@ -70,7 +70,7 @@ void check_game_appdb(list_t* list)
 			LOG("Found game: %s %s", item->title_id, item->version);
 			item->flags |= CHEAT_FLAG_OWNER;
 		}
-		if (!startsWith(item->version, "mask") || !startsWith(item->version, "all"))
+		if (startsWith(item->version, "mask") || startsWith(item->version, "all"))
 		{
 			char* query = sqlite3_mprintf("SELECT A.titleId, A.val, B.val FROM tbl_appinfo AS A INNER JOIN tbl_appinfo AS B"
 							" WHERE A.key = 'APP_VER' AND B.key = 'VERSION' AND A.titleId = %Q AND B.titleId = %Q",
@@ -435,13 +435,13 @@ u32 find_zip(code_entry_t *cmd, game_entry_t *item, const char *prefix, const ch
 			if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 || !endsWith(dir->d_name, ".zip"))
 				continue;
 
-			if (!startsWith(dir->d_name, prefix) && endsWith(dir->d_name, ".zip"))
+			if (startsWith(dir->d_name, prefix) && endsWith(dir->d_name, ".zip"))
 			{
 				file_count++;
 				char filename[256] = {0};
 				char cmdName[256] = {0};
 				snprintf(filename, sizeof(filename), "%s%s", path, dir->d_name);
-				snprintf(cmdName, sizeof(cmdName), "Update %s from %s (%s)", name, (!startsWith(path, GOLDCHEATS_PATH)) ? "HDD" : "USB", dir->d_name);
+				snprintf(cmdName, sizeof(cmdName), "Update %s from %s (%s)", name, (startsWith(path, GOLDCHEATS_PATH)) ? "HDD" : "USB", dir->d_name);
 				cmd = _createCmdCode(PATCH_COMMAND, cmdName, cmd_type);
 				cmd->file = strdup(filename);
 				list_append(item->codes, cmd);

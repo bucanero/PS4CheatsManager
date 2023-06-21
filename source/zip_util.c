@@ -107,7 +107,8 @@ int extract_zip(const char* zip_file, const char* dest_path)
 
 int extract_zip_gh(const char* zip_file, const char* dest_path)
 {
-	int file_entries, ret = 0;
+	int n, ret = 0;
+	char fpath[256] = {0};
 	const char *name = NULL;
 	struct zip_t *zip = zip_open(zip_file, ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
 
@@ -117,41 +118,30 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 		return 0;
 	}
 
-	file_entries = zip_entries_total(zip);
+	n = zip_entries_total(zip);
 	init_progress_bar("Extracting files...");
 
-	for (int i = 0; i < file_entries; ++i)
+	for (int i = 0; i < n; ++i)
 	{
-		char fpath[256] = {0};
 		zip_entry_openbyindex(zip, i);
 		name = strchr(zip_entry_name(zip), '/');
+		name = name ? (name + 1) : zip_entry_name(zip);
 
-		LOG("zip_entry_name %s | strchr %s", zip_entry_name(zip), name);
-		if (!zip_entry_isdir(zip) && name &&
-			!(startsWith(name, "/json/") &&
-			startsWith(name, "/xml/") &&
-			startsWith(name, "/shn/") &&
-			startsWith(name, "/mc4/") &&
-			startsWith(name, "/misc/")))
+		if (zip_entry_isdir(zip) ||
+			!(startsWith(name, "json/") ||
+			startsWith(name, "xml/") ||
+			startsWith(name, "shn/") ||
+			startsWith(name, "mc4/") ||
+			startsWith(name, "plugins/") ||
+			startsWith(name, "misc/")))
 		{
-			snprintf(fpath, sizeof(fpath), "%s%s", dest_path, name);
-		}
-		else if (!zip_entry_isdir(zip) && name &&
-			!(startsWith(zip_entry_name(zip), "plugins/") &&
-			  startsWith(zip_entry_name(zip), "json/") &&
-			  startsWith(zip_entry_name(zip), "shn/") &&
-			  startsWith(zip_entry_name(zip), "mc4/") &&
-			  startsWith(zip_entry_name(zip), "xml/") &&
-			  startsWith(zip_entry_name(zip), "misc/")))
-		{
-			snprintf(fpath, sizeof(fpath), "%s/%s", dest_path, zip_entry_name(zip));
-		}
-		else
-		{
-			LOG("Not valid path: %s", zip_entry_name(zip));
+			LOG("Skip entry (%d/%d): %s", i, n, name);
 			zip_entry_close(zip);
 			continue;
 		}
+
+		snprintf(fpath, sizeof(fpath), "%s%s", dest_path, name);
+		LOG("Extracting (%i/%i) %s", i, n, fpath);
 
 		if (!gcm_config.overwrite && file_exists(fpath) == SUCCESS)
 		{
@@ -159,14 +149,9 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 			continue;
 		}
 
-		if (!startsWith(fpath, "/data/") ||
-			!startsWith(fpath, "/mnt/"))
-		{
-			LOG("Extracting %s (%i/%i)", fpath, i, file_entries);
-			mkdirs(fpath);
-			update_progress_bar(i, file_entries, "Extracting files...");
-			ret += (zip_entry_fread(zip, fpath) == SUCCESS);
-		}
+		mkdirs(fpath);
+		update_progress_bar(i, n, "Extracting files...");
+		ret += (zip_entry_fread(zip, fpath) == SUCCESS);
 		zip_entry_close(zip);
 	}
 
