@@ -51,10 +51,7 @@ void initMenuOptions()
 
 static int ReloadUserGames(game_list_t* save_list, const char* message)
 {
-	if (message)
-	{
-		init_loading_screen(message);
-	}
+	init_loading_screen(message);
 
 	if (save_list->list)
 	{
@@ -71,10 +68,7 @@ static int ReloadUserGames(game_list_t* save_list, const char* message)
 	else if (gcm_config.doSort == SORT_BY_TITLE_ID)
 		list_bubbleSort(save_list->list, &sortGameList_Compare_TitleID);
 
-	if (message)
-	{
-		stop_loading_screen();
-	}
+	stop_loading_screen();
 
 	if (!save_list->list && save_list->icon_id != header_ico_xmb_png_index)
 	{
@@ -190,7 +184,7 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_UPDATE_CHEATS: //User Backup Menu
-			if (!update_cheats.list && !ReloadUserGames(&update_cheats, NULL))
+			if (!update_cheats.list && !ReloadUserGames(&update_cheats, ""))
 				return;
 
 			if (gcm_config.doAni)
