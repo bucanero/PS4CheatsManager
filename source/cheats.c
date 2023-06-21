@@ -422,14 +422,15 @@ int ReadOnlineSaves(game_entry_t * game)
 	return (list_count(game->codes));
 }
 
-u32 find_zip(list_t *item_list, const char *prefix, const char *name, const char *path, const char cmd_type)
+static uint32_t find_zip(list_t *item_list, const char *prefix, const char *name, const char *path, const char cmd_type)
 {
 	code_entry_t *cmd;
 	uint32_t file_count = 0;
+	char cmdName[256] = {0};
 	struct dirent *dir;
 	DIR *d = opendir(path);
 
-	if (d)
+	if (!d)
 	{
 		LOG("DIR* to %s is null.", path);
 		return 0;
@@ -438,21 +439,16 @@ u32 find_zip(list_t *item_list, const char *prefix, const char *name, const char
 	LOG("Searching zip path: %s", path);
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 || !endsWith(dir->d_name, ".zip"))
+		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 ||
+			!startsWith(dir->d_name, prefix) || !endsWith(dir->d_name, ".zip"))
 			continue;
 
-		if (startsWith(dir->d_name, prefix) && endsWith(dir->d_name, ".zip"))
-		{
-			file_count++;
-			char filename[256] = {0};
-			char cmdName[256] = {0};
-			snprintf(filename, sizeof(filename), "%s%s", path, dir->d_name);
-			snprintf(cmdName, sizeof(cmdName), "Update %s from %s (%s)", name, (startsWith(path, GOLDCHEATS_PATH)) ? "HDD" : "USB", dir->d_name);
-			cmd = _createCmdCode(PATCH_COMMAND, cmdName, cmd_type);
-			cmd->file = strdup(filename);
-			list_append(item_list, cmd);
-			LOG("File %s (%u) added", filename, file_count);
-		}
+		file_count++;
+		snprintf(cmdName, sizeof(cmdName), "Update %s from %s (%s)", name, (startsWith(path, GOLDCHEATS_PATH)) ? "HDD" : "USB", dir->d_name);
+		cmd = _createCmdCode(PATCH_COMMAND, cmdName, cmd_type);
+		asprintf(&cmd->file, "%s%s", path, dir->d_name);
+		list_append(item_list, cmd);
+		LOG("File %s (%u) added", cmd->file, file_count);
 	}
 	closedir(d);
 
@@ -529,10 +525,11 @@ int ReadBackupCodes(game_entry_t * item)
 	char local_path[256] = {0};
 	uint32_t entry_count = 0;
 	const char* search_paths[] = {"",
-								"cheats/", "patches/", "plugins/",
-								"Cheats/", "Patches/", "Plugins/",
-								"backup/cheats/", "backup/patches/", "backup/plugins/",
-								"Backup/Cheats/", "Backup/Patches/", "Backup/Plugins/", NULL};
+		"cheats/", "patches/", "plugins/",
+		"Cheats/", "Patches/", "Plugins/",
+		"backup/cheats/", "backup/patches/", "backup/plugins/",
+		"Backup/Cheats/", "Backup/Patches/", "Backup/Plugins/", NULL
+	};
 
 	item->codes = list_alloc();
 	for (const char* search = search_paths[0]; search != NULL; search++)
@@ -551,13 +548,13 @@ int ReadBackupCodes(game_entry_t * item)
 		entry_count += find_zip(item->codes, "plugins", "Plugins", local_path, CMD_UPD_LOCAL_PLUGINS);
 	}
 
-	if (entry_count < 1)
+	if (!entry_count)
 	{
-		cmd = _createCmdCode(PATCH_NULL, "No files found!", CMD_CODE_NULL);
+		cmd = _createCmdCode(PATCH_NULL, "No .Zip files found!", CMD_CODE_NULL);
 		list_append(item->codes, cmd);
 	}
 
-	return 0;
+	return list_count(item->codes);
 }
 
 static int is_patch_enabled(uint64_t hash)
