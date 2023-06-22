@@ -494,7 +494,7 @@ list_t * ReadBackupList(const char* userPath)
 		list_append(list, item);
 	}
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4, "Backup Cheats & Patches");
+	item = _createSaveEntry(CHEAT_FLAG_PS4, "Backup Cheats, Patches & Patches");
 	item->title_id = strdup("HDD/USB");
 	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();

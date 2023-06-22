@@ -198,10 +198,10 @@ static void updLocalPlugins(const char* upd_path)
 
 static void backupCheats(const char* dst_path)
 {
-	mkdirs(dst_path);
-
 	char zip_path[256];
 	struct tm t;
+
+	mkdirs(dst_path);
 	// build file path
 	t = *gmtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDCHEATS_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
@@ -216,10 +216,10 @@ static void backupCheats(const char* dst_path)
 
 static void backupPatches(const char* dst_path)
 {
-	mkdirs(dst_path);
-
 	char zip_path[256];
 	struct tm t;
+
+	mkdirs(dst_path);
 	// build file path
 	t = *gmtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDPATCH_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
@@ -234,10 +234,10 @@ static void backupPatches(const char* dst_path)
 
 static void backupPlugins(const char* dst_path)
 {
-	mkdirs(dst_path);
-	
 	char zip_path[256] = {0};
 	struct tm t;
+
+	mkdirs(dst_path);
 	// build file path
 	t = *localtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDPLUGINS_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);

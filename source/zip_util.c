@@ -127,7 +127,7 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 		if ((name = zip_entry_name(zip)) != NULL && (startsWith(name, "GoldHEN") || startsWith(name, "patches")))
 		{
 			name = strchr(name, '/');
-			name = name ? (name + 1) : NULL;
+			if (name) name++;
 		}
 
 		if (zip_entry_isdir(zip) || !name ||

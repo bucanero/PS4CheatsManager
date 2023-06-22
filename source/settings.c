@@ -106,9 +106,9 @@ void clearcache_callback(int sel)
 
 void clearpatch_callback(int sel)
 {
-	LOG("Cleaning folder '" GOLDCHEATS_PATCH_SETTINGS_PATH "'...");
-	clean_directory(GOLDCHEATS_PATCH_SETTINGS_PATH);
-	show_message("Patch settings folder cleaned:\n" GOLDCHEATS_PATCH_SETTINGS_PATH);
+	LOG("Cleaning folder '" GOLDPATCH_SETTINGS_PATH "'...");
+	clean_directory(GOLDPATCH_SETTINGS_PATH);
+	show_message("Patch settings folder cleaned:\n" GOLDPATCH_SETTINGS_PATH);
 }
 
 void setpluginsperms_callback(int sel)
