@@ -535,6 +535,9 @@ int ReadBackupCodes(game_entry_t * item)
 	for (const char** search = search_paths; search[0] != NULL; search++)
 	{
 		snprintf(local_path, sizeof(local_path), "%s%s", item->path, search[0]);
+		if (dir_exists(local_path) != SUCCESS)
+			continue;
+
 		// find backups
 		entry_count += find_zip(item->codes, GOLDCHEATS_BACKUP_PREFIX, "Cheats", local_path, CMD_UPD_LOCAL_CHEATS);
 		entry_count += find_zip(item->codes, GOLDPATCH_BACKUP_PREFIX, "Patches", local_path, CMD_UPD_LOCAL_PATCHES);
