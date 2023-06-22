@@ -426,7 +426,6 @@ static uint32_t find_zip(list_t *item_list, const char *prefix, const char *name
 {
 	code_entry_t *cmd;
 	uint32_t file_count = 0;
-	char cmdName[256] = {0};
 	struct dirent *dir;
 	DIR *d = opendir(path);
 
@@ -443,11 +442,13 @@ static uint32_t find_zip(list_t *item_list, const char *prefix, const char *name
 			!startsWith(dir->d_name, prefix) || !endsWith(dir->d_name, ".zip"))
 			continue;
 
-		file_count++;
+		// this will be copied later
+		char cmdName[256] = {0};
 		snprintf(cmdName, sizeof(cmdName), "Update %s from %s (%s)", name, (startsWith(path, GOLDCHEATS_PATH)) ? "HDD" : "USB", dir->d_name);
 		cmd = _createCmdCode(PATCH_COMMAND, cmdName, cmd_type);
 		asprintf(&cmd->file, "%s%s", path, dir->d_name);
 		list_append(item_list, cmd);
+		file_count++;
 		LOG("File %s (%u) added", cmd->file, file_count);
 	}
 	closedir(d);
@@ -523,7 +524,6 @@ list_t * ReadBackupList(const char* userPath)
 int ReadBackupCodes(game_entry_t * item)
 {
 	code_entry_t * cmd;
-	char local_path[256] = {0};
 	uint32_t entry_count = 0;
 	const char* search_paths[] = {"",
 		"cheats/", "patches/", "plugins/",
@@ -535,6 +535,8 @@ int ReadBackupCodes(game_entry_t * item)
 	item->codes = list_alloc();
 	for (u32 i = 0; i < ArrayStringSize(search_paths); i++)
 	{
+		// path is only used in this scope
+		char local_path[256] = {0};
 		snprintf(local_path, sizeof(local_path), "%s%s", item->path, search_paths[i]);
 		// find backups
 		entry_count += find_zip(item->codes, GOLDCHEATS_BACKUP_PREFIX, "Cheats", local_path, CMD_UPD_LOCAL_CHEATS);
