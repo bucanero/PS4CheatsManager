@@ -60,6 +60,12 @@ menu_option_t menu_options[] = {
 		.value = NULL, 
 		.callback = clearpatch_callback
 	},
+	{ .name = "Set file permissions for Plugins",
+		.options = NULL,
+		.type = APP_OPTION_CALL,
+		.value = NULL,
+		.callback = setpluginsperms_callback
+	},
 	{ .name = "Enable Debug Log",
 		.options = NULL,
 		.type = APP_OPTION_CALL,
@@ -103,6 +109,18 @@ void clearpatch_callback(int sel)
 	LOG("Cleaning folder '" GOLDCHEATS_PATCH_SETTINGS_PATH "'...");
 	clean_directory(GOLDCHEATS_PATCH_SETTINGS_PATH);
 	show_message("Patch settings folder cleaned:\n" GOLDCHEATS_PATCH_SETTINGS_PATH);
+}
+
+void setpluginsperms_callback(int sel)
+{
+	if (set_perms_directory(GOLDCHEATS_PLUGINS_PATH, 0777) == SUCCESS)
+	{
+		show_message("Fixed plugins file permissions:\n" GOLDCHEATS_PLUGINS_PATH);
+	}
+	else
+	{
+		show_message("Failed to set file permissions:\n" GOLDCHEATS_PLUGINS_PATH);
+	}
 }
 
 void unzip_app_data(const char* zip_file)

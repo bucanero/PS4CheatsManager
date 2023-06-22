@@ -215,3 +215,26 @@ int clean_directory(const char* inputdir)
 
     return SUCCESS;
 }
+
+int set_perms_directory(const char* inputdir, int mode)
+{
+	DIR *d;
+	struct dirent *dir;
+
+	d = opendir(inputdir);
+	if (!d)
+		return FAILED;
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
+		{
+			char dataPath[256] = {0};
+			snprintf(dataPath, sizeof(dataPath), "%s" "%s", inputdir, dir->d_name);
+			chmod(dataPath, mode);
+		}
+	}
+	closedir(d);
+
+    return SUCCESS;
+}

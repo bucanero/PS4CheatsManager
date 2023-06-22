@@ -135,7 +135,7 @@ static void updNetPlugins(void)
 	{
 		LOG("Update version %s (%s) downloaded to %s", ver->valuestring, url->valuestring, GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP);
 		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP, GOLDCHEATS_PATH);
-		if (ret > 0)
+		if (ret > 0 && set_perms_directory(GOLDCHEATS_PLUGINS_PATH, 0777) == SUCCESS)
 		{
 			show_message("Successfully installed %d plugins files\nPlugins version: %s", ret, ver->valuestring);
 		}
@@ -190,7 +190,10 @@ static void updLocalPlugins(const char* upd_path)
 		show_message("Cannot open file %s", upd_path);
 		return;
 	}
-	show_message("Successfully installed offline plugin files from\n%s", upd_path);
+	if (set_perms_directory(GOLDCHEATS_PLUGINS_PATH, 0777) == SUCCESS)
+	{
+		show_message("Successfully installed offline plugin files from\n%s", upd_path);
+	}
 }
 
 static void backupCheats(const char* dst_path)
