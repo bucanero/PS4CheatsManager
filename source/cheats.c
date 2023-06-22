@@ -457,7 +457,6 @@ static uint32_t find_zip(list_t *item_list, const char *prefix, const char *name
 
 list_t * ReadBackupList(const char* userPath)
 {
-	char devicePath[64] = {0};
 	code_entry_t * cmd;
 	game_entry_t * item;
 	list_t *list = list_alloc();
@@ -483,6 +482,8 @@ list_t * ReadBackupList(const char* userPath)
 
 	for (int i = 0; i < MAX_USB_DEVICES; i++)
 	{
+		// this path is only used in this scope
+		char devicePath[64] = {0};
 		snprintf(devicePath, sizeof(devicePath), USB_PATH, i);
 		if (dir_exists(devicePath) != SUCCESS)
 			continue;
@@ -528,13 +529,13 @@ int ReadBackupCodes(game_entry_t * item)
 		"cheats/", "patches/", "plugins/",
 		"Cheats/", "Patches/", "Plugins/",
 		"backup/cheats/", "backup/patches/", "backup/plugins/",
-		"Backup/Cheats/", "Backup/Patches/", "Backup/Plugins/", NULL
+		"Backup/Cheats/", "Backup/Patches/", "Backup/Plugins/"
 	};
 
 	item->codes = list_alloc();
-	for (const char* search = search_paths[0]; search != NULL; search++)
+	for (u32 i = 0; i < ArrayStringSize(search_paths); i++)
 	{
-		snprintf(local_path, sizeof(local_path), "%s%s", item->path, search);
+		snprintf(local_path, sizeof(local_path), "%s%s", item->path, search_paths[i]);
 		// find backups
 		entry_count += find_zip(item->codes, GOLDCHEATS_BACKUP_PREFIX, "Cheats", local_path, CMD_UPD_LOCAL_CHEATS);
 		entry_count += find_zip(item->codes, GOLDPATCH_BACKUP_PREFIX, "Patches", local_path, CMD_UPD_LOCAL_PATCHES);
