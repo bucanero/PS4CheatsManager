@@ -193,11 +193,13 @@ jobs:
         make createzip
 
     - name: Build Gold Cheats App Package
-      run: make
+      run: |
+        make
+        mv IV0000-GOLD00777_00-GOLDCHEATS000PS4.pkg goldcheats-build_${{ env.sha_name }}.pkg
 
     - name: Push package artifact
       uses: actions/upload-artifact@v3
       with:
         name: goldcheats-build_${{ env.sha_name }}
-        path: IV0000-GOLD00777_00-GOLDCHEATS000PS4.pkg
+        path: goldcheats-build_${{ env.sha_name }}.pkg
         if-no-files-found: error

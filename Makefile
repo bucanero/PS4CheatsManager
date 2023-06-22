@@ -5,7 +5,7 @@ TITLE_ID    := GOLD00777
 CONTENT_ID  := IV0000-GOLD00777_00-GOLDCHEATS000PS4
 
 # Libraries linked into the ELF.
-LIBS        := -lc -lkernel -lc++ -lSceAudioOut -lSceUserService -lScePigletv2VSH -lSceSysmodule -lSceFreeType \
+LIBS        := -lc -lkernel -lSceAudioOut -lSceUserService -lScePigletv2VSH -lSceSysmodule -lSceFreeType \
                -lScePad -lSceSystemService -lSceSaveData -lSceCommonDialog -lSceMsgDialog -lSceNet \
                -lSDL2 -lcjson -ldbglogger -lz -lzip -ljbc -lmxml -lcurl -lpolarssl -lSQLite
 
