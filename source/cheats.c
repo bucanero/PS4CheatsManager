@@ -56,7 +56,10 @@ void check_game_appdb(list_t* list)
 	game_entry_t* item;
 
 	if ((db = open_sqlite_db("/system_data/priv/mms/app.db")) == NULL)
+	{
+		LOG("Failed to open app.db");
 		return;
+	}
 
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
 	{
