@@ -161,7 +161,7 @@ static void updLocalCheats(const char* upd_path)
 {
 	if (!extract_zip_gh(upd_path, GOLDCHEATS_DATA_PATH))
 	{
-		show_message("Cannot open file %s", upd_path);
+		show_message("Unable to extract zip\n%s", upd_path);
 		return;
 	}
 
@@ -174,7 +174,7 @@ static void updLocalPatches(const char* upd_path)
 {
 	if (!extract_zip_gh(upd_path, GOLDCHEATS_PATCH_PATH))
 	{
-		show_message("Cannot open file %s", upd_path);
+		show_message("Unable to extract zip\n%s", upd_path);
 		return;
 	}
 
@@ -187,7 +187,7 @@ static void updLocalPlugins(const char* upd_path)
 {
 	if (!extract_zip_gh(upd_path, GOLDCHEATS_PATH))
 	{
-		show_message("Cannot open file %s", upd_path);
+		show_message("Unable to extract zip\n%s", upd_path);
 		return;
 	}
 	if (set_perms_directory(GOLDCHEATS_PLUGINS_PATH, 0777) == SUCCESS)
@@ -205,7 +205,7 @@ static void backupCheats(const char* dst_path)
 	// build file path
 	t = *gmtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDCHEATS_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
-	if (!zip_directory(GOLDCHEATS_PATH "cheats", GOLDCHEATS_DATA_PATH, zip_path))
+	if (!zip_directory(_GOLDCHEATS_PATH, GOLDCHEATS_DATA_PATH, zip_path))
 	{
 		show_message("Failed to backup cheats to\n%s", zip_path);
 		return;
@@ -223,7 +223,7 @@ static void backupPatches(const char* dst_path)
 	// build file path
 	t = *gmtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDPATCH_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
-	if (!zip_directory(GOLDCHEATS_PATH "patches", GOLDCHEATS_PATCH_PATH, zip_path))
+	if (!zip_directory(_GOLDCHEATS_PATH, GOLDCHEATS_PATCH_PATH, zip_path))
 	{
 		show_message("Failed to backup patches to\n%s", zip_path);
 		return;

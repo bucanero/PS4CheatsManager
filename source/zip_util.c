@@ -124,7 +124,7 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 	for (int i = 0; i < n; ++i)
 	{
 		zip_entry_openbyindex(zip, i);
-		if ((name = zip_entry_name(zip)) != NULL && (startsWith(name, "GoldHEN") || startsWith(name, "patches")))
+		if ((name = zip_entry_name(zip)) != NULL && (startsWith(name, "GoldHEN") || startsWith(name, "patches") || startsWith(name, "cheats")))
 		{
 			name = strchr(name, '/');
 			if (name) name++;
