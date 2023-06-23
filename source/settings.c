@@ -200,11 +200,20 @@ void update_callback(int sel)
 
 	if (show_dialog(1, "New version available! Download update?"))
 	{
-		char* download_path = (dir_exists("/data/pkg/") == SUCCESS) ? "/data/pkg/goldcheats.pkg" : "/data/goldcheats.pkg";
+		char* download_path = "/data/goldcheats.pkg";
+		if (dir_exists("/mnt/usb0/") == SUCCESS)
+		{
+			download_path = "/mnt/usb0/goldcheats.pkg";
+		}
+		else if (dir_exists("/data/pkg/") == SUCCESS)
+		{
+			download_path = "/data/pkg/goldcheats.pkg";
+		}
+
 		if (http_download(url->valuestring, "", download_path, 1))
 			show_message("Update downloaded to %s", download_path);
 		else
-			show_message("Download error!");
+			show_message("Unable to download update package file!");
 	}
 
 end_update:
