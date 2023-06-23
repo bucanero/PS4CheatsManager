@@ -45,14 +45,12 @@ int file_exists(const char *path)
 
 int dir_exists(const char *path)
 {
-    return file_exists(path);
-/*
-    struct stat sb;
-    if ((stat(path, &sb) == 0) && sb.st_mode & S_IFDIR) {
-        return SUCCESS;
-    }
-    return FAILED;
-*/
+	if (access(path, W_OK) == 0)
+	{
+		return SUCCESS;
+	}
+
+	return FAILED;
 }
 
 int unlink_secure(const char *path)
@@ -211,6 +209,29 @@ int clean_directory(const char* inputdir)
 		{
 			snprintf(dataPath, sizeof(dataPath), "%s" "%s", inputdir, dir->d_name);
 			unlink_secure(dataPath);
+		}
+	}
+	closedir(d);
+
+    return SUCCESS;
+}
+
+int set_perms_directory(const char* inputdir, int mode)
+{
+	DIR *d;
+	struct dirent *dir;
+
+	d = opendir(inputdir);
+	if (!d)
+		return FAILED;
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
+		{
+			char dataPath[256] = {0};
+			snprintf(dataPath, sizeof(dataPath), "%s" "%s", inputdir, dir->d_name);
+			chmod(dataPath, mode);
 		}
 	}
 	closedir(d);

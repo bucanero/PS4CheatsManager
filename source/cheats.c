@@ -56,7 +56,10 @@ void check_game_appdb(list_t* list)
 	game_entry_t* item;
 
 	if ((db = open_sqlite_db("/system_data/priv/mms/app.db")) == NULL)
+	{
+		LOG("Failed to open app.db");
 		return;
+	}
 
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
 	{
@@ -70,7 +73,7 @@ void check_game_appdb(list_t* list)
 			LOG("Found game: %s %s", item->title_id, item->version);
 			item->flags |= CHEAT_FLAG_OWNER;
 		}
-		if (!strncmp(item->version, "mask", 4) || !strncmp(item->version, "all", 3))
+		if (startsWith(item->version, "mask") || startsWith(item->version, "all"))
 		{
 			char* query = sqlite3_mprintf("SELECT A.titleId, A.val, B.val FROM tbl_appinfo AS A INNER JOIN tbl_appinfo AS B"
 							" WHERE A.key = 'APP_VER' AND B.key = 'VERSION' AND A.titleId = %Q AND B.titleId = %Q",
@@ -422,13 +425,47 @@ int ReadOnlineSaves(game_entry_t * game)
 	return (list_count(game->codes));
 }
 
+static uint32_t find_zip(list_t *item_list, const char *prefix, const char *name, const char *path, const char cmd_type)
+{
+	code_entry_t *cmd;
+	uint32_t file_count = 0;
+	char cmdName[256] = {0};
+	struct dirent *dir;
+	DIR *d = opendir(path);
+
+	if (!d)
+	{
+		LOG("DIR* to %s is null.", path);
+		return 0;
+	}
+
+	LOG("Searching zip path: %s", path);
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 ||
+			!startsWith(dir->d_name, prefix) || !endsWith(dir->d_name, ".zip"))
+			continue;
+
+		file_count++;
+		snprintf(cmdName, sizeof(cmdName), "Update %s from %s (%s)", name, (startsWith(path, GOLDCHEATS_PATH)) ? "HDD" : "USB", dir->d_name);
+		cmd = _createCmdCode(PATCH_COMMAND, cmdName, cmd_type);
+		asprintf(&cmd->file, "%s%s", path, dir->d_name);
+		list_append(item_list, cmd);
+		LOG("File %s (%u) added", cmd->file, file_count);
+	}
+	closedir(d);
+
+	return file_count;
+}
+
 list_t * ReadBackupList(const char* userPath)
 {
+	char devicePath[64] = {0};
 	code_entry_t * cmd;
 	game_entry_t * item;
 	list_t *list = list_alloc();
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_ONLINE, "Update Cheats & Patches");
+	item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_ONLINE, "Update Cheats, Patches & Plugins");
 	item->title_id = strdup("Internet");
 	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();
@@ -437,28 +474,37 @@ list_t * ReadBackupList(const char* userPath)
 	list_append(item->codes, cmd);
 	cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from GitHub", CMD_UPD_INTERNET_PATCHES);
 	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Update Plugins from GitHub", CMD_UPD_INTERNET_PLUGINS);
+	list_append(item->codes, cmd);
 	list_append(list, item);
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats & Patches");
+	item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats, Patches & Plugins");
+	item->path = strdup(GOLDCHEATS_PATH);
+	item->title_id = strdup("HDD");
+	item->type = FILE_TYPE_MENU;
+	list_append(list, item);
+
+	for (int i = 0; i < MAX_USB_DEVICES; i++)
+	{
+		snprintf(devicePath, sizeof(devicePath), USB_PATH, i);
+		if (dir_exists(devicePath) != SUCCESS)
+			continue;
+
+		item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats, Patches & Plugins");
+		item->path = strdup(devicePath);
+		item->type = FILE_TYPE_MENU;
+		asprintf(&item->title_id, "USB %d", i);
+		list_append(list, item);
+	}
+
+	item = _createSaveEntry(CHEAT_FLAG_PS4, "Backup Cheats, Patches & Plugins");
 	item->title_id = strdup("HDD/USB");
 	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();
 
-	cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from USB (/" GOLDCHEATS_LOCAL_FILE ")", CMD_UPD_LOCAL_CHEATS_USB);
-	list_append(item->codes, cmd);
-	cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from USB (/patch1.zip)", CMD_UPD_LOCAL_PATCHES_USB);
-	list_append(item->codes, cmd);
-	cmd = _createCmdCode(PATCH_COMMAND, "Update Cheats from HDD (" GOLDCHEATS_PATH GOLDCHEATS_LOCAL_FILE ")", CMD_UPD_LOCAL_CHEATS_HDD);
-	list_append(item->codes, cmd);
-	cmd = _createCmdCode(PATCH_COMMAND, "Update Patches from HDD (" GOLDCHEATS_PATH "patch1.zip)", CMD_UPD_LOCAL_PATCHES_HDD);
-	list_append(item->codes, cmd);
-	list_append(list, item);
-
-	item = _createSaveEntry(CHEAT_FLAG_PS4, "Backup Cheats & Patches");
-	item->title_id = strdup("HDD/USB");
-	item->type = FILE_TYPE_MENU;
-	item->codes = list_alloc();
-
+	// TODO: Iterate through usb partitions
+	// and let user select which partition they want to backup files to
+	// if possible, show available space on each partition as well
 	cmd = _createCmdCode(PATCH_COMMAND, "Backup Cheats to .Zip (HDD)", CMD_BACKUP_CHEATS_HDD);
 	list_append(item->codes, cmd);
 	cmd = _createCmdCode(PATCH_COMMAND, "Backup Cheats to .Zip (USB)", CMD_BACKUP_CHEATS_USB);
@@ -467,14 +513,54 @@ list_t * ReadBackupList(const char* userPath)
 	list_append(item->codes, cmd);
 	cmd = _createCmdCode(PATCH_COMMAND, "Backup Patches to .Zip (USB)", CMD_BACKUP_PATCHES_USB);
 	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Backup Plugins to .Zip (HDD)", CMD_BACKUP_PLUGINS_HDD);
+	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Backup Plugins to .Zip (USB)", CMD_BACKUP_PLUGINS_USB);
+	list_append(item->codes, cmd);
 	list_append(list, item);
 
 	return list;
 }
 
-int ReadBackupCodes(game_entry_t * bup)
+int ReadBackupCodes(game_entry_t * item)
 {
-	return 0;
+	code_entry_t * cmd;
+	char local_path[256] = {0};
+	uint32_t entry_count = 0;
+	const char* search_paths[] = {"",
+		"cheats/", "patches/", "plugins/",
+		"Cheats/", "Patches/", "Plugins/",
+		"backup/cheats/", "backup/patches/", "backup/plugins/",
+		"Backup/Cheats/", "Backup/Patches/", "Backup/Plugins/", NULL
+	};
+
+	item->codes = list_alloc();
+	for (const char** search = search_paths; search[0] != NULL; search++)
+	{
+		snprintf(local_path, sizeof(local_path), "%s%s", item->path, search[0]);
+		if (dir_exists(local_path) != SUCCESS)
+			continue;
+
+		// find backups
+		entry_count += find_zip(item->codes, GOLDCHEATS_BACKUP_PREFIX, "Cheats", local_path, CMD_UPD_LOCAL_CHEATS);
+		entry_count += find_zip(item->codes, GOLDPATCH_BACKUP_PREFIX, "Patches", local_path, CMD_UPD_LOCAL_PATCHES);
+		entry_count += find_zip(item->codes, GOLDPLUGINS_BACKUP_PREFIX, "Plugins", local_path, CMD_UPD_LOCAL_PLUGINS);
+		// find downloaded files
+		entry_count += find_zip(item->codes, "cheats", "Cheats", local_path, CMD_UPD_LOCAL_CHEATS);
+		entry_count += find_zip(item->codes, "GoldHEN_Cheat_Repository", "Cheats", local_path, CMD_UPD_LOCAL_CHEATS);
+		entry_count += find_zip(item->codes, "patches", "Patches", local_path, CMD_UPD_LOCAL_PATCHES);
+		entry_count += find_zip(item->codes, "patch1", "Patches", local_path, CMD_UPD_LOCAL_PATCHES);
+		entry_count += find_zip(item->codes, "GoldPlugins", "Plugins", local_path, CMD_UPD_LOCAL_PLUGINS);
+		entry_count += find_zip(item->codes, "plugins", "Plugins", local_path, CMD_UPD_LOCAL_PLUGINS);
+	}
+
+	if (!entry_count)
+	{
+		cmd = _createCmdCode(PATCH_NULL, "No .Zip files found!", CMD_CODE_NULL);
+		list_append(item->codes, cmd);
+	}
+
+	return list_count(item->codes);
 }
 
 static int is_patch_enabled(uint64_t hash)

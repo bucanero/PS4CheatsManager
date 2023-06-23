@@ -108,12 +108,15 @@ int extract_zip(const char* zip_file, const char* dest_path)
 int extract_zip_gh(const char* zip_file, const char* dest_path)
 {
 	int n, ret = 0;
-	char fpath[256];
-	const char *name;
+	char fpath[256] = {0};
+	const char *name = NULL;
 	struct zip_t *zip = zip_open(zip_file, ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
 
 	if (!zip)
+	{
+		LOG("Zip file %s is null", zip_file);
 		return 0;
+	}
 
 	n = zip_entries_total(zip);
 	init_progress_bar("Extracting files...");
@@ -121,27 +124,36 @@ int extract_zip_gh(const char* zip_file, const char* dest_path)
 	for (int i = 0; i < n; ++i)
 	{
 		zip_entry_openbyindex(zip, i);
-		name = strchr(zip_entry_name(zip), '/');
-
-		if (!zip_entry_isdir(zip) && name && 
- 			!(strncmp(name, "/json/", 6) &&
- 			strncmp(name, "/xml/", 5) && 
- 			strncmp(name, "/shn/", 5) && 
-			strncmp(name, "/mc4/", 5) &&
-			strncmp(name, "/misc/", 6)))
+		if ((name = zip_entry_name(zip)) != NULL && (startsWith(name, "GoldHEN") || startsWith(name, "patches") || startsWith(name, "cheats")))
 		{
-			snprintf(fpath, sizeof(fpath), "%s%s", dest_path, name + 1);
-			if (!gcm_config.overwrite && file_exists(fpath) == SUCCESS)
-			{
-				zip_entry_close(zip);
-				continue;
-			}
-
-			LOG("Extracting %s", fpath);
-			mkdirs(fpath);
-			update_progress_bar(i, n, "Extracting files...");
-			ret += (zip_entry_fread(zip, fpath) == SUCCESS);
+			name = strchr(name, '/');
+			if (name) name++;
 		}
+
+		if (zip_entry_isdir(zip) || !name ||
+			!(startsWith(name, "json/") ||
+			startsWith(name, "xml/") ||
+			startsWith(name, "shn/") ||
+			startsWith(name, "mc4/") ||
+			startsWith(name, "plugins/") ||
+			startsWith(name, "misc/")))
+		{
+			LOG("Skip entry (%d/%d)", i, n);
+			zip_entry_close(zip);
+			continue;
+		}
+
+		snprintf(fpath, sizeof(fpath), "%s%s", dest_path, name);
+		if (!gcm_config.overwrite && file_exists(fpath) == SUCCESS)
+		{
+			zip_entry_close(zip);
+			continue;
+		}
+
+		LOG("Extracting (%i/%i) %s", i, n, fpath);
+		mkdirs(fpath);
+		update_progress_bar(i, n, "Extracting files...");
+		ret += (zip_entry_fread(zip, fpath) == SUCCESS);
 		zip_entry_close(zip);
 	}
 

@@ -60,7 +60,7 @@ uint32_t* texture_mem;                      // Pointers to texture memory
 uint32_t* free_mem;                         // Pointer after last texture
 
 const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
-								"\x10 Select    \x13 Back",											//Update
+								"\x10 Select    \x13 Back    \x11 Refresh",							//Update
 								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//HDD list
 								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Patch list
 								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Online list
@@ -116,7 +116,7 @@ game_list_t online_cheats = {
 */
 game_list_t update_cheats = {
     .icon_id = header_ico_xmb_png_index,
-    .title = "Update Cheats & Patches",
+    .title = "Update Cheats, Patches & Plugins",
     .list = NULL,
     .path = "",
     .ReadList = &ReadBackupList,
@@ -472,7 +472,7 @@ s32 main(s32 argc, const char* argv[])
 			SetCurrentFont(font_console_regular);
 			SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 			SetFontColor(APP_FONT_MENU_COLOR | alpha, 0);
-			DrawString(0, SCREEN_HEIGHT - 94, menu_pad_help[(last_menu_id[menu_id] == MENU_UPDATE_CHEATS) ? MENU_UPDATE_CHEATS : menu_id]);
+			DrawString(0, SCREEN_HEIGHT - 94, menu_pad_help[(last_menu_id[menu_id] == MENU_UPDATE_CHEATS) ? MENU_CODE_OPTIONS : menu_id]);
 			SetFontAlign(FONT_ALIGN_LEFT);
 		}
 
