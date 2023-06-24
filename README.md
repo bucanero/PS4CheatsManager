@@ -1,7 +1,7 @@
 # GoldHEN Cheats Manager
 
 [![Downloads][img_downloads]][app_downloads] [![Release][img_latest]][app_latest] [![License][img_license]][app_license]
-[![Build package](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/actions/workflows/build.yml/badge.svg)](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/actions/workflows/build.yml)
+[![Build package](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 
 An open-source PlayStation 4 cheat code manager for [GoldHEN](https://github.com/GoldHEN/GoldHEN).
 
@@ -21,6 +21,17 @@ An open-source PlayStation 4 cheat code manager for [GoldHEN](https://github.com
 # Download
 
 Get the [latest version here][app_latest].
+
+<details>
+<summary>Nightly Builds (Click to Expand)</summary>
+
+- Login to GitHub [(this is required to download artifacts)](https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts#:~:text=Who%20can%20use,download%20workflow%20artifacts.).
+- Click on a build in the **[Actions](../../actions)** Tab.
+  - ![image](https://github.com/bucanero/apollo-ps4/assets/37698908/2e52961b-04ef-42f1-9453-78b3ceb24afc)
+- Click on the artifact to download the pkg zip.
+  - ![image](https://github.com/bucanero/apollo-ps4/assets/37698908/aaeb523e-eab9-43f7-a993-5fa902ada1b7)
+
+</details>
 
 ## Changelog
 
