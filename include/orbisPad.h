@@ -37,6 +37,8 @@ typedef struct OrbisPadConfig
 	int padHandle;
 }OrbisPadConfig;
 
+extern int32_t button_assign_type;
+
 int orbisPadInit();
 void orbisPadFinish();
 OrbisPadConfig *orbisPadGetConf();

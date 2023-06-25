@@ -53,6 +53,7 @@ app_config_t gcm_config = {
 
 int close_app = 0;
 int idle_time = 0;                          // Set by readPad
+int32_t button_assign_type = 0;
 
 png_texture * menu_textures;                // png_texture array for main menu, initialized in LoadTexture
 SDL_Window* window;                         // SDL window
@@ -295,13 +296,13 @@ static int LoadSounds(void* data)
 	return 0;
 }
 
-static void registerSpecialChars()
+static void registerSpecialChars(void)
 {
 	// Register button icons
-	RegisterSpecialCharacter(CHAR_BTN_X, 0, 1.0, &menu_textures[footer_ico_cross_png_index]);
+	RegisterSpecialCharacter(button_assign_type ? CHAR_BTN_X : CHAR_BTN_O, 0, 1.0, &menu_textures[footer_ico_cross_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_S, 0, 1.0, &menu_textures[footer_ico_square_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_T, 0, 1.0, &menu_textures[footer_ico_triangle_png_index]);
-	RegisterSpecialCharacter(CHAR_BTN_O, 0, 1.0, &menu_textures[footer_ico_circle_png_index]);
+	RegisterSpecialCharacter(button_assign_type ? CHAR_BTN_O : CHAR_BTN_X, 0, 1.0, &menu_textures[footer_ico_circle_png_index]);
 }
 
 static void terminate()
@@ -363,6 +364,13 @@ s32 main(s32 argc, const char* argv[])
 	initInternal();
 	http_init();
 	initPad();
+
+	int32_t ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_ENTER_BUTTON_ASSIGN, &button_assign_type);
+	if (ret < 0)
+	{
+		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_ENTER_BUTTON_ASSIGN info!, assigning X as main button.");
+		button_assign_type = 1;
+	}
 
 	// Initialize audio output library
 	if (sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_AUDIOOUT) < 0 ||

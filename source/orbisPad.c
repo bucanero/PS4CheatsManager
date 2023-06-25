@@ -103,6 +103,17 @@ bool orbisPadGetButtonHold(unsigned int filter)
 
 bool orbisPadGetButtonPressed(unsigned int filter)
 {
+	if (!button_assign_type)
+	{
+		if (filter == ORBIS_PAD_BUTTON_CROSS)
+		{
+			filter = ORBIS_PAD_BUTTON_CIRCLE;
+		}
+		else if (filter == ORBIS_PAD_BUTTON_CIRCLE)
+		{
+			filter = ORBIS_PAD_BUTTON_CROSS;
+		}
+	}
 	if((orbisPadConf.buttonsPressed&filter)==filter)
 	{
 		orbisPadConf.buttonsPressed ^= filter;
