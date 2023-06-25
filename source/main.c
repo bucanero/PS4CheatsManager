@@ -54,6 +54,7 @@ app_config_t gcm_config = {
 int close_app = 0;
 int idle_time = 0;                          // Set by readPad
 int32_t button_assign_type = 0;
+int32_t timezone_offset = 0;
 
 png_texture * menu_textures;                // png_texture array for main menu, initialized in LoadTexture
 SDL_Window* window;                         // SDL window
@@ -365,11 +366,20 @@ s32 main(s32 argc, const char* argv[])
 	http_init();
 	initPad();
 
+	button_assign_type = 0;
+	timezone_offset = 0;
 	int32_t ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_ENTER_BUTTON_ASSIGN, &button_assign_type);
 	if (ret < 0)
 	{
 		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_ENTER_BUTTON_ASSIGN info!, assigning X as main button.");
 		button_assign_type = 1;
+	}
+
+	ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE, &timezone_offset);
+	if (ret < 0)
+	{
+		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE! Setting timezone offset to 0");
+		timezone_offset = 0;
 	}
 
 	// Initialize audio output library
