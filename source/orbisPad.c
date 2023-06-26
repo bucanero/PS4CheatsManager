@@ -221,6 +221,7 @@ int orbisPadInit(void)
 	ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_ENTER_BUTTON_ASSIGN, &orbisPadConf.crossButtonOK);
 	if (ret < 0)
 	{
+		LOG("sceSystemServiceParamGetInt error 0x%08x", ret);
 		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_ENTER_BUTTON_ASSIGN info!, assigning X as main button.");
 		orbisPadConf.crossButtonOK = 1;
 	}
