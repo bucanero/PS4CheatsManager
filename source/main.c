@@ -53,7 +53,6 @@ app_config_t gcm_config = {
 
 int close_app = 0;
 int idle_time = 0;                          // Set by readPad
-int32_t button_assign_type = 0;
 int32_t timezone_offset = 0;
 
 png_texture * menu_textures;                // png_texture array for main menu, initialized in LoadTexture
@@ -117,53 +116,44 @@ game_list_t update_cheats = {
 static const char* get_button_prompts(int menu_id)
 {
 	const char* prompt = "";
+
 	switch (menu_id)
 	{
-		case MENU_MAIN_SCREEN:
-		{
-			prompt = "";
-			break;
-		}
 		case MENU_PATCH_VIEW:
 		case MENU_CREDITS:
 		case MENU_SAVE_DETAILS:
-		{
 			prompt = "\x13 Back";
 			break;
-		}
+
 		case MENU_SETTINGS:
 		case MENU_CODE_OPTIONS:
-		{
 			prompt = "\x10 Select    \x13 Back";
 			break;
-		}
+
 		case MENU_UPDATE_CHEATS:
-		{
 			prompt = "\x10 Select    \x13 Back    \x11 Refresh";
 			break;
-		}
+
 		case MENU_HDD_CHEATS:
 		case MENU_HDD_PATCHES:
 		case MENU_ONLINE_DB:
-		{
 			prompt = "\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh";
 			break;
-		}
+
 		case MENU_PATCHES:
-		{
 			prompt = "\x10 Select    \x12 View Code    \x13 Back";
 			break;
-		}
+
+		case MENU_MAIN_SCREEN:
 		default:
-		{
 			prompt = "";
 			break;
-		}
 	}
+
 	return prompt;
 }
 
-static int initPad()
+static int initPad(void)
 {
 	if (sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_PAD) < 0)
 		return 0;
@@ -182,7 +172,7 @@ static int initPad()
 }
 
 // Used only in initialization. Allocates 64 mb for textures and loads the font
-static int LoadTextures_Menu()
+static int LoadTextures_Menu(void)
 {
 	texture_mem = malloc(256 * 32 * 32 * 4);
 	menu_textures = (png_texture *)calloc(TOTAL_MENU_TEXTURES, sizeof(png_texture));
@@ -300,13 +290,30 @@ static int LoadSounds(void* data)
 static void registerSpecialChars(void)
 {
 	// Register button icons
-	RegisterSpecialCharacter(button_assign_type ? CHAR_BTN_X : CHAR_BTN_O, 0, 1.0, &menu_textures[footer_ico_cross_png_index]);
+	RegisterSpecialCharacter(orbisPadGetConf()->crossButtonOK ? CHAR_BTN_X : CHAR_BTN_O, 0, 1.0, &menu_textures[footer_ico_cross_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_S, 0, 1.0, &menu_textures[footer_ico_square_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_T, 0, 1.0, &menu_textures[footer_ico_triangle_png_index]);
-	RegisterSpecialCharacter(button_assign_type ? CHAR_BTN_O : CHAR_BTN_X, 0, 1.0, &menu_textures[footer_ico_circle_png_index]);
+	RegisterSpecialCharacter(orbisPadGetConf()->crossButtonOK ? CHAR_BTN_O : CHAR_BTN_X, 0, 1.0, &menu_textures[footer_ico_circle_png_index]);
 }
 
-static void terminate()
+static void helpFooter(int id)
+{
+	u8 alpha = 0xFF;
+
+	if (gcm_config.prompt_fade && orbisPadGetConf()->idle > 0x100)
+	{
+		int dec = (orbisPadGetConf()->idle - 0x100) * 2;
+		alpha = (dec > alpha) ? 0 : (alpha - dec);
+	}
+
+	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
+	SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
+	SetFontColor(APP_FONT_MENU_COLOR | alpha, 0);
+	DrawString(0, SCREEN_HEIGHT - 94, get_button_prompts(id));
+	SetFontAlign(FONT_ALIGN_LEFT);
+}
+
+static void terminate(void)
 {
 	LOG("Exiting...");
 
@@ -314,7 +321,7 @@ static void terminate()
 	sceSystemServiceLoadExec("exit", NULL);
 }
 
-static int initInternal()
+static int initInternal(void)
 {
     // load common modules
     int ret = sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_SYSTEM_SERVICE);
@@ -366,16 +373,7 @@ s32 main(s32 argc, const char* argv[])
 	http_init();
 	initPad();
 
-	button_assign_type = 0;
-	timezone_offset = 0;
-	int32_t ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_ENTER_BUTTON_ASSIGN, &button_assign_type);
-	if (ret < 0)
-	{
-		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_ENTER_BUTTON_ASSIGN info!, assigning X as main button.");
-		button_assign_type = 1;
-	}
-
-	ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE, &timezone_offset);
+	int ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE, &timezone_offset);
 	if (ret < 0)
 	{
 		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE! Setting timezone offset to 0");
@@ -511,21 +509,7 @@ s32 main(s32 argc, const char* argv[])
 		drawScene();
 
 		// Draw help
-		u8 alpha = 0xFF;
-		if (orbisPadGetConf()->idle > 0x100 && gcm_config.prompt_fade)
-		{
-			int dec = (orbisPadGetConf()->idle - 0x100) * 2;
-			if (dec > alpha)
-				dec = alpha;
-			alpha -= dec;
-		}
-
-		SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-		SetCurrentFont(font_console_regular);
-		SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
-		SetFontColor(APP_FONT_MENU_COLOR | alpha, 0);
-		DrawString(0, SCREEN_HEIGHT - 94, get_button_prompts((last_menu_id[menu_id] == MENU_UPDATE_CHEATS) ? MENU_CODE_OPTIONS : menu_id));
-		SetFontAlign(FONT_ALIGN_LEFT);
+		helpFooter((last_menu_id[menu_id] == MENU_UPDATE_CHEATS) ? MENU_CODE_OPTIONS : menu_id);
 
 #ifdef DEBUG_ENABLE_LOG
 		// Calculate FPS and ms/frame
