@@ -128,7 +128,6 @@ extern int last_menu_id[];
 extern struct game_entry * selected_entry;
 extern struct code_entry * selected_centry;
 extern int option_index;
-extern int32_t timezone_offset;
 
 void DrawBackground2D(u32 rgba);
 void DrawTexture(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba);

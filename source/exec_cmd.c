@@ -4,6 +4,7 @@
 #include <time.h>
 #include <cjson/cJSON.h>
 #include <orbis/SaveData.h>
+#include <orbis/SystemService.h>
 
 #include "cheats.h"
 #include "menu.h"
@@ -196,12 +197,28 @@ static void updLocalPlugins(const char* upd_path)
 	}
 }
 
+static struct tm get_local_time(void)
+{
+	static int tz_offset = 0xDEADBEEF;
+
+	if (tz_offset == 0xDEADBEEF)
+	{
+		int ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE, &tz_offset);
+		if (ret < 0)
+		{
+			LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE! Setting timezone offset to 0");
+			tz_offset = 0;
+		}
+	}
+
+	time_t modifiedTime = time(NULL) + (tz_offset * 60);
+	return (*gmtime(&modifiedTime));
+}
+
 static void backupCheats(const char* dst_path)
 {
 	char zip_path[256];
-	time_t currentTime = time(NULL);
-	time_t modifiedTime = currentTime + (timezone_offset * 60);
-	struct tm t = *gmtime(&modifiedTime);
+	struct tm t = get_local_time();
 
 	mkdirs(dst_path);
 	// build file path
@@ -218,9 +235,7 @@ static void backupCheats(const char* dst_path)
 static void backupPatches(const char* dst_path)
 {
 	char zip_path[256];
-	time_t currentTime = time(NULL);
-	time_t modifiedTime = currentTime + (timezone_offset * 60);
-	struct tm t = *gmtime(&modifiedTime);
+	struct tm t = get_local_time();
 
 	mkdirs(dst_path);
 	// build file path
@@ -237,9 +252,7 @@ static void backupPatches(const char* dst_path)
 static void backupPlugins(const char* dst_path)
 {
 	char zip_path[256] = {0};
-	time_t currentTime = time(NULL);
-	time_t modifiedTime = currentTime + (timezone_offset * 60);
-	struct tm t = *gmtime(&modifiedTime);
+	struct tm t = get_local_time();
 
 	mkdirs(dst_path);
 	// build file path

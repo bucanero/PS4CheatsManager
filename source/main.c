@@ -53,7 +53,6 @@ app_config_t gcm_config = {
 
 int close_app = 0;
 int idle_time = 0;                          // Set by readPad
-int32_t timezone_offset = 0;
 
 png_texture * menu_textures;                // png_texture array for main menu, initialized in LoadTexture
 SDL_Window* window;                         // SDL window
@@ -115,7 +114,7 @@ game_list_t update_cheats = {
 
 static const char* get_button_prompts(int menu_id)
 {
-	const char* prompt = "";
+	const char* prompt = NULL;
 
 	switch (menu_id)
 	{
@@ -372,13 +371,6 @@ s32 main(s32 argc, const char* argv[])
 	initInternal();
 	http_init();
 	initPad();
-
-	int ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE, &timezone_offset);
-	if (ret < 0)
-	{
-		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE! Setting timezone offset to 0");
-		timezone_offset = 0;
-	}
 
 	// Initialize audio output library
 	if (sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_AUDIOOUT) < 0 ||
