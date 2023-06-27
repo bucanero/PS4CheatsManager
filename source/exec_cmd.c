@@ -199,19 +199,24 @@ static void updLocalPlugins(const char* upd_path)
 
 static struct tm get_local_time(void)
 {
-	static int tz_offset = 0xDEADBEEF;
-
-	if (tz_offset == 0xDEADBEEF)
+	int tz_offset = 0;
+	int tz_dst = 0;
+	int ret_tz = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE, &tz_offset);
+	if (ret_tz < 0)
 	{
-		int ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE, &tz_offset);
-		if (ret < 0)
-		{
-			LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE! Setting timezone offset to 0");
-			tz_offset = 0;
-		}
+		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE! Setting timezone offset to 0");
+		LOG("sceSystemServiceParamGetInt: 0x%08X", ret_tz);
+		tz_offset = 0;
+	}
+	int ret_dst = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_SUMMERTIME, &tz_dst);
+	if (ret_dst < 0)
+	{
+		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_SUMMERTIME! Setting timezone daylight time savings to 0");
+		LOG("sceSystemServiceParamGetInt: 0x%08X", ret_dst);
+		tz_dst = 0;
 	}
 
-	time_t modifiedTime = time(NULL) + (tz_offset * 60);
+	time_t modifiedTime = time(NULL) + ((tz_offset + (tz_dst * 60)) * 60);
 	return (*gmtime(&modifiedTime));
 }
 
