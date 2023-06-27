@@ -464,7 +464,7 @@ skip_code:
     DrawScrollBar(selIndex, list_count(game->codes), y_inc, SCREEN_WIDTH - 125, alpha);
 }
 
-void Draw_CheatsMenu_Selection_Ani()
+void Draw_CheatsMenu_Selection_Ani(void)
 {
     int ani = 0;
     for (ani = 0; ani < MENU_ANI_MAX; ani++)

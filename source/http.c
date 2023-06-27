@@ -14,7 +14,7 @@
 #define HTTP_USER_AGENT "Mozilla/5.0 (PLAYSTATION 4; 1.00)"
 
 
-int http_init()
+int http_init(void)
 {
 	if(sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_NET) < 0)
 		return HTTP_FAILED;
