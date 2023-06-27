@@ -37,7 +37,7 @@ int TTFLoadFont(int set, const char * path, void * from_memory, int size_from_me
 
 /* release all */
 
-void TTFUnloadFont()
+void TTFUnloadFont(void)
 {
    if(!ttf_inited) return;
    FT_Done_FreeType(freetype);

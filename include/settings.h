@@ -33,6 +33,7 @@ typedef struct
     uint8_t doAni;
     uint8_t update;
     uint8_t overwrite;
+    uint8_t prompt_fade;
     uint32_t user_id;
 } app_config_t;
 
@@ -45,6 +46,7 @@ void owner_callback(int sel);
 void music_callback(int sel);
 void sort_callback(int sel);
 void ani_callback(int sel);
+void btn_fade_callback(int sel);
 void update_callback(int sel);
 void overwrite_callback(int sel);
 void clearcache_callback(int sel);

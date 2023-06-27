@@ -139,7 +139,7 @@ int patch_module(const char* name, module_patch_cb_t* patch_cb, void* arg)
     return 1;
 }
 
-static int get_firmware_version()
+static int get_firmware_version(void)
 {
     int fw;
 
@@ -163,7 +163,7 @@ int sys_console_cmd(uint64_t cmd, void *data)
 
 // GoldHEN 2+ only
 // custom syscall 200
-static int check_syscalls()
+static int check_syscalls(void)
 {
     uint64_t tmp;
 
@@ -209,7 +209,7 @@ int sys_proc_cmd(uint64_t pid, uint64_t cmd, void *data)
 }
 
 /*
-int goldhen_jailbreak()
+int goldhen_jailbreak(void)
 {
     return sys_console_cmd(SYS_CONSOLE_CMD_JAILBREAK, NULL);
 }
@@ -283,7 +283,7 @@ int find_map_entry_start(int pid, const char* entry_name, uint64_t* start)
     return 0;
 }
 
-int patch_save_libraries()
+int patch_save_libraries(void)
 {
     int version = get_firmware_version();
 
@@ -330,7 +330,7 @@ jbc_cred g_Cred;
 jbc_cred g_RootCreds;
 
 // Verify jailbreak
-static int is_jailbroken()
+static int is_jailbroken(void)
 {
     FILE *s_FilePointer = fopen("/user/.jailbreak", "w");
 
@@ -343,7 +343,7 @@ static int is_jailbroken()
 }
 
 // Jailbreaks creds
-static int jailbreak()
+static int jailbreak(void)
 {
     if (is_jailbroken())
         return 1;
@@ -357,7 +357,7 @@ static int jailbreak()
 }
 
 // Restores original creds
-static void unjailbreak()
+static void unjailbreak(void)
 {
     if (!is_jailbroken())
         return;
@@ -366,7 +366,7 @@ static void unjailbreak()
 }
 
 // Initialize jailbreak
-int initialize_jbc()
+int initialize_jbc(void)
 {
     // Pop notification depending on jailbreak result
     if (!jailbreak())
@@ -381,7 +381,7 @@ int initialize_jbc()
 }
 
 // Unload libjbc libraries
-void terminate_jbc()
+void terminate_jbc(void)
 {
 	unjailbreak();
     LOG("Jailbreak removed!");

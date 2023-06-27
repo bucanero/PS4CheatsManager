@@ -84,7 +84,7 @@ static void _draw_AboutMenu(u8 alpha)
 	SetFontAlign(FONT_ALIGN_LEFT);
 }
 
-void Draw_AboutMenu_Ani()
+void Draw_AboutMenu_Ani(void)
 {
 	for (int ani = 0; ani < MENU_ANI_MAX; ani++)
 	{
@@ -109,7 +109,7 @@ void Draw_AboutMenu_Ani()
 	}
 }
 
-void Draw_AboutMenu()
+void Draw_AboutMenu(void)
 {
 	DrawHeader(header_ico_abt_png_index, 0, "About", "v" GOLDCHEATS_VERSION, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
 	_draw_AboutMenu(0xFF);

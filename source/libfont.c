@@ -73,7 +73,7 @@ special_char* GetSpecialCharFromValue(const char value)
 	return ret;
 }
 
-void ResetFont()
+void ResetFont(void)
 {
     font_datas.current_font = font_datas.number_of_fonts =0;
 
@@ -302,12 +302,12 @@ void SetFontZ(float z)
     font_datas.Z  = z;
 }
 
-float GetFontX()
+float GetFontX(void)
 {
     return font_datas.X;
 }
 
-float GetFontY()
+float GetFontY(void)
 {
     return font_datas.Y;
 }

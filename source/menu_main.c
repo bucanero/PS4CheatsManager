@@ -30,7 +30,7 @@ code_entry_t* selected_centry;
 int option_index = 0;
 
 
-void initMenuOptions()
+void initMenuOptions(void)
 {
 	menu_options_maxopt = 0;
 	while (menu_options[menu_options_maxopt].name)
@@ -79,7 +79,7 @@ static int ReloadUserGames(game_list_t* save_list, const char* message)
 	return list_count(save_list->list);
 }
 
-static code_entry_t* LoadRawPatch()
+static code_entry_t* LoadRawPatch(void)
 {
 	size_t len;
 	char patchPath[256];
@@ -93,7 +93,7 @@ static code_entry_t* LoadRawPatch()
 	return centry;
 }
 
-static code_entry_t* LoadSaveDetails()
+static code_entry_t* LoadSaveDetails(void)
 {
 	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
 	centry->name = strdup(selected_entry->title_id);
@@ -381,7 +381,7 @@ static void doSaveMenu(game_list_t * save_list)
 	Draw_UserCheatsMenu(save_list, menu_sel, 0xFF);
 }
 
-static void doMainMenu()
+static void doMainMenu(void)
 {
 	// Check the pads.
 	if(orbisPadGetButtonHold(ORBIS_PAD_BUTTON_LEFT))
@@ -403,7 +403,7 @@ static void doMainMenu()
 	Draw_MainMenu();
 }
 
-static void doAboutMenu()
+static void doAboutMenu(void)
 {
 	// Check the pads.
 	if (orbisPadGetButtonPressed(ORBIS_PAD_BUTTON_CIRCLE))
@@ -415,7 +415,7 @@ static void doAboutMenu()
 	Draw_AboutMenu();
 }
 
-static void doOptionsMenu()
+static void doOptionsMenu(void)
 {
 	// Check the pads.
 	if(orbisPadGetButtonHold(ORBIS_PAD_BUTTON_UP))
@@ -473,7 +473,7 @@ static void doOptionsMenu()
 	Draw_OptionsMenu();
 }
 
-static int count_code_lines()
+static int count_code_lines(void)
 {
 	//Calc max
 	int max = 0;
@@ -488,7 +488,7 @@ static int count_code_lines()
 	return max;
 }
 
-static void doPatchViewMenu()
+static void doPatchViewMenu(void)
 {
 	int max = count_code_lines();
 	
@@ -508,7 +508,7 @@ static void doPatchViewMenu()
 	Draw_CheatsMenu_View("Code view");
 }
 
-static void doCodeOptionsMenu()
+static void doCodeOptionsMenu(void)
 {
     code_entry_t* code = list_get_item(selected_entry->codes, menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]);
 	// Check the pads.
@@ -545,7 +545,7 @@ static void doCodeOptionsMenu()
 	Draw_CheatsMenu_Options();
 }
 
-static void doSaveDetailsMenu()
+static void doSaveDetailsMenu(void)
 {
 	int max = count_code_lines();
 
@@ -571,7 +571,7 @@ static void doSaveDetailsMenu()
 	Draw_CheatsMenu_View(selected_entry->name);
 }
 
-static void doPatchMenu()
+static void doPatchMenu(void)
 {
 	// Check the pads.
 	if(orbisPadGetButtonHold(ORBIS_PAD_BUTTON_UP))
@@ -672,7 +672,7 @@ static void doPatchMenu()
 }
 
 // Resets new frame
-void drawScene()
+void drawScene(void)
 {
 	switch (menu_id)
 	{

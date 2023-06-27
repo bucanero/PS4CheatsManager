@@ -47,6 +47,7 @@ app_config_t gcm_config = {
     .doAni = 1,
     .update = 1,
     .overwrite = 1,
+    .prompt_fade = 1,
     .user_id = 0,
 };
 
@@ -58,19 +59,6 @@ SDL_Window* window;                         // SDL window
 SDL_Renderer* renderer;                     // SDL software renderer
 uint32_t* texture_mem;                      // Pointers to texture memory
 uint32_t* free_mem;                         // Pointer after last texture
-
-const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
-								"\x10 Select    \x13 Back    \x11 Refresh",							//Update
-								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//HDD list
-								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Patch list
-								"\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh",			//Online list
-								"\x10 Select    \x13 Back",											//Options
-								"\x13 Back",														//About
-								"\x10 Select    \x12 View Code    \x13 Back",						//Select Cheats
-								"\x13 Back",														//View Cheat
-								"\x10 Select    \x13 Back",											//Cheat Option
-								"\x13 Back",														//View Details
-								};
 
 /*
 * HDD cheats list
@@ -124,8 +112,47 @@ game_list_t update_cheats = {
     .UpdatePath = NULL,
 };
 
+static const char* get_button_prompts(int menu_id)
+{
+	const char* prompt = NULL;
 
-static int initPad()
+	switch (menu_id)
+	{
+		case MENU_PATCH_VIEW:
+		case MENU_CREDITS:
+		case MENU_SAVE_DETAILS:
+			prompt = "\x13 Back";
+			break;
+
+		case MENU_SETTINGS:
+		case MENU_CODE_OPTIONS:
+			prompt = "\x10 Select    \x13 Back";
+			break;
+
+		case MENU_UPDATE_CHEATS:
+			prompt = "\x10 Select    \x13 Back    \x11 Refresh";
+			break;
+
+		case MENU_HDD_CHEATS:
+		case MENU_HDD_PATCHES:
+		case MENU_ONLINE_DB:
+			prompt = "\x10 Select    \x13 Back    \x12 Filter    \x11 Refresh";
+			break;
+
+		case MENU_PATCHES:
+			prompt = "\x10 Select    \x12 View Code    \x13 Back";
+			break;
+
+		case MENU_MAIN_SCREEN:
+		default:
+			prompt = "";
+			break;
+	}
+
+	return prompt;
+}
+
+static int initPad(void)
 {
 	if (sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_PAD) < 0)
 		return 0;
@@ -144,7 +171,7 @@ static int initPad()
 }
 
 // Used only in initialization. Allocates 64 mb for textures and loads the font
-static int LoadTextures_Menu()
+static int LoadTextures_Menu(void)
 {
 	texture_mem = malloc(256 * 32 * 32 * 4);
 	menu_textures = (png_texture *)calloc(TOTAL_MENU_TEXTURES, sizeof(png_texture));
@@ -259,16 +286,33 @@ static int LoadSounds(void* data)
 	return 0;
 }
 
-static void registerSpecialChars()
+static void registerSpecialChars(void)
 {
 	// Register button icons
-	RegisterSpecialCharacter(CHAR_BTN_X, 0, 1.0, &menu_textures[footer_ico_cross_png_index]);
+	RegisterSpecialCharacter(orbisPadGetConf()->crossButtonOK ? CHAR_BTN_X : CHAR_BTN_O, 0, 1.0, &menu_textures[footer_ico_cross_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_S, 0, 1.0, &menu_textures[footer_ico_square_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_T, 0, 1.0, &menu_textures[footer_ico_triangle_png_index]);
-	RegisterSpecialCharacter(CHAR_BTN_O, 0, 1.0, &menu_textures[footer_ico_circle_png_index]);
+	RegisterSpecialCharacter(orbisPadGetConf()->crossButtonOK ? CHAR_BTN_O : CHAR_BTN_X, 0, 1.0, &menu_textures[footer_ico_circle_png_index]);
 }
 
-static void terminate()
+static void helpFooter(int id)
+{
+	u8 alpha = 0xFF;
+
+	if (gcm_config.prompt_fade && orbisPadGetConf()->idle > 0x100)
+	{
+		int dec = (orbisPadGetConf()->idle - 0x100) * 2;
+		alpha = (dec > alpha) ? 0 : (alpha - dec);
+	}
+
+	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
+	SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
+	SetFontColor(APP_FONT_MENU_COLOR | alpha, 0);
+	DrawString(0, SCREEN_HEIGHT - 94, get_button_prompts(id));
+	SetFontAlign(FONT_ALIGN_LEFT);
+}
+
+static void terminate(void)
 {
 	LOG("Exiting...");
 
@@ -276,7 +320,7 @@ static void terminate()
 	sceSystemServiceLoadExec("exit", NULL);
 }
 
-static int initInternal()
+static int initInternal(void)
 {
     // load common modules
     int ret = sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_SYSTEM_SERVICE);
@@ -456,25 +500,8 @@ s32 main(s32 argc, const char* argv[])
 		orbisPadUpdate();
 		drawScene();
 
-		//Draw help
-		if (menu_pad_help[menu_id])
-		{
-			u8 alpha = 0xFF;
-			if (orbisPadGetConf()->idle > 0x100)
-			{
-				int dec = (orbisPadGetConf()->idle - 0x100) * 2;
-				if (dec > alpha)
-					dec = alpha;
-				alpha -= dec;
-			}
-
-			SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-			SetCurrentFont(font_console_regular);
-			SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
-			SetFontColor(APP_FONT_MENU_COLOR | alpha, 0);
-			DrawString(0, SCREEN_HEIGHT - 94, menu_pad_help[(last_menu_id[menu_id] == MENU_UPDATE_CHEATS) ? MENU_CODE_OPTIONS : menu_id]);
-			SetFontAlign(FONT_ALIGN_LEFT);
-		}
+		// Draw help
+		helpFooter((last_menu_id[menu_id] == MENU_UPDATE_CHEATS) ? MENU_CODE_OPTIONS : menu_id);
 
 #ifdef DEBUG_ENABLE_LOG
 		// Calculate FPS and ms/frame

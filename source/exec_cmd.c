@@ -4,6 +4,7 @@
 #include <time.h>
 #include <cjson/cJSON.h>
 #include <orbis/SaveData.h>
+#include <orbis/SystemService.h>
 
 #include "cheats.h"
 #include "menu.h"
@@ -196,14 +197,37 @@ static void updLocalPlugins(const char* upd_path)
 	}
 }
 
+static struct tm get_local_time(void)
+{
+	int tz_offset = 0;
+	int tz_dst = 0;
+	int ret;
+
+	if ((ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE, &tz_offset)) < 0)
+	{
+		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE! Setting timezone offset to 0");
+		LOG("sceSystemServiceParamGetInt: 0x%08X", ret);
+		tz_offset = 0;
+	}
+
+	if ((ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_SUMMERTIME, &tz_dst)) < 0)
+	{
+		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_SUMMERTIME! Setting timezone daylight time savings to 0");
+		LOG("sceSystemServiceParamGetInt: 0x%08X", ret);
+		tz_dst = 0;
+	}
+
+	time_t modifiedTime = time(NULL) + ((tz_offset + (tz_dst * 60)) * 60);
+	return (*gmtime(&modifiedTime));
+}
+
 static void backupCheats(const char* dst_path)
 {
 	char zip_path[256];
-	struct tm t;
+	struct tm t = get_local_time();
 
 	mkdirs(dst_path);
 	// build file path
-	t = *gmtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDCHEATS_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 	if (!zip_directory(_GOLDCHEATS_PATH, GOLDCHEATS_DATA_PATH, zip_path))
 	{
@@ -217,11 +241,10 @@ static void backupCheats(const char* dst_path)
 static void backupPatches(const char* dst_path)
 {
 	char zip_path[256];
-	struct tm t;
+	struct tm t = get_local_time();
 
 	mkdirs(dst_path);
 	// build file path
-	t = *gmtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDPATCH_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 	if (!zip_directory(_GOLDCHEATS_PATH, GOLDCHEATS_PATCH_PATH, zip_path))
 	{
@@ -235,11 +258,10 @@ static void backupPatches(const char* dst_path)
 static void backupPlugins(const char* dst_path)
 {
 	char zip_path[256] = {0};
-	struct tm t;
+	struct tm t = get_local_time();
 
 	mkdirs(dst_path);
 	// build file path
-	t = *localtime(&(time_t){time(NULL)});
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDPLUGINS_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 
 	if (!zip_directory(_GOLDCHEATS_PATH, GOLDCHEATS_PLUGINS_PATH, zip_path))

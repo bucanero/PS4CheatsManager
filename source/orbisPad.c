@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <sys/time.h>
 #include <dbglogger.h>
+#include <orbis/SystemService.h>
 #include "orbisPad.h"
 
 #define LOG dbglogger_log
@@ -31,7 +32,7 @@ static uint64_t timeInMilliseconds(void)
     return (((uint64_t)tv.tv_sec)*1000)+(tv.tv_usec/1000);
 }
 
-void orbisPadFinish()
+void orbisPadFinish(void)
 {
 	int ret;
 
@@ -44,7 +45,7 @@ void orbisPadFinish()
 	LOG("ORBISPAD finished");
 }
 
-OrbisPadConfig *orbisPadGetConf()
+OrbisPadConfig *orbisPadGetConf(void)
 {
 	if(orbispad_initialized)
 	{
@@ -54,7 +55,7 @@ OrbisPadConfig *orbisPadGetConf()
 	return NULL; 
 }
 
-static int orbisPadInitConf()
+static int orbisPadInitConf(void)
 {	
 	if(orbispad_initialized)
 	{
@@ -67,7 +68,7 @@ static int orbisPadInitConf()
 	return 0;
 }
 
-unsigned int orbisPadGetCurrentButtonsPressed()
+unsigned int orbisPadGetCurrentButtonsPressed(void)
 {
 	return orbisPadConf.buttonsPressed;
 }
@@ -77,7 +78,7 @@ void orbisPadSetCurrentButtonsPressed(unsigned int buttons)
 	orbisPadConf.buttonsPressed=buttons;
 }
 
-unsigned int orbisPadGetCurrentButtonsReleased()
+unsigned int orbisPadGetCurrentButtonsReleased(void)
 {
 	return orbisPadConf.buttonsReleased;
 }
@@ -103,6 +104,9 @@ bool orbisPadGetButtonHold(unsigned int filter)
 
 bool orbisPadGetButtonPressed(unsigned int filter)
 {
+	if (!orbisPadConf.crossButtonOK && (filter & (ORBIS_PAD_BUTTON_CROSS|ORBIS_PAD_BUTTON_CIRCLE)))
+		filter ^= (ORBIS_PAD_BUTTON_CROSS|ORBIS_PAD_BUTTON_CIRCLE);
+
 	if((orbisPadConf.buttonsPressed&filter)==filter)
 	{
 		orbisPadConf.buttonsPressed ^= filter;
@@ -126,7 +130,7 @@ bool orbisPadGetButtonReleased(unsigned int filter)
 	return 0;
 }
 
-int orbisPadUpdate()
+int orbisPadUpdate(void)
 {
 	int ret;
 	unsigned int actualButtons=0;
@@ -173,7 +177,7 @@ int orbisPadUpdate()
 	return -1;
 }
 
-int orbisPadInit()
+int orbisPadInit(void)
 {
 	int ret;
 	OrbisUserServiceInitializeParams param;
@@ -212,6 +216,14 @@ int orbisPadInit()
 	{
 		LOG("scePadOpen Error 0x%8X", orbisPadConf.padHandle);
 		return -1;
+	}
+
+	ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_ENTER_BUTTON_ASSIGN, &orbisPadConf.crossButtonOK);
+	if (ret < 0)
+	{
+		LOG("sceSystemServiceParamGetInt error 0x%08X", ret);
+		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_ENTER_BUTTON_ASSIGN info!, assigning X as main button.");
+		orbisPadConf.crossButtonOK = 1;
 	}
 
 	orbispad_initialized=1;
