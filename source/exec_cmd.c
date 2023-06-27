@@ -206,14 +206,14 @@ static struct tm get_local_time(void)
 	if ((ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE, &tz_offset)) < 0)
 	{
 		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_TIME_ZONE! Setting timezone offset to 0");
-		LOG("sceSystemServiceParamGetInt: 0x%08X", ret_tz);
+		LOG("sceSystemServiceParamGetInt: 0x%08X", ret);
 		tz_offset = 0;
 	}
 
 	if ((ret = sceSystemServiceParamGetInt(ORBIS_SYSTEM_SERVICE_PARAM_ID_SUMMERTIME, &tz_dst)) < 0)
 	{
 		LOG("Failed to obtain ORBIS_SYSTEM_SERVICE_PARAM_ID_SUMMERTIME! Setting timezone daylight time savings to 0");
-		LOG("sceSystemServiceParamGetInt: 0x%08X", ret_dst);
+		LOG("sceSystemServiceParamGetInt: 0x%08X", ret);
 		tz_dst = 0;
 	}
 
