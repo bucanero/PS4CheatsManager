@@ -47,7 +47,6 @@ app_config_t gcm_config = {
     .doAni = 1,
     .update = 1,
     .overwrite = 1,
-    .prompt_fade = 1,
     .user_id = 0,
 };
 
@@ -299,7 +298,7 @@ static void helpFooter(int id)
 {
 	u8 alpha = 0xFF;
 
-	if (gcm_config.prompt_fade && orbisPadGetConf()->idle > 0x100)
+	if (gcm_config.doAni && orbisPadGetConf()->idle > 0x100)
 	{
 		int dec = (orbisPadGetConf()->idle - 0x100) * 2;
 		alpha = (dec > alpha) ? 0 : (alpha - dec);
