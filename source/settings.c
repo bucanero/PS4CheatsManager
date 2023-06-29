@@ -36,12 +36,6 @@ menu_option_t menu_options[] = {
 		.value = &gcm_config.doAni, 
 		.callback = ani_callback 
 	},
-	{ .name = "Button Prompts Fade Out", 
-		.options = NULL, 
-		.type = APP_OPTION_BOOL, 
-		.value = &gcm_config.prompt_fade, 
-		.callback = btn_fade_callback 
-	},
 	{ .name = "Version Update Check", 
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
@@ -95,11 +89,6 @@ void sort_callback(int sel)
 void ani_callback(int sel)
 {
 	gcm_config.doAni = !sel;
-}
-
-void btn_fade_callback(int sel)
-{
-	gcm_config.prompt_fade = !sel;
 }
 
 void overwrite_callback(int sel)
