@@ -36,7 +36,7 @@ jobs:
 
     # temporary release until 0.53 is released
     - name: Download OpenOrbis Toolchain
-      run: curl -sL {{ env.OO_SDK_URL }} | tar xz -C ./
+      run: curl -sL ${{ env.OO_SDK_URL }} | tar xz -C ./
 
     - name: Copy makerules
       run: cp oosdk_libraries/build_rules.mk OpenOrbis/PS4Toolchain/build_rules.mk
