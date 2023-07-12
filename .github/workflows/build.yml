@@ -35,17 +35,9 @@ jobs:
         repository: bucanero/oosdk_libraries
         path: oosdk_libraries
 
-    - name: Cache OpenOrbis Toolchain
-      id: cache-oosdk
-      uses: actions/cache@v3
-      with:
-        path: ${{ env.OO_PS4_TOOLCHAIN }}
-        key: ${{ runner.os }}-oosdk-llvm-${{ env.llvm_ver }}-${{ env.OO_SDK_URL }}
-
     # temporary release until 0.53 is released
     - name: Download OpenOrbis Toolchain
-      if: steps.cache-oosdk.outputs.cache-hit != 'true'
-      run: curl -sL ${{ env.OO_SDK_URL }} | tar xz -C ./
+      run: curl -sL https://github.com/illusion0001/OpenOrbis-PS4-Toolchain/releases/latest/download/toolchain.tar.gz | tar xz -C ./
 
     - name: Copy makerules
       run: cp oosdk_libraries/build_rules.mk OpenOrbis/PS4Toolchain/build_rules.mk
