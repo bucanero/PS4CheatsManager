@@ -195,6 +195,7 @@ jobs:
         path: goldcheats-build_${{ env.sha_name }}.pkg
         if-no-files-found: error
 
+    - name: Push appdata artifact
       uses: actions/upload-artifact@v3
       with:
         path: assets/misc/appdata.zip
