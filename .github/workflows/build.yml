@@ -194,3 +194,7 @@ jobs:
         name: goldcheats-build_${{ env.sha_name }}
         path: goldcheats-build_${{ env.sha_name }}.pkg
         if-no-files-found: error
+
+      uses: actions/upload-artifact@v3
+      with:
+        path: assets/misc/appdata.zip
