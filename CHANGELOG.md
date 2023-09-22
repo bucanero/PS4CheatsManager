@@ -4,7 +4,28 @@ All notable changes to the `GoldHEN Cheats Manager` project will be documented i
 
 ## [Unreleased]()
 
-## [v1.1.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.0.3) - 2023-06-01
+## [v1.1.4](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.1.4) - 2023-09-22
+
+### Added
+
+- Add Plugins updater
+- Backup local Plugins
+- Improve local cheats & patches updater
+- Local update (Cheats, Patches, Plugins) scans files in 8 possible mounted USB partitions and HDD
+- Adjust Circle/Cross button assignment based on console settings
+- Download App update .pkg to `usb0` if available
+
+### Changed
+
+- Changed backup paths to:
+  - `/mnt/usb0/backups/(name)`
+  - `/data/GoldHEN/backup/name/`
+
+### Misc
+
+- Update Open Orbis SDK version
+
+## [v1.1.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.1.0) - 2023-06-01
 
 ### Added
 
