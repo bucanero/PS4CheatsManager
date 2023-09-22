@@ -198,4 +198,5 @@ jobs:
     - name: Push appdata artifact
       uses: actions/upload-artifact@v3
       with:
+        name: appdata-build_${{ env.sha_name }}
         path: assets/misc/appdata.zip
