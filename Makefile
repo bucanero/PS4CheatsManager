@@ -1,13 +1,13 @@
 # Package metadata.
-TITLE       := GoldHEN Cheats Manager
-VERSION     := 01.14
-TITLE_ID    := GOLD00777
-CONTENT_ID  := IV0000-GOLD00777_00-GOLDCHEATS000PS4
+TITLE       := PS4 Cheats Manager
+VERSION     := 01.20
+TITLE_ID    := CHTM00777
+CONTENT_ID  := IV0000-CHTM00777_00-PS4CHEATSMANAGER
 
 # Libraries linked into the ELF.
 LIBS        := -lc -lkernel -lSceAudioOut -lSceUserService -lScePigletv2VSH -lSceSysmodule -lSceFreeType \
                -lScePad -lSceSystemService -lSceSaveData -lSceCommonDialog -lSceMsgDialog -lSceNet \
-               -lSDL2 -lcjson -ldbglogger -lz -lzip -ljbc -lmxml -lcurl -lpolarssl -lSQLite
+               -lSceNetCtl -lSDL2 -lcjson -ldbglogger -lz -ljbc -lmxml -lcurl -lpolarssl -lSQLite
 
 # Additional compile flags.
 EXTRAFLAGS  := -fcolor-diagnostics -Wall -D__PS4__

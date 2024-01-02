@@ -10,7 +10,7 @@ An open-source PlayStation 4 cheat code manager for [GoldHEN](https://github.com
 <details>
 <summary>Screenshots Gallery (Click to Expand)</summary>
 
-![image](./docs/screenshots/goldcheats-xmb.jpg)
+![image](./docs/screenshots/cheatsmgr-xmb.jpg)
 ![image](./docs/screenshots/game-list.jpg)
 ![image](./docs/screenshots/hdd-patch.jpg)
 

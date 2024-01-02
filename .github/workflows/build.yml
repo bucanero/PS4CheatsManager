@@ -53,12 +53,6 @@ jobs:
         repository: bucanero/libSQLite-ps4
         path: libSQLite-ps4
 
-    - name: Checkout zip
-      uses: actions/checkout@v3
-      with:
-        repository: bucanero/zip
-        path: zip
-
     - name: Checkout SDL-PS4
       uses: actions/checkout@v3
       with:
@@ -116,10 +110,6 @@ jobs:
 
     - name: Install polarssl
       working-directory: oosdk_libraries/polarssl-1.3.9
-      run: make install
-
-    - name: Install zip
-      working-directory: zip
       run: make install
 
     - name: Install SQLite
@@ -186,7 +176,7 @@ jobs:
     - name: Build Gold Cheats App Package
       run: |
         make
-        mv IV0000-GOLD00777_00-GOLDCHEATS000PS4.pkg goldcheats-build_${{ env.sha_name }}.pkg
+        mv IV0000-CHTM00777_00-PS4CHEATSMANAGER.pkg cheatsmgr-build_${{ env.sha_name }}.pkg
 
     - name: Push package artifact
       uses: actions/upload-artifact@v3

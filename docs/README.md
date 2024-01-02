@@ -11,7 +11,7 @@ An open-source PlayStation 4 cheat code manager for [GoldHEN](https://github.com
 
 ![image](./screenshots/hdd-patch.jpg)
 
-![image](./screenshots/goldcheats-xmb.jpg)
+![image](./screenshots/cheatsmgr-xmb.jpg)
 
 **PS4 Cheats Manager** is a simple PS4 homebrew application that manages `JSON`, `SHN`, `XML`, and `MC4` cheat codes files.
 
