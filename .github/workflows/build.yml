@@ -173,7 +173,7 @@ jobs:
         unzip -q appdata1/patch1.zip
         make createzip
 
-    - name: Build Gold Cheats App Package
+    - name: Build Cheats Manager App Package
       run: |
         make
         mv IV0000-CHTM00777_00-PS4CHEATSMANAGER.pkg cheatsmgr-build_${{ env.sha_name }}.pkg
@@ -181,8 +181,8 @@ jobs:
     - name: Push package artifact
       uses: actions/upload-artifact@v3
       with:
-        name: goldcheats-build_${{ env.sha_name }}
-        path: goldcheats-build_${{ env.sha_name }}.pkg
+        name: cheatsmgr-build_${{ env.sha_name }}
+        path: cheatsmgr-build_${{ env.sha_name }}.pkg
         if-no-files-found: error
 
     - name: Push appdata artifact
