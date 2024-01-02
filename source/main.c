@@ -37,10 +37,10 @@ static int32_t audio = 0;
 
 
 #define load_menu_texture(name, type) \
-			if (!LoadMenuTexture(GOLDCHEATS_APP_PATH "images/" #name "." #type , name##_##type##_index)) return 0;
+			if (!LoadMenuTexture(CHEATSMGR_APP_PATH "images/" #name "." #type , name##_##type##_index)) return 0;
 
 app_config_t gcm_config = {
-    .app_name = "GOLDHEN",
+    .app_name = "CHTMGR",
     .app_ver = {0},
     .music = 1,
     .doSort = 1,
@@ -94,7 +94,7 @@ game_list_t online_cheats = {
     .list = NULL,
     .path = ONLINE_URL,
     .ReadList = &ReadOnlineList,
-    .ReadCodes = &ReadOnlineSaves,
+    .ReadCodes = &ReadOnlineCodes,
     .UpdatePath = NULL,
 };
 
@@ -192,7 +192,11 @@ static int LoadTextures_Menu(void)
 	load_menu_texture(bgimg, png);
 	load_menu_texture(bglist, png);
 	load_menu_texture(cheat, png);
-	load_menu_texture(goldhen, png);
+	load_menu_texture(pslogo, png);
+	load_menu_texture(leon_luna, jpg);
+	load_menu_texture(tag_shn, png);
+	load_menu_texture(tag_mc4, png);
+	load_menu_texture(tag_json, png);
 	load_menu_texture(circle_error_dark, png);
 	load_menu_texture(circle_error_light, png);
 	load_menu_texture(circle_loading_bg, png);
@@ -242,7 +246,7 @@ static int LoadSounds(void* data)
 	drmp3 wav;
 
 	// Decode a mp3 file to play
-	if (!drmp3_init_file(&wav, GOLDCHEATS_APP_PATH "audio/background_music.mp3", NULL))
+	if (!drmp3_init_file(&wav, CHEATSMGR_APP_PATH "audio/background_music.mp3", NULL))
 	{
 		LOG("[ERROR] Failed to decode audio file");
 		return -1;
@@ -292,6 +296,10 @@ static void registerSpecialChars(void)
 	RegisterSpecialCharacter(CHAR_BTN_S, 0, 1.0, &menu_textures[footer_ico_square_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_T, 0, 1.0, &menu_textures[footer_ico_triangle_png_index]);
 	RegisterSpecialCharacter(orbisPadGetConf()->crossButtonOK ? CHAR_BTN_O : CHAR_BTN_X, 0, 1.0, &menu_textures[footer_ico_circle_png_index]);
+
+	RegisterSpecialCharacter(CHAR_TAG_MC4, 0, 1.0, &menu_textures[tag_mc4_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_SHN, 0, 1.0, &menu_textures[tag_shn_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_JSON, 0, 1.0, &menu_textures[tag_json_png_index]);
 }
 
 static void helpFooter(int id)
@@ -408,7 +416,7 @@ s32 main(s32 argc, const char* argv[])
 		terminate();
 
 	mkdirs(GOLDCHEATS_DATA_PATH);
-	mkdirs(GOLDCHEATS_LOCAL_CACHE);
+	mkdirs(CHEATSMGR_LOCAL_CACHE);
 	mkdirs(GOLDCHEATS_PATCH_PATH "settings/");
 	
 	// Load freetype
@@ -451,9 +459,9 @@ s32 main(s32 argc, const char* argv[])
 	load_app_settings(&gcm_config);
 
 	// Unpack application data on first run
-	if (strncmp(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver)) != 0)
+	if (strncmp(gcm_config.app_ver, CHEATSMGR_VERSION, sizeof(gcm_config.app_ver)) != 0)
 	{
-		if (gcm_config.overwrite && extract_zip(GOLDCHEATS_APP_PATH "misc/" LOCAL_TEMP_ZIP, GOLDCHEATS_PATH))
+		if (gcm_config.overwrite && extract_zip(CHEATSMGR_APP_PATH "misc/" LOCAL_TEMP_ZIP, GOLDHEN_PATH "/"))
 		{
 			char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
 			char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
@@ -462,7 +470,7 @@ s32 main(s32 argc, const char* argv[])
 			free(patch_ver);
 		}
 
-		strncpy(gcm_config.app_ver, GOLDCHEATS_VERSION, sizeof(gcm_config.app_ver));
+		strncpy(gcm_config.app_ver, CHEATSMGR_VERSION, sizeof(gcm_config.app_ver));
 		save_app_settings(&gcm_config);
 	}
 
@@ -476,7 +484,7 @@ s32 main(s32 argc, const char* argv[])
 	// Splash screen logo (fade-out)
 	drawSplashLogo(-1);
 #endif
-	SDL_DestroyTexture(menu_textures[goldhen_png_index].texture);
+	SDL_DestroyTexture(menu_textures[pslogo_png_index].texture);
 	
 	//Set options
 	update_callback(!gcm_config.update);

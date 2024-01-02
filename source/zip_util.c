@@ -1,10 +1,10 @@
-#include <zip.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <dirent.h>
 
+#include "zip.h"
 #include "cheats.h"
 #include "common.h"
 #include "settings.h"

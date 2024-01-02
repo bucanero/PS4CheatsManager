@@ -98,10 +98,10 @@ void overwrite_callback(int sel)
 
 void clearcache_callback(int sel)
 {
-	LOG("Cleaning folder '%s'...", GOLDCHEATS_LOCAL_CACHE);
-	clean_directory(GOLDCHEATS_LOCAL_CACHE);
+	LOG("Cleaning folder '%s'...", CHEATSMGR_LOCAL_CACHE);
+	clean_directory(CHEATSMGR_LOCAL_CACHE);
 
-	show_message("Local cache folder cleaned:\n" GOLDCHEATS_LOCAL_CACHE);
+	show_message("Local cache folder cleaned:\n" CHEATSMGR_LOCAL_CACHE);
 }
 
 void clearpatch_callback(int sel)
@@ -123,20 +123,6 @@ void setpluginsperms_callback(int sel)
 	}
 }
 
-void unzip_app_data(const char* zip_file)
-{
-	if (extract_zip(zip_file, GOLDCHEATS_DATA_PATH))
-	{
-		char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
-		char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
-		show_message("Successfully installed local application data:\n\n- %s- %s", cheat_ver, patch_ver);
-		free(cheat_ver);
-		free(patch_ver);
-	}
-	unlink_secure(zip_file);
-	return;
-}
-
 void update_callback(int sel)
 {
     gcm_config.update = !sel;
@@ -144,18 +130,18 @@ void update_callback(int sel)
     if (!gcm_config.update)
         return;
 
-	LOG("checking latest GoldCheats version at %s", GOLDCHEATS_UPDATE_URL);
+	LOG("checking latest Cheats Manager version at %s", CHEATSMGR_UPDATE_URL);
 
-	if (!http_download(GOLDCHEATS_UPDATE_URL, "", GOLDCHEATS_LOCAL_CACHE "ver.check", 0))
+	if (!http_download(CHEATSMGR_UPDATE_URL, "", CHEATSMGR_LOCAL_CACHE "ver.check", 0))
 	{
-		LOG("http request to %s failed", GOLDCHEATS_UPDATE_URL);
+		LOG("http request to %s failed", CHEATSMGR_UPDATE_URL);
 		return;
 	}
 
 	char *buffer;
 	long size = 0;
 
-	buffer = readTextFile(GOLDCHEATS_LOCAL_CACHE "ver.check", &size);
+	buffer = readTextFile(CHEATSMGR_LOCAL_CACHE "ver.check", &size);
 	cJSON *json = cJSON_Parse(buffer);
 
 	if (!json)
@@ -179,7 +165,7 @@ void update_callback(int sel)
 
 	LOG("latest version is %s", ver->valuestring);
 
-	if (strcasecmp(GOLDCHEATS_VERSION, ver->valuestring + 1) == 0)
+	if (strcasecmp(CHEATSMGR_VERSION, ver->valuestring + 1) == 0)
 	{
 		LOG("no need to update");
 		goto end_update;
@@ -189,10 +175,10 @@ void update_callback(int sel)
 
 	if (show_dialog(1, "New version available! Download update?"))
 	{
-		char* download_path = (dir_exists("/data/pkg/") == SUCCESS) ? "/data/pkg/goldcheats.pkg" : "/data/goldcheats.pkg";
+		char* download_path = (dir_exists("/data/pkg/") == SUCCESS) ? "/data/pkg/cheats-manager.pkg" : "/data/cheats-manager.pkg";
 		if (dir_exists("/mnt/usb0/") == SUCCESS)
 		{
-			download_path = "/mnt/usb0/goldcheats.pkg";
+			download_path = "/mnt/usb0/cheats-manager.pkg";
 		}
 
 		if (http_download(url->valuestring, "", download_path, 1))
@@ -209,8 +195,8 @@ end_update:
 
 void log_callback(int sel)
 {
-	dbglogger_init_mode(FILE_LOGGER, GOLDCHEATS_PATH "goldcheats.log", 0);
-	show_message("Debug Logging Enabled!\n\n" GOLDCHEATS_PATH "goldcheats.log");
+	dbglogger_init_mode(FILE_LOGGER, CHEATSMGR_PATH "cheatsmgr.log", 0);
+	show_message("Debug Logging Enabled!\n\n" CHEATSMGR_PATH "cheatsmgr.log");
 }
 
 int save_app_settings(app_config_t* config)
@@ -235,7 +221,7 @@ int save_app_settings(app_config_t* config)
 	}
 
 	LOG("Saving Settings...");
-	snprintf(filePath, sizeof(filePath), GOLDCHEATS_SANDBOX_PATH "settings.bin", mountResult.mountPathName);
+	snprintf(filePath, sizeof(filePath), CHEATSMGR_SANDBOX_PATH "settings.bin", mountResult.mountPathName);
 	write_buffer(filePath, (uint8_t*) config, sizeof(app_config_t));
 
 	orbis_UpdateSaveParams(mountResult.mountPathName, "PS4 Cheats Manager", "User Settings", "www.bucanero.com.ar");
@@ -274,7 +260,7 @@ int load_app_settings(app_config_t* config)
 	}
 
 	LOG("Loading Settings...");
-	snprintf(filePath, sizeof(filePath), GOLDCHEATS_SANDBOX_PATH "settings.bin", mountResult.mountPathName);
+	snprintf(filePath, sizeof(filePath), CHEATSMGR_SANDBOX_PATH "settings.bin", mountResult.mountPathName);
 
 	if (read_buffer(filePath, (uint8_t**) &file_data, &file_size) == SUCCESS && file_size == sizeof(app_config_t))
 	{

@@ -1,10 +1,10 @@
-#define GOLDCHEATS_VERSION          "1.1.4"     //GoldCheats PS4 version (about menu)
+#define CHEATSMGR_VERSION          "1.2.0"     // PS4 Cheats Manager version (about menu)
 
-#define MENU_TITLE_OFF			45			//Offset of menu title text from menu mini icon
-#define MENU_ICON_OFF 			105         //X Offset to start printing menu mini icon
-#define MENU_ANI_MAX 			0x80        //Max animation number
-#define MENU_SPLIT_OFF			400			//Offset from left of sub/split menu to start drawing
-#define OPTION_ITEM_OFF         1595        //Offset from left of settings item/value
+#define MENU_TITLE_OFF             45          // Offset of menu title text from menu mini icon
+#define MENU_ICON_OFF              105         // X Offset to start printing menu mini icon
+#define MENU_ANI_MAX               0x80        // Max animation number
+#define MENU_SPLIT_OFF             400         // Offset from left of sub/split menu to start drawing
+#define OPTION_ITEM_OFF            1595        // Offset from left of settings item/value
 
 enum app_option_type
 {
@@ -41,7 +41,6 @@ extern menu_option_t menu_options[];
 extern app_config_t gcm_config;
 
 void log_callback(int sel);
-void owner_callback(int sel);
 void music_callback(int sel);
 void sort_callback(int sel);
 void ani_callback(int sel);
@@ -50,5 +49,3 @@ void overwrite_callback(int sel);
 void clearcache_callback(int sel);
 void clearpatch_callback(int sel);
 void setpluginsperms_callback(int sel);
-void upd_appdata_callback(int sel);
-void unzip_app_data(const char* zip_file);

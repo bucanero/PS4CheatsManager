@@ -1,10 +1,30 @@
 # Changelog
 
-All notable changes to the `GoldHEN Cheats Manager` project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable changes to the `PS4 Cheats Manager` project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]()
 
-## [v1.1.4](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.1.4) - 2023-09-22
+## [v1.2.0](https://github.com/bucanero/PS4CheatsManager/releases/tag/v1.2.0) - 2024-01-02
+
+### Added
+
+- MC4 format decryption
+  - Parse and display codes from MC4 files
+  - Export decrypted MC4 files to `xml` format
+  - List invalid MC4 files
+- Tag cheat files by format (`JSON`, `SHN`, `MC4`)
+- Add option to delete all local cheats, patches, plugins
+- Network proxy support (based on system settings)
+
+### Changed
+
+- Updated UI assets
+
+### Fixed
+
+- Game filtering by Title ID
+
+## [v1.1.4](https://github.com/bucanero/PS4CheatsManager/releases/tag/v1.1.4) - 2023-09-22
 
 ### Added
 
@@ -25,7 +45,7 @@ All notable changes to the `GoldHEN Cheats Manager` project will be documented i
 
 - Update Open Orbis SDK version
 
-## [v1.1.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.1.0) - 2023-06-01
+## [v1.1.0](https://github.com/bucanero/PS4CheatsManager/releases/tag/v1.1.0) - 2023-06-01
 
 ### Added
 
@@ -37,7 +57,7 @@ All notable changes to the `GoldHEN Cheats Manager` project will be documented i
   - Backup local cheat files to .Zip (HDD/USB)
   - Backup local patch files to .Zip (HDD/USB)
 
-## [v1.0.3](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.0.3) - 2023-01-25
+## [v1.0.3](https://github.com/bucanero/PS4CheatsManager/releases/tag/v1.0.3) - 2023-01-25
 
 ### Added
 
@@ -47,7 +67,7 @@ All notable changes to the `GoldHEN Cheats Manager` project will be documented i
 
 - Dropped support for Patch Engine's JSON format in favor of XML. (Plugins will have to be updated to at least 1.163)
 
-## [v1.0.2](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.0.2) - 2022-12-24
+## [v1.0.2](https://github.com/bucanero/PS4CheatsManager/releases/tag/v1.0.2) - 2022-12-24
 
 _dedicated to Leon ~ in loving memory (2009 - 2022)_ :heart:
 
@@ -70,7 +90,7 @@ _dedicated to Leon ~ in loving memory (2009 - 2022)_ :heart:
 
 - Includes latest official cheat+patch pack (2022-12-24)
 
-## [v1.0.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v1.0.0) - 2022-11-12
+## [v1.0.0](https://github.com/bucanero/PS4CheatsManager/releases/tag/v1.0.0) - 2022-11-12
 
 ### Added
 
@@ -94,7 +114,7 @@ _dedicated to Leon ~ in loving memory (2009 - 2022)_ :heart:
 - Fixed networking issues (thanks to LightingMods for the help)
 - Fixed version detection for some "remaster" titles
 
-## [v0.7.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v0.7.0) - 2022-07-05
+## [v0.7.0](https://github.com/bucanero/PS4CheatsManager/releases/tag/v0.7.0) - 2022-07-05
 
 ### Added
 
@@ -103,7 +123,7 @@ _dedicated to Leon ~ in loving memory (2009 - 2022)_ :heart:
   - `/mnt/usb0/GoldHEN_Cheat_Repository-main.zip`
   - `/data/GoldHEN_Cheat_Repository-main.zip`
 
-## [v0.6.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v0.6.0) - 2022-04-07
+## [v0.6.0](https://github.com/bucanero/PS4CheatsManager/releases/tag/v0.6.0) - 2022-04-07
 
 ### Added
 
@@ -111,7 +131,7 @@ _dedicated to Leon ~ in loving memory (2009 - 2022)_ :heart:
 - Installed Games detection on Cheat list screen
 - Show total number of files on Cheat list screen
 
-## [v0.5.1](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v0.5.1) - 2022-03-16
+## [v0.5.1](https://github.com/bucanero/PS4CheatsManager/releases/tag/v0.5.1) - 2022-03-16
 
 ### Added
 
@@ -119,6 +139,6 @@ _dedicated to Leon ~ in loving memory (2009 - 2022)_ :heart:
 - Updated [Cheat repository URL](https://github.com/GoldHEN/GoldHEN_Cheat_Repository)
 - Extract cheat files only (skip others)
 
-## [v0.5.0](https://github.com/GoldHEN/GoldHEN_Cheat_Manager/releases/tag/v0.5.0) - 2022-03-14
+## [v0.5.0](https://github.com/bucanero/PS4CheatsManager/releases/tag/v0.5.0) - 2022-03-14
 
 First public beta release.

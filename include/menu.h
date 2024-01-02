@@ -30,10 +30,11 @@ enum menu_screen_ids
 enum texture_index
 {
 //Artemis assets
+	leon_luna_jpg_index,
 	bgimg_png_index,
 	bglist_png_index,
 	cheat_png_index,
-	goldhen_png_index,
+	pslogo_png_index,
 	circle_error_dark_png_index,
 	circle_error_light_png_index,
 	circle_loading_bg_png_index,
@@ -68,6 +69,9 @@ enum texture_index
 	titlescr_ico_opt_png_index,
 	titlescr_ico_abt_png_index,
 	titlescr_logo_png_index,
+	tag_shn_png_index,
+	tag_mc4_png_index,
+	tag_json_png_index,
 
 	TOTAL_MENU_TEXTURES
 };

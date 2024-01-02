@@ -201,7 +201,7 @@ static void SetMenu(int id)
 
 			if (selected_entry->flags & CHEAT_FLAG_ONLINE)
 			{
-				snprintf(iconfile, sizeof(iconfile), GOLDCHEATS_LOCAL_CACHE "%s.PNG", selected_entry->title_id);
+				snprintf(iconfile, sizeof(iconfile), CHEATSMGR_LOCAL_CACHE "%s.PNG", selected_entry->title_id);
 
 				if (file_exists(iconfile) != SUCCESS)
 					http_download(selected_entry->path, "icon0.png", iconfile, 0);
@@ -244,47 +244,6 @@ static void SetMenu(int id)
 	menu_sel = menu_old_sel[menu_id];
 }
 
-static void move_letter_back(list_t * games)
-{
-	int i;
-	game_entry_t *game = list_get_item(games, menu_sel);
-	char ch = toupper(game->name[0]);
-
-	if ((ch > '\x29') && (ch < '\x40'))
-	{
-		menu_sel = 0;
-		return;
-	}
-
-	for (i = menu_sel; (i > 0) && (ch == toupper(game->name[0])); i--)
-	{
-		game = list_get_item(games, i-1);
-	}
-
-	menu_sel = i;
-}
-
-static void move_letter_fwd(list_t * games)
-{
-	int i;
-	int game_count = list_count(games) - 1;
-	game_entry_t *game = list_get_item(games, menu_sel);
-	char ch = toupper(game->name[0]);
-
-	if (ch == 'Z')
-	{
-		menu_sel = game_count;
-		return;
-	}
-	
-	for (i = menu_sel; (i < game_count) && (ch == toupper(game->name[0])); i++)
-	{
-		game = list_get_item(games, i+1);
-	}
-
-	menu_sel = i;
-}
-
 static void move_selection_back(int game_count, int steps)
 {
 	menu_sel -= steps;
@@ -318,7 +277,7 @@ static void doSaveMenu(game_list_t * save_list)
 		move_selection_back(list_count(save_list->list), 25);
 
 	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_L2))
-		move_letter_back(save_list->list);
+		menu_sel = 0;
 
 	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_RIGHT))
 		move_selection_fwd(list_count(save_list->list), 5);
@@ -327,7 +286,7 @@ static void doSaveMenu(game_list_t * save_list)
 		move_selection_fwd(list_count(save_list->list), 25);
 
 	else if (orbisPadGetButtonHold(ORBIS_PAD_BUTTON_R2))
-		move_letter_fwd(save_list->list);
+		menu_sel = list_count(save_list->list) - 1;
 
 	else if (orbisPadGetButtonPressed(ORBIS_PAD_BUTTON_CIRCLE))
 	{
@@ -359,8 +318,10 @@ static void doSaveMenu(game_list_t * save_list)
 			save_list->list->count = save_list->filtered;
 			save_list->filtered = 0;
 
-			if (gcm_config.doSort)
+			if (gcm_config.doSort == SORT_BY_NAME)
 				list_bubbleSort(save_list->list, &sortGameList_Compare);
+			else if (gcm_config.doSort == SORT_BY_TITLE_ID)
+				list_bubbleSort(save_list->list, &sortGameList_Compare_TitleID);
 		}
 		else
 		{
@@ -405,14 +366,25 @@ static void doMainMenu(void)
 
 static void doAboutMenu(void)
 {
+	static int ll = 0;
+
 	// Check the pads.
 	if (orbisPadGetButtonPressed(ORBIS_PAD_BUTTON_CIRCLE))
 	{
+		if (ll)
+			gcm_config.music = (ll & 0x01);
+
+		ll = 0;
 		SetMenu(MENU_MAIN_SCREEN);
 		return;
 	}
+	else if (orbisPadGetButtonPressed(ORBIS_PAD_BUTTON_TOUCH_PAD))
+	{
+		ll = (0x02 | gcm_config.music);
+		gcm_config.music = 1;
+	}
 
-	Draw_AboutMenu();
+	Draw_AboutMenu(ll);
 }
 
 static void doOptionsMenu(void)

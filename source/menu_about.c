@@ -9,16 +9,15 @@
 
 #define FONT_W  32
 #define FONT_H  64
-#define STEP_X  -8         // horizontal displacement
+#define STEP_X  -4         // horizontal displacement
 
 static int sx = SCREEN_WIDTH;
 const char *menu_about_strings[] = {
-									"Bucanero", "PS4 Cheats Manager",
-									"Ctn123", "Cheat Engine",
-									"Shiningami", "Cheat Engine",
-									"illusion", "Patch Engine",
-									"SiSTRo", "GoldHEN, Cheat Menu",
-									"Kameleon", "QA Support",
+									"Bucanero", "Developer",
+									"", "",
+									"GoldHEN", "credits",
+									"SiSTRo", "Shiningami",
+									"illusion", "Kameleon",
 									"", "",
 									"PS3", "credits",
 									"Dnawrkshp (Artemis)", "Berion (GUI design)",
@@ -38,7 +37,7 @@ static void draw_sinetext(int y, const char* string)
     for(int i = 0; i < sl; i++)
     {
         amp = sinf(x      // testing sinf() from math.h
-                 * 0.02)  // it turns out in num of bends
+                 * 0.01)  // it turns out in num of bends
                  * 10;    // +/- vertical bounds over y
 
         if(x > 0 && x < SCREEN_WIDTH - FONT_W)
@@ -57,10 +56,19 @@ static void draw_sinetext(int y, const char* string)
         sx = SCREEN_WIDTH + FONT_W;
 }
 
+static void _draw_LeonLuna(void)
+{
+	DrawTextureCenteredY(&menu_textures[leon_luna_jpg_index], 0, SCREEN_HEIGHT/2, 0, menu_textures[leon_luna_jpg_index].width, menu_textures[leon_luna_jpg_index].height, 0xFFFFFF00 | 0xFF);
+	DrawTexture(&menu_textures[help_png_index], 0, 840, 0, SCREEN_WIDTH + 20, 100, 0xFFFFFF00 | 0xFF);
+
+	SetFontColor(APP_FONT_MENU_COLOR | 0xFF, 0);
+	draw_sinetext(860, "... in memory of Leon & Luna - may your days be filled with eternal joy ...");
+}
+
 static void _draw_AboutMenu(u8 alpha)
 {
 	//------------- About Menu Contents
-	DrawTextureCenteredX(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, 110, 0, menu_textures[titlescr_logo_png_index].width, menu_textures[titlescr_logo_png_index].height, 0xFFFFFF00 | alpha);
+	DrawTextureCenteredX(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, 160, 0, menu_textures[titlescr_logo_png_index].width/2, menu_textures[titlescr_logo_png_index].height/2, 0xFFFFFF00 | alpha);
 
 	SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 	SetCurrentFont(font_console_regular);
@@ -77,10 +85,8 @@ static void _draw_AboutMenu(u8 alpha)
 		DrawStringMono((SCREEN_WIDTH / 2) + 20, 350 + (cnt * 25), menu_about_strings[cnt + 1]);
 	}
 
-	DrawTexture(&menu_textures[help_png_index], 0, 830, 0, SCREEN_WIDTH, 104, 0xFFFFFF00 | 0xFF);
-
-	SetFontColor(APP_FONT_MENU_COLOR | 0xFF, 0);
-	draw_sinetext(850, "\xB0\xB1\xB2\xDB\xB3 www.bucanero.com.ar \xB3\xDB\xB2\xB1\xB0");
+	SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
+	DrawStringMono(0, 850, "\xB0\xB1\xB2\xDB\xB3 in memory of Leon & Luna \xB3\xDB\xB2\xB1\xB0");
 	SetFontAlign(FONT_ALIGN_LEFT);
 }
 
@@ -91,7 +97,7 @@ void Draw_AboutMenu_Ani(void)
 		SDL_RenderClear(renderer);
 		DrawBackground2D(0xFFFFFFFF);
 
-		DrawHeader_Ani(header_ico_abt_png_index, "About", "v" GOLDCHEATS_VERSION, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
+		DrawHeader_Ani(header_ico_abt_png_index, "About", "v" CHEATSMGR_VERSION, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
 
 		//------------- About Menu Contents
 		u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
@@ -109,8 +115,11 @@ void Draw_AboutMenu_Ani(void)
 	}
 }
 
-void Draw_AboutMenu(void)
+void Draw_AboutMenu(int ll)
 {
-	DrawHeader(header_ico_abt_png_index, 0, "About", "v" GOLDCHEATS_VERSION, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
+	if (ll)
+		return(_draw_LeonLuna());
+
+	DrawHeader(header_ico_abt_png_index, 0, "About", "v" CHEATSMGR_VERSION, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
 	_draw_AboutMenu(0xFF);
 }

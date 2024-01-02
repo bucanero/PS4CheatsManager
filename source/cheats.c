@@ -9,6 +9,7 @@
 #include <cjson/cJSON.h>
 #include <mxml.h>
 #include <sqlite3.h>
+#include <polarssl/aes.h>
 
 #include "cheats.h"
 #include "common.h"
@@ -26,6 +27,8 @@
 #define CHAR_ICON_LOCK		"\x08"
 #define CHAR_ICON_WARN		"\x0F"
 
+#define MC4_AES256CBC_KEY   "304c6528f659c766110239a51cl5dd9c"
+#define MC4_AES256CBC_IV    "u@}kzW2u[u(8DWar"
 
 static sqlite3* open_sqlite_db(const char* db_path)
 {
@@ -228,7 +231,7 @@ static option_entry_t* _createOptions(int count, const char* name, char value)
 }
 */
 
-static game_entry_t* _createSaveEntry(uint16_t flag, const char* name)
+static game_entry_t* createGameEntry(uint16_t flag, const char* name)
 {
 	game_entry_t* entry = (game_entry_t *)calloc(1, sizeof(game_entry_t));
 	entry->flags = flag;
@@ -305,27 +308,69 @@ static const char* GetXMLAttr(mxml_node_t *node, const char *name)
 	return AttrData;
 }
 
+char* mc4_decrypt(const char* data)
+{
+	uint8_t iv[16];
+	size_t enc_size;
+	aes_context aes_ctx;
+
+	uint8_t* enc_data = dbg_base64_decode(data, &enc_size);
+	if (!enc_data)
+		return NULL;
+
+	// check if size is multiple of 16 (AES block size)
+	if (enc_size % 16)
+	{
+		enc_size = align_to_pow2(enc_size, 16);
+		enc_data = realloc(enc_data, enc_size);
+		LOG("AES: padding to 0x%X", enc_size);
+	}
+
+	memcpy(iv, MC4_AES256CBC_IV, sizeof(iv));
+	aes_init(&aes_ctx);
+	aes_setkey_dec(&aes_ctx, (uint8_t*) MC4_AES256CBC_KEY, 256);
+	aes_crypt_cbc(&aes_ctx, AES_DECRYPT, enc_size, iv, enc_data, enc_data);
+
+	return (char*) enc_data;
+}
+
 int set_shn_codes(game_entry_t* item)
 {
 	code_entry_t* cmd;
 	item->codes = list_alloc();
 
-//	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Save Details", CMD_VIEW_DETAILS);
-//	list_append(item->codes, cmd);
-
 	LOG("Parsing %s...", item->path);
-
 	char *buffer = readTextFile(item->path, NULL);
 	mxml_node_t *node, *tree = NULL;
+
+	if (buffer && (item->flags & CHEAT_FLAG_MC4))
+	{
+		char* dec_data = mc4_decrypt(buffer);
+		free(buffer);
+		buffer = dec_data;
+
+		if (!dec_data)
+		{
+			LOG("Error: could not decrypt %s", item->path);
+			list_free(item->codes);
+			return 0;
+		}
+
+		cmd = _createCmdCode(PATCH_COMMAND, " " UTF8_CHAR_STAR " Decrypt MC4 file to XML " UTF8_CHAR_STAR, CMD_DECRYPT_MC4);
+		list_append(item->codes, cmd);
+	}
 
 	/* parse the file and get the DOM */
 	tree = mxmlLoadString(NULL, buffer, MXML_NO_CALLBACK);
 	if (!tree)
 	{
-		LOG("XML: could not parse XML: %s", buffer);
-		list_free(item->codes);
+		LOG("XML: could not parse '%s'", item->path);
 		free(buffer);
 
+		if (item->flags & CHEAT_FLAG_MC4)
+			return list_count(item->codes);
+
+		list_free(item->codes);
 		return 0;
 	}
 
@@ -373,7 +418,7 @@ int ReadCodes(game_entry_t * save)
 	if (save->flags & CHEAT_FLAG_JSON)
 		return set_json_codes(save);
 
-	if (save->flags & CHEAT_FLAG_SHN)
+	if (save->flags & (CHEAT_FLAG_SHN | CHEAT_FLAG_MC4))
 		return set_shn_codes(save);
 
 	save->codes = list_alloc();
@@ -382,7 +427,7 @@ int ReadCodes(game_entry_t * save)
 }
 
 /*
- * Function:		ReadOnlineSaves()
+ * Function:		ReadOnlineCodes()
  * File:			saves.c
  * Project:			Apollo PS3
  * Description:		Downloads an entire NCL file into an array of code_entry
@@ -391,11 +436,11 @@ int ReadCodes(game_entry_t * save)
  *	_count_count:	Pointer to int (set to the number of codes within the ncl)
  * Return:			Returns an array of code_entry, null if failed to load
  */
-int ReadOnlineSaves(game_entry_t * game)
+int ReadOnlineCodes(game_entry_t * game)
 {
 //	code_entry_t* item;
 	char path[256];
-	snprintf(path, sizeof(path), GOLDCHEATS_LOCAL_CACHE "%s", strrchr(game->path, '/') + 1);
+	snprintf(path, sizeof(path), CHEATSMGR_LOCAL_CACHE "%s", strrchr(game->path, '/') + 1);
 
 	if (file_exists(path) == SUCCESS)
 	{
@@ -417,7 +462,7 @@ int ReadOnlineSaves(game_entry_t * game)
 	if (game->flags & CHEAT_FLAG_JSON)
 		set_json_codes(game);
 
-	if (game->flags & CHEAT_FLAG_SHN)
+	if (game->flags & (CHEAT_FLAG_SHN | CHEAT_FLAG_MC4))
 		set_shn_codes(game);
 
 	game->path = tmp;
@@ -447,7 +492,7 @@ static uint32_t find_zip(list_t *item_list, const char *prefix, const char *name
 			continue;
 
 		file_count++;
-		snprintf(cmdName, sizeof(cmdName), "Update %s from %s (%s)", name, (startsWith(path, GOLDCHEATS_PATH)) ? "HDD" : "USB", dir->d_name);
+		snprintf(cmdName, sizeof(cmdName), "Update %s from %s (%s)", name, (startsWith(path, CHEATSMGR_PATH)) ? "HDD" : "USB", dir->d_name);
 		cmd = _createCmdCode(PATCH_COMMAND, cmdName, cmd_type);
 		asprintf(&cmd->file, "%s%s", path, dir->d_name);
 		list_append(item_list, cmd);
@@ -465,7 +510,20 @@ list_t * ReadBackupList(const char* userPath)
 	game_entry_t * item;
 	list_t *list = list_alloc();
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_ONLINE, "Update Cheats, Patches & Plugins");
+	item = createGameEntry(CHEAT_FLAG_PS4, "Remove Cheats, Patches, Plugins");
+	item->title_id = strdup("HDD");
+	item->type = FILE_TYPE_MENU;
+	item->codes = list_alloc();
+
+	cmd = _createCmdCode(PATCH_COMMAND, "Remove all Cheats from HDD", CMD_REMOVE_CHEATS);
+	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Remove all Patches from HDD", CMD_REMOVE_PATCHES);
+	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, "Remove all Plugins from HDD", CMD_REMOVE_PLUGINS);
+	list_append(item->codes, cmd);
+	list_append(list, item);
+
+	item = createGameEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_ONLINE, "Update Cheats, Patches, Plugins");
 	item->title_id = strdup("Internet");
 	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();
@@ -478,8 +536,8 @@ list_t * ReadBackupList(const char* userPath)
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats, Patches & Plugins");
-	item->path = strdup(GOLDCHEATS_PATH);
+	item = createGameEntry(CHEAT_FLAG_PS4, "Update Cheats, Patches, Plugins");
+	item->path = strdup(CHEATSMGR_PATH);
 	item->title_id = strdup("HDD");
 	item->type = FILE_TYPE_MENU;
 	list_append(list, item);
@@ -490,14 +548,14 @@ list_t * ReadBackupList(const char* userPath)
 		if (dir_exists(devicePath) != SUCCESS)
 			continue;
 
-		item = _createSaveEntry(CHEAT_FLAG_PS4, "Update Cheats, Patches & Plugins");
+		item = createGameEntry(CHEAT_FLAG_PS4, "Update Cheats, Patches, Plugins");
 		item->path = strdup(devicePath);
 		item->type = FILE_TYPE_MENU;
 		asprintf(&item->title_id, "USB %d", i);
 		list_append(list, item);
 	}
 
-	item = _createSaveEntry(CHEAT_FLAG_PS4, "Backup Cheats, Patches & Plugins");
+	item = createGameEntry(CHEAT_FLAG_PS4, "Backup Cheats, Patches, Plugins");
 	item->title_id = strdup("HDD/USB");
 	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();
@@ -626,7 +684,7 @@ list_t * ReadPatchList(const char* userPath)
 
 			ver = strdup(AppVerData);
 			app = strdup(TitleData);
-			item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD | CHEAT_FLAG_PATCH, TitleData);
+			item = createGameEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD | CHEAT_FLAG_PATCH, TitleData);
 			item->type = FILE_TYPE_PS4;
 			item->path = strdup(fullPath);
 			item->version = strdup(AppVerData);
@@ -842,7 +900,7 @@ int sortGameList_Compare_TitleID(const void* a, const void* b)
 	return strcasecmp(ta, tb);
 }
 
-static void read_shn_games(const char* userPath, const char* fext, list_t *list)
+static void read_shn_games(const char* userPath, list_t *list)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -855,23 +913,22 @@ static void read_shn_games(const char* userPath, const char* fext, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 || endsWith(dir->d_name, fext) == NULL)
+		if (!endsWith(dir->d_name, ".shn"))
 			continue;
 
 		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
-		if (file_exists(fullPath) != SUCCESS)
+		char *buffer = readTextFile(fullPath, NULL);
+		if (!buffer)
 			continue;
 
 		LOG("Reading %s...", dir->d_name);
-
-		char *buffer = readTextFile(fullPath, NULL);
 		mxml_node_t *node, *tree = NULL;
 
 		/* parse the file and get the DOM */
 		tree = mxmlLoadString(NULL, buffer, MXML_NO_CALLBACK);
 		if (!tree)
 		{
-			LOG("XML: could not parse XML: %s", buffer);
+			LOG("XML: could not parse '%s'", fullPath);
 			free(buffer);
 			continue;
 		}
@@ -884,12 +941,87 @@ static void read_shn_games(const char* userPath, const char* fext, list_t *list)
 			continue;
 		}
 
-		item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD, GetXMLAttr(node, "Game"));
+		item = createGameEntry(CHEAT_FLAG_SHN | CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD, GetXMLAttr(node, "Game"));
 		item->type = FILE_TYPE_PS4;
 		item->path = strdup(fullPath);
 		item->version = strdup(GetXMLAttr(node, "Version"));
 		item->title_id = strdup(GetXMLAttr(node, "Cusa"));
-		item->flags |= CHEAT_FLAG_SHN;
+
+		/* free the document */
+		mxmlDelete(tree);
+		free(buffer);
+
+		LOG("[%s] F(%d) '%s'", item->title_id, item->flags, item->name);
+		list_append(list, item);
+	}
+	
+	closedir(d);
+	return;
+}
+
+static void read_mc4_games(const char* userPath, list_t *list)
+{
+	DIR *d;
+	struct dirent *dir;
+	game_entry_t *item;
+	char fullPath[256];
+
+	d = opendir(userPath);
+	if (!d)
+		return;
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (!endsWith(dir->d_name, ".mc4"))
+			continue;
+
+		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
+		char *buffer = readTextFile(fullPath, NULL);
+		if (!buffer)
+			continue;
+
+		LOG("Reading %s...", dir->d_name);
+		char *dec_data = mc4_decrypt(buffer);
+		free(buffer);
+		buffer = dec_data;
+
+		if (!dec_data)
+		{
+			LOG("Error: could not decrypt %s", fullPath);
+			continue;
+		}
+
+		mxml_node_t *node, *tree = NULL;
+
+		/* parse the file and get the DOM */
+		tree = mxmlLoadString(NULL, buffer, MXML_NO_CALLBACK);
+		if (!tree)
+		{
+			LOG("XML: could not parse '%.16s...'", buffer);
+			free(buffer);
+
+			item = createGameEntry(CHEAT_FLAG_MC4 | CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD, fullPath);
+			sprintf(item->name, "%s%s", UTF8_CHAR_GROUP, dir->d_name);
+			asprintf(&item->title_id, "%.9s", dir->d_name);
+			item->path = strdup(fullPath);
+			item->version = strdup("?");
+			list_append(list, item);
+			continue;
+		}
+
+		node = mxmlFindElement(tree, tree, "Trainer", "Game", NULL, MXML_DESCEND);
+		if (!node)
+		{
+			LOG("Invalid MC4 file %s", fullPath);
+			free(buffer);
+			continue;
+		}
+
+		item = createGameEntry(CHEAT_FLAG_MC4 | CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD, GetXMLAttr(node, "Game"));
+		item->type = FILE_TYPE_PS4;
+		item->path = strdup(fullPath);
+		item->version = strdup(GetXMLAttr(node, "Version"));
+		item->title_id = strdup(GetXMLAttr(node, "Cusa"));
 
 		/* free the document */
 		mxmlDelete(tree);
@@ -917,16 +1049,15 @@ static void read_json_games(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 || endsWith(dir->d_name, ".json") == NULL)
+		if (!endsWith(dir->d_name, ".json"))
 			continue;
 
 		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
-		if (file_exists(fullPath) != SUCCESS)
+		char *buffer = readTextFile(fullPath, NULL);
+		if (!buffer)
 			continue;
 
 		LOG("Reading %s...", dir->d_name);
-
-		char *buffer = readTextFile(fullPath, NULL);
 		cJSON *cheat = cJSON_Parse(buffer);
 		const cJSON *jobject;
 
@@ -938,7 +1069,7 @@ static void read_json_games(const char* userPath, list_t *list)
 		}
 
 		jobject = cJSON_GetObjectItemCaseSensitive(cheat, "name");
-		item = _createSaveEntry(CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD, cJSON_IsString(jobject) ? jobject->valuestring : "");
+		item = createGameEntry(CHEAT_FLAG_JSON | CHEAT_FLAG_PS4 | CHEAT_FLAG_HDD, cJSON_IsString(jobject) ? jobject->valuestring : "");
 		item->type = FILE_TYPE_PS4;
 		item->path = strdup(fullPath);
 
@@ -947,7 +1078,6 @@ static void read_json_games(const char* userPath, list_t *list)
 
 		jobject = cJSON_GetObjectItemCaseSensitive(cheat, "id");
 		item->title_id = strdup(cJSON_IsString(jobject) ? jobject->valuestring : "");
-		item->flags |= CHEAT_FLAG_JSON;
 
 		cJSON_Delete(cheat);
 		free(buffer);
@@ -982,7 +1112,7 @@ list_t * ReadUserList(const char* userPath)
 	list = list_alloc();
 
 /*
-	item = _createSaveEntry(CHEAT_FLAG_PS4, CHAR_ICON_COPY " Bulk Cheats Management");
+	item = createGameEntry(CHEAT_FLAG_PS4, CHAR_ICON_COPY " Bulk Cheats Management");
 	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();
 	item->path = strdup(userPath);
@@ -1007,11 +1137,11 @@ list_t * ReadUserList(const char* userPath)
 
 	LOG("Loading SHN files...");
 	snprintf(fullPath, sizeof(fullPath), "%sshn/", userPath);
-	read_shn_games(fullPath, ".shn", list);
+	read_shn_games(fullPath, list);
 
 	LOG("Loading MC4 files...");
 	snprintf(fullPath, sizeof(fullPath), "%smc4/", userPath);
-	read_shn_games(fullPath, ".xml", list);
+	read_mc4_games(fullPath, list);
 
 	if (!list_count(list))
 	{
@@ -1039,7 +1169,7 @@ static void _ReadOnlineListEx(const char* urlPath, const char* fext, uint16_t fl
 	char fname[64];
 	struct stat stats;
 
-	snprintf(path, sizeof(path), GOLDCHEATS_LOCAL_CACHE "%s_games.txt", fext);
+	snprintf(path, sizeof(path), CHEATSMGR_LOCAL_CACHE "%s_games.txt", fext);
 	snprintf(fname, sizeof(fname), "%s.txt", fext);
 
 	if (stat(path, &stats) != SUCCESS && !http_download(urlPath, fname, path, 0))
@@ -1069,8 +1199,11 @@ static void _ReadOnlineListEx(const char* urlPath, const char* fext, uint16_t fl
 		if ((tmp = strchr(content, '=')) != NULL)
 		{
 			*tmp++ = 0;
-			item = _createSaveEntry(flag | CHEAT_FLAG_ONLINE, tmp);
+			item = createGameEntry(flag | CHEAT_FLAG_ONLINE, tmp);
 			asprintf(&item->path, "%s%s/%s", urlPath, fext, content);
+
+			if (item->flags & CHEAT_FLAG_MC4)
+				*strrchr(item->path, '.') = 0;
 
 			tmp = strchr(content, '_');
 			*tmp++ = 0;
@@ -1107,7 +1240,7 @@ list_t * ReadOnlineList(const char* urlPath)
 	_ReadOnlineListEx(urlPath, "shn", CHEAT_FLAG_PS4 | CHEAT_FLAG_SHN, list);
 
 	// PS4 MC4 games
-	_ReadOnlineListEx(urlPath, "mc4", CHEAT_FLAG_PS4 | CHEAT_FLAG_SHN, list);
+	_ReadOnlineListEx(urlPath, "mc4", CHEAT_FLAG_PS4 | CHEAT_FLAG_MC4, list);
 
 	if (!list_count(list))
 	{

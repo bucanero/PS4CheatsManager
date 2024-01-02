@@ -51,13 +51,13 @@ static void togglePatch(const game_entry_t* game, const code_entry_t* code)
 
 static void updNetCheats(void)
 {
-	if (!http_download(GOLDCHEATS_URL, GOLDCHEATS_FILE, GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
+	if (!http_download(GOLDCHEATS_URL, GOLDCHEATS_FILE, CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
 	{
 		show_message("No internet connection to " GOLDCHEATS_URL GOLDCHEATS_FILE " or server not available!");
 		return;
 	}
 
-	int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP, GOLDCHEATS_DATA_PATH);
+	int ret = extract_zip_gh(CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, GOLDCHEATS_DATA_PATH);
 	if (ret > 0)
 	{
 		char *cheat_ver = readTextFile(GOLDCHEATS_DATA_PATH "misc/cheat_ver.txt", NULL);
@@ -69,18 +69,18 @@ static void updNetCheats(void)
 		show_message("No files extracted!");
 	}
 
-	unlink_secure(GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP);
+	unlink_secure(CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP);
 }
 
 static void updNetPatches(void)
 {
-	if (!http_download(GOLDPATCH_URL, GOLDPATCH_FILE, GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
+	if (!http_download(GOLDPATCH_URL, GOLDPATCH_FILE, CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
 	{
 		show_message("No internet connection to " GOLDPATCH_URL GOLDPATCH_FILE " or server not available!");
 		return;
 	}
 
-	int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP, GOLDCHEATS_PATCH_PATH);
+	int ret = extract_zip_gh(CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, GOLDCHEATS_PATCH_PATH);
 	if (ret > 0)
 	{
 		char *patch_ver = readTextFile(GOLDCHEATS_PATCH_PATH "misc/patch_ver.txt", NULL);
@@ -92,12 +92,12 @@ static void updNetPatches(void)
 		show_message("No files extracted!");
 	}
 
-	unlink_secure(GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP);
+	unlink_secure(CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP);
 }
 
 static void updNetPlugins(void)
 {
-	if (!http_download(GOLDPLUGINS_UPDATE_URL, "", GOLDCHEATS_LOCAL_CACHE "plugins.json", 0))
+	if (!http_download(GOLDPLUGINS_UPDATE_URL, "", CHEATSMGR_LOCAL_CACHE "plugins.json", 0))
 	{
 		show_message("No internet connection to " GOLDPLUGINS_UPDATE_URL " or server not available!");
 		return;
@@ -106,7 +106,7 @@ static void updNetPlugins(void)
 	char *buffer;
 	long size = 0;
 
-	buffer = readTextFile(GOLDCHEATS_LOCAL_CACHE "plugins.json", &size);
+	buffer = readTextFile(CHEATSMGR_LOCAL_CACHE "plugins.json", &size);
 	cJSON *json = cJSON_Parse(buffer);
 
 	if (!json)
@@ -132,10 +132,10 @@ static void updNetPlugins(void)
 	LOG("latest version is %s", ver->valuestring);
 	LOG("download URL is %s", url->valuestring);
 
-	if (http_download(url->valuestring, "", GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
+	if (http_download(url->valuestring, "", CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
 	{
-		LOG("Update version %s (%s) downloaded to %s", ver->valuestring, url->valuestring, GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP);
-		int ret = extract_zip_gh(GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP, GOLDCHEATS_PATH);
+		LOG("Update version %s (%s) downloaded to %s", ver->valuestring, url->valuestring, CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP);
+		int ret = extract_zip_gh(CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, GOLDHEN_PATH "/");
 		if (ret > 0 && set_perms_directory(GOLDCHEATS_PLUGINS_PATH, 0777) == SUCCESS)
 		{
 			show_message("Successfully installed %d plugins files\nPlugins version: %s", ret, ver->valuestring);
@@ -144,7 +144,7 @@ static void updNetPlugins(void)
 		{
 			show_message("No plugins files extracted!");
 		}
-		unlink_secure(GOLDCHEATS_LOCAL_CACHE LOCAL_TEMP_ZIP);
+		unlink_secure(CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP);
 	}
 	else
 	{
@@ -154,7 +154,7 @@ static void updNetPlugins(void)
 end_update:
 	cJSON_Delete(json);
 	free(buffer);
-	unlink_secure(GOLDCHEATS_LOCAL_CACHE "plugins.json");
+	unlink_secure(CHEATSMGR_LOCAL_CACHE "plugins.json");
 	return;
 }
 
@@ -186,7 +186,7 @@ static void updLocalPatches(const char* upd_path)
 
 static void updLocalPlugins(const char* upd_path)
 {
-	if (!extract_zip_gh(upd_path, GOLDCHEATS_PATH))
+	if (!extract_zip_gh(upd_path, GOLDHEN_PATH "/"))
 	{
 		show_message("Unable to extract zip\n%s", upd_path);
 		return;
@@ -229,7 +229,7 @@ static void backupCheats(const char* dst_path)
 	mkdirs(dst_path);
 	// build file path
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDCHEATS_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
-	if (!zip_directory(_GOLDCHEATS_PATH, GOLDCHEATS_DATA_PATH, zip_path))
+	if (!zip_directory(GOLDHEN_PATH, GOLDCHEATS_DATA_PATH, zip_path))
 	{
 		show_message("Failed to backup cheats to\n%s", zip_path);
 		return;
@@ -246,7 +246,7 @@ static void backupPatches(const char* dst_path)
 	mkdirs(dst_path);
 	// build file path
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDPATCH_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
-	if (!zip_directory(_GOLDCHEATS_PATH, GOLDCHEATS_PATCH_PATH, zip_path))
+	if (!zip_directory(GOLDHEN_PATH, GOLDCHEATS_PATCH_PATH, zip_path))
 	{
 		show_message("Failed to backup patches to\n%s", zip_path);
 		return;
@@ -264,7 +264,7 @@ static void backupPlugins(const char* dst_path)
 	// build file path
 	snprintf(zip_path, sizeof(zip_path), "%s" GOLDPLUGINS_BACKUP_PREFIX "_%d-%02d-%02d_%02d%02d%02d.zip", dst_path, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 
-	if (!zip_directory(_GOLDCHEATS_PATH, GOLDCHEATS_PLUGINS_PATH, zip_path))
+	if (!zip_directory(GOLDHEN_PATH, GOLDCHEATS_PLUGINS_PATH, zip_path))
 	{
 		show_message("Failed to backup plugins to\n%s", zip_path);
 		return;
@@ -273,10 +273,99 @@ static void backupPlugins(const char* dst_path)
 	show_message("Created plugins backup successfully:\n%s", zip_path);
 }
 
+static void decryptMC4(const game_entry_t* game)
+{
+	char *buffer, *dec_data;
+	char xml_path[256];
+
+	if (game->flags & CHEAT_FLAG_ONLINE)
+		snprintf(xml_path, sizeof(xml_path), "%s%s", CHEATSMGR_LOCAL_CACHE, strrchr(game->path, '/') + 1);
+	else
+		snprintf(xml_path, sizeof(xml_path), "%s", game->path);
+
+	LOG("Decrypting %s...", game->path);
+
+	buffer = readTextFile(xml_path, NULL);
+	if (!buffer)
+	{
+		show_message("Failed to open\n%s", game->path);
+		return;
+	}
+
+	dec_data = mc4_decrypt(buffer);
+	free(buffer);
+
+	if (!dec_data)
+	{
+		show_message("Failed to decrypt\n%s", game->path);
+		return;
+	}
+
+	snprintf(xml_path, sizeof(xml_path), "%s%s.xml", CHEATSMGR_PATH, strrchr(game->path, '/') + 1);
+	if (write_buffer(xml_path, (uint8_t*) dec_data, strlen(dec_data)) == SUCCESS)
+		show_message("MC4 file decrypted to:\n%s", xml_path);
+	else
+		show_message("Failed to write decrypted file %s", xml_path);
+
+	free(dec_data);
+}
+
+static void removeCheats(void)
+{
+	if (!show_dialog(1, "Are you sure you want to remove all cheats?"))
+		return;
+
+	LOG("Removing all cheats...");
+	clean_directory(GOLDCHEATS_DATA_PATH "json/");
+	clean_directory(GOLDCHEATS_DATA_PATH "shn/");
+	clean_directory(GOLDCHEATS_DATA_PATH "mc4/");
+
+	show_message("All cheats removed!");
+}
+
+static void removePatches(void)
+{
+	if (!show_dialog(1, "Are you sure you want to remove all patches?"))
+		return;
+
+	LOG("Removing all patches...");
+	clean_directory(GOLDCHEATS_PATCH_PATH "xml/");
+	clean_directory(GOLDPATCH_SETTINGS_PATH);
+
+	show_message("All patches removed!");
+}
+
+static void removePlugins(void)
+{
+	if (!show_dialog(1, "Are you sure you want to remove all plugins?"))
+		return;
+
+	LOG("Removing all plugins...");
+	clean_directory(GOLDCHEATS_PLUGINS_PATH);
+
+	show_message("All plugins removed!");
+}
+
 void execCodeCommand(code_entry_t* code, const char* codecmd)
 {
 	switch (codecmd[0])
 	{
+		case CMD_DECRYPT_MC4:
+			decryptMC4(selected_entry);
+			return;
+
+		case CMD_REMOVE_CHEATS:
+			removeCheats();
+			break;
+
+		case CMD_REMOVE_PATCHES:
+			removePatches();
+			break;
+
+		case CMD_REMOVE_PLUGINS:
+			removePlugins();
+			break;
+
 		case CMD_TOGGLE_PATCH:
 			togglePatch(selected_entry, code);
 			return;
@@ -307,17 +396,17 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_BACKUP_CHEATS_HDD:
 		case CMD_BACKUP_CHEATS_USB:
-			backupCheats(codecmd[0] == CMD_BACKUP_CHEATS_USB ? USB0_PATH "backup/cheats/" : GOLDCHEATS_PATH "backup/cheats/");
+			backupCheats(codecmd[0] == CMD_BACKUP_CHEATS_USB ? USB0_PATH "backup/cheats/" : CHEATSMGR_PATH "backup/cheats/");
 			break;
 
 		case CMD_BACKUP_PATCHES_HDD:
 		case CMD_BACKUP_PATCHES_USB:
-			backupPatches(codecmd[0] == CMD_BACKUP_PATCHES_USB ? USB0_PATH "backup/patches/" : GOLDCHEATS_PATH "backup/patches/");
+			backupPatches(codecmd[0] == CMD_BACKUP_PATCHES_USB ? USB0_PATH "backup/patches/" : CHEATSMGR_PATH "backup/patches/");
 			break;
 
 		case CMD_BACKUP_PLUGINS_HDD:
 		case CMD_BACKUP_PLUGINS_USB:
-			backupPlugins(codecmd[0] == CMD_BACKUP_PLUGINS_USB ? USB0_PATH "backup/plugins/" : GOLDCHEATS_PATH "backup/plugins/");
+			backupPlugins(codecmd[0] == CMD_BACKUP_PLUGINS_USB ? USB0_PATH "backup/plugins/" : CHEATSMGR_PATH "backup/plugins/");
 			break;
 
 		default:

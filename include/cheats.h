@@ -2,24 +2,22 @@
 #include <dbglogger.h>
 #define LOG dbglogger_log
 
-#define _GOLDCHEATS_PATH            "/data/GoldHEN"
-#define GOLDCHEATS_PATH             _GOLDCHEATS_PATH "/"
+#define CHEATSMGR_PATH              "/data/CheatsManager/"
+#define CHEATSMGR_LOCAL_CACHE       CHEATSMGR_PATH "temp/"
+#define CHEATSMGR_UPDATE_URL        "https://api.github.com/repos/bucanero/PS4CheatsManager/releases/latest"
 
 #ifdef DEBUG_ENABLE_LOG
-#define GOLDCHEATS_APP_PATH			"/data/GoldHEN/debug/"
-#define GOLDCHEATS_SANDBOX_PATH		"/mnt/sandbox/LOAD00044_000%s/"
+#define CHEATSMGR_APP_PATH          "/data/CheatsManager/debug/"
+#define CHEATSMGR_SANDBOX_PATH      "/mnt/sandbox/LOAD00044_000%s/"
 #else
-#define GOLDCHEATS_APP_PATH			"/mnt/sandbox/GOLD00777_000/app0/assets/"
-#define GOLDCHEATS_SANDBOX_PATH		"/mnt/sandbox/GOLD00777_000%s/"
+#define CHEATSMGR_APP_PATH          "/mnt/sandbox/CHTM00777_000/app0/assets/"
+#define CHEATSMGR_SANDBOX_PATH      "/mnt/sandbox/CHTM00777_000%s/"
 #endif
 
-#define GOLDCHEATS_USER_PATH        GOLDCHEATS_PATH "%08x/"
-#define GOLDCHEATS_DATA_PATH        GOLDCHEATS_PATH "cheats/"
-#define GOLDCHEATS_PATCH_PATH       GOLDCHEATS_PATH "patches/"
-#define GOLDCHEATS_PLUGINS_PATH     GOLDCHEATS_PATH "plugins/"
-#define GOLDCHEATS_LOCAL_CACHE      GOLDCHEATS_PATH "temp/"
-#define GOLDCHEATS_UPDATE_URL       "https://api.github.com/repos/GoldHEN/GoldHEN_Cheat_Manager/releases/latest"
-#define GOLDPLUGINS_UPDATE_URL      "https://api.github.com/repos/GoldHEN/GoldHEN_Plugins_Repository/releases/latest"
+#define GOLDHEN_PATH                "/data/GoldHEN"
+#define GOLDCHEATS_DATA_PATH        GOLDHEN_PATH "/cheats/"
+#define GOLDCHEATS_PATCH_PATH       GOLDHEN_PATH "/patches/"
+#define GOLDCHEATS_PLUGINS_PATH     GOLDHEN_PATH "/plugins/"
 #define GOLDPATCH_SETTINGS_PATH     GOLDCHEATS_PATCH_PATH "settings/"
 
 #define GOLDCHEATS_BACKUP_PREFIX    "GH-cheats"
@@ -27,11 +25,11 @@
 #define GOLDPLUGINS_BACKUP_PREFIX   "GH-plugins"
 
 #define LOCAL_TEMP_ZIP              "appdata.zip"
-#define GOLDCHEATS_LOCAL_FILE       "GoldHEN_Cheat_Repository-main.zip"
 #define GOLDCHEATS_URL              "https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/"
 #define GOLDCHEATS_FILE             "main.zip"
 #define GOLDPATCH_URL               "https://github.com/GoldHEN/GoldHEN_Patch_Repository/raw/gh-pages/"
 #define GOLDPATCH_FILE              "patch1.zip"
+#define GOLDPLUGINS_UPDATE_URL      "https://api.github.com/repos/GoldHEN/GoldHEN_Plugins_Repository/releases/latest"
 
 #define MAX_USB_DEVICES         8
 #define USB0_PATH               "/mnt/usb0/"
@@ -50,6 +48,12 @@ enum cmd_code_enum
     CMD_TOGGLE_PATCH,
     CMD_VIEW_RAW_PATCH,
     CMD_VIEW_DETAILS,
+    CMD_DECRYPT_MC4,
+
+// Remove commands
+    CMD_REMOVE_CHEATS,
+    CMD_REMOVE_PATCHES,
+    CMD_REMOVE_PLUGINS,
 
 // Update commands
     CMD_UPD_INTERNET_CHEATS,
@@ -74,7 +78,7 @@ enum cmd_code_enum
 #define CHEAT_FLAG_JSON          4
 #define CHEAT_FLAG_PS1           8
 #define CHEAT_FLAG_PS2           16
-#define CHEAT_FLAG_PSP           32
+#define CHEAT_FLAG_MC4           32
 #define CHEAT_FLAG_SHN           64
 #define CHEAT_FLAG_PATCH         128
 #define CHEAT_FLAG_ONLINE        256
@@ -95,9 +99,9 @@ enum char_flag_enum
     CHAR_TAG_NULL,
     CHAR_TAG_PS1,
     CHAR_TAG_PS2,
-    CHAR_TAG_PS3,
-    CHAR_TAG_PSP,
-    CHAR_TAG_PSV,
+    CHAR_TAG_JSON,
+    CHAR_TAG_SHN,
+    CHAR_TAG_MC4,
     CHAR_TAG_APPLY,
     CHAR_TAG_OWNER,
     CHAR_TAG_LOCKED,
@@ -170,7 +174,7 @@ int sortGameList_Compare_TitleID(const void* a, const void* b);
 int sortCodeList_Compare(const void* A, const void* B);
 int ReadCodes(game_entry_t * save);
 int ReadPatches(game_entry_t * game);
-int ReadOnlineSaves(game_entry_t * game);
+int ReadOnlineCodes(game_entry_t * game);
 int ReadBackupCodes(game_entry_t * bup);
 
 int http_init(void);
@@ -192,6 +196,7 @@ void stop_loading_screen();
 
 void execCodeCommand(code_entry_t* code, const char* codecmd);
 uint64_t patch_hash_calc(const game_entry_t* game, const code_entry_t* code);
+char* mc4_decrypt(const char* data);
 
 int get_save_details(const game_entry_t *save, char** details);
 int orbis_SaveUmount(const char* mountPath);

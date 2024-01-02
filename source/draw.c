@@ -105,7 +105,7 @@ void DrawHeader_Ani(int icon, const char * hdrTitle, const char * headerSubTitle
 	//------------- Menu Bar
 	SetFontColor(0x000000 | icon_a, 0);
 	SetFontSize(APP_FONT_SIZE_SUBTITLE);
-	DrawStringMono(MENU_ICON_OFF + 10, 80, "\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4");
+	DrawStringMono(MENU_ICON_OFF + 10, 80, (icon == header_ico_abt_png_index) ? "" : "\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4");
 
 	//header mini icon
 	DrawTextureCenteredX(&menu_textures[icon], MENU_ICON_OFF - 20, 32, 0, 96, 96, 0xffffff00 | icon_a);
@@ -144,7 +144,7 @@ void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSu
 	//------------ Menu Bar
 	SetFontColor(0x000000FF, 0);
 	SetFontSize(APP_FONT_SIZE_SUBTITLE);
-	DrawStringMono(xOff + MENU_ICON_OFF + 10, 80, "\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4");
+	DrawStringMono(xOff + MENU_ICON_OFF + 10, 80, (icon == header_ico_abt_png_index) ? "" : "\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4");
 
 	//header mini icon
 	//header title string
@@ -298,10 +298,10 @@ void drawSplashLogo(int mode)
 			logo_a_t = 0xFF;
 		u8 logo_a = (u8)logo_a_t;
 
-		SDL_SetTextureAlphaMod(menu_textures[goldhen_png_index].texture, logo_a);
+		SDL_SetTextureAlphaMod(menu_textures[pslogo_png_index].texture, logo_a);
 
 		//App description
-		DrawTextureCentered(&menu_textures[goldhen_png_index], SCREEN_WIDTH/2, SCREEN_HEIGHT /2, 0, menu_textures[goldhen_png_index].width, menu_textures[goldhen_png_index].height, 0xFFFFFF00 | logo_a);
+		DrawTextureCentered(&menu_textures[pslogo_png_index], SCREEN_WIDTH/2, SCREEN_HEIGHT /2, 0, menu_textures[pslogo_png_index].width, menu_textures[pslogo_png_index].height, 0xFFFFFF00 | logo_a);
 
 		//flush and flip
 		SDL_RenderPresent(renderer);
@@ -322,7 +322,7 @@ void drawEndLogo(void)
 		DrawBackground2D(0xFFFFFFFF);
 
 		//App description
-		DrawTextureCentered(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, SCREEN_HEIGHT /2, 0, menu_textures[titlescr_logo_png_index].width *3/4, menu_textures[titlescr_logo_png_index].height *3/4, 0xFFFFFF00 | 0xFF);
+		DrawTextureCentered(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, SCREEN_HEIGHT /2, 0, menu_textures[titlescr_logo_png_index].width, menu_textures[titlescr_logo_png_index].height, 0xFFFFFF00 | 0xFF);
 
 		rect.y = 0;
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xFF);
@@ -344,7 +344,7 @@ static void _draw_MainMenu(uint8_t alpha)
 	DrawBackgroundTexture(0, 0, 0xFF);
 	
 	//App logo
-	DrawTextureCenteredX(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, 250, 0, menu_textures[titlescr_logo_png_index].width *3/2, menu_textures[titlescr_logo_png_index].height *3/2, 0xFFFFFFFF);
+	DrawTextureCenteredX(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, 250, 0, menu_textures[titlescr_logo_png_index].width, menu_textures[titlescr_logo_png_index].height, 0xFFFFFFFF);
 	
 	//App description
 //	DrawTextureCenteredX(&menu_textures[logo_text_png_index], SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 40, 0, menu_textures[logo_text_png_index].width * 3/2, menu_textures[logo_text_png_index].height * 3/2, 0xFFFFFF00 | 0xFF);
@@ -374,7 +374,7 @@ void Draw_MainMenu_Ani(void)
 		DrawBackgroundTexture(0, 0, bg_a);
 		
 		//App logo
-		DrawTextureCenteredX(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, 250, 0, menu_textures[titlescr_logo_png_index].width *3/2, menu_textures[titlescr_logo_png_index].height *3/2, 0xFFFFFF00 | logo_a);
+		DrawTextureCenteredX(&menu_textures[titlescr_logo_png_index], SCREEN_WIDTH/2, 250, 0, menu_textures[titlescr_logo_png_index].width, menu_textures[titlescr_logo_png_index].height, 0xFFFFFF00 | logo_a);
 		
 		//App description
 //		DrawTextureCenteredX(&menu_textures[logo_text_png_index], SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 40, 0, menu_textures[logo_text_png_index].width * 3/2, menu_textures[logo_text_png_index].height * 3/2, 0xFFFFFF00 | logo_a);
