@@ -27,7 +27,7 @@
 #define LOCAL_TEMP_ZIP              "appdata.zip"
 #define GOLDCHEATS_URL              "https://github.com/GoldHEN/GoldHEN_Cheat_Repository/archive/refs/heads/"
 #define GOLDCHEATS_FILE             "main.zip"
-#define GOLDPATCH_URL               "https://github.com/GoldHEN/GoldHEN_Patch_Repository/raw/gh-pages/"
+#define GOLDPATCH_URL               "https://github.com/illusion0001/PS4-PS5-Game-Patch/releases/latest/download/"
 #define GOLDPATCH_FILE              "patch1.zip"
 #define GOLDPLUGINS_UPDATE_URL      "https://api.github.com/repos/GoldHEN/GoldHEN_Plugins_Repository/releases/latest"
 
