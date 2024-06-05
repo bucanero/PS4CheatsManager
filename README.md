@@ -58,7 +58,7 @@ It will open the context menu on the screen. Press ![O button](https://github.co
 
 # Online Database
 
-The application also provides direct access to the Online [Cheat](https://github.com/GoldHEN/GoldHEN_Cheat_Repository) and [Patch](https://github.com/GoldHEN/GoldHEN_Patch_Repository) databases, the official GoldHEN repositories of cheats and custom game patches for PlayStation 4 games.
+The application also provides direct access to the Online [Cheat](https://github.com/GoldHEN/GoldHEN_Cheat_Repository) and [Patch](https://github.com/illusion0001/PS4-PS5-Game-Patch) databases, the official GoldHEN repositories of cheats and custom game patches for PlayStation 4 games.
 
 # Credits
 

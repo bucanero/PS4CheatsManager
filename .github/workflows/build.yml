@@ -17,7 +17,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
 
     - name: Set env vars
       run: |
@@ -29,7 +29,7 @@ jobs:
         echo "OO_SDK_URL=https://github.com/illusion0001/OpenOrbis-PS4-Toolchain/releases/latest/download/toolchain.tar.gz" >> $GITHUB_ENV
 
     - name: Checkout oosdk_libraries
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
       with:
         repository: bucanero/oosdk_libraries
         path: oosdk_libraries
@@ -42,58 +42,51 @@ jobs:
       run: cp oosdk_libraries/build_rules.mk OpenOrbis/PS4Toolchain/build_rules.mk
 
     - name: Checkout dbglogger
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
       with:
         repository: bucanero/dbglogger
         path: dbglogger
 
     - name: Checkout SQLite
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
       with:
         repository: bucanero/libSQLite-ps4
         path: libSQLite-ps4
 
     - name: Checkout SDL-PS4
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
       with:
         repository: bucanero/SDL-PS4
         path: ${{ env.sdl_path }}
         ref: ps4
 
     - name: Checkout mxml
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
       with:
         repository: bucanero/mxml
         path: mxml
 
     - name: Checkout cJSON
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
       with:
         repository: bucanero/cJSON
         path: cJSON
 
     - name: Checkout libjbc
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
       with:
         repository: bucanero/ps4-libjbc
         path: ps4-libjbc
 
     - name: Checkout Cheat repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
       with:
         repository: GoldHEN/GoldHEN_Cheat_Repository
         path: cheats
 
-    - name: Checkout Patch repository
-      uses: actions/checkout@v3
-      with:
-        repository: GoldHEN/GoldHEN_Patch_Repository
-        path: appdata1
-        ref: gh-pages
-
     - name: Cache LLVM and Clang
       id: cache-llvm
-      uses: actions/cache@v3
+      uses: actions/cache@main
       with:
         path: ./llvm
         key: llvm-${{ env.llvm_ver }}
@@ -134,7 +127,7 @@ jobs:
 
     - name: Cache SDL2
       id: cache-sdl2
-      uses: actions/cache@v3
+      uses: actions/cache@main
       with:
         path: ${{ env.sdl_path }}/orbis/libSDL2.a
         key: ${{ runner.os }}-sdl2
@@ -149,7 +142,7 @@ jobs:
 
     - name: Cache curl
       id: cache-curl
-      uses: actions/cache@v3
+      uses: actions/cache@main
       with:
         path: ${{ env.curl_path }}/orbis/lib/libcurl.a
         key: ${{ runner.os }}-curl
@@ -170,7 +163,7 @@ jobs:
 
     - name: Add current cheats and patches data into Package
       run: |
-        unzip -q appdata1/patch1.zip
+        curl -sL https://github.com/illusion0001/PS4-PS5-Game-Patch/releases/latest/download/patch1.zip | busybox unzip - -q
         make createzip
 
     - name: Build Cheats Manager App Package
@@ -179,14 +172,14 @@ jobs:
         mv IV0000-CHTM00777_00-PS4CHEATSMANAGER.pkg cheatsmgr-build_${{ env.sha_name }}.pkg
 
     - name: Push package artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@main
       with:
         name: cheatsmgr-build_${{ env.sha_name }}
         path: cheatsmgr-build_${{ env.sha_name }}.pkg
         if-no-files-found: error
 
     - name: Push appdata artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@main
       with:
         name: appdata-build_${{ env.sha_name }}
         path: assets/misc/appdata.zip
