@@ -84,13 +84,6 @@ jobs:
         repository: GoldHEN/GoldHEN_Cheat_Repository
         path: cheats
 
-    - name: Checkout Patch repository
-      uses: actions/checkout@main
-      with:
-        repository: GoldHEN/GoldHEN_Patch_Repository
-        path: appdata1
-        ref: gh-pages
-
     - name: Cache LLVM and Clang
       id: cache-llvm
       uses: actions/cache@main
@@ -170,7 +163,7 @@ jobs:
 
     - name: Add current cheats and patches data into Package
       run: |
-        unzip -q appdata1/patch1.zip
+        curl -sL https://github.com/illusion0001/PS4-PS5-Game-Patch/releases/latest/download/patch1.zip | busybox unzip - -q
         make createzip
 
     - name: Build Cheats Manager App Package
