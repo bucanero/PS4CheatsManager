@@ -48,6 +48,9 @@ app_config_t gcm_config = {
     .update = 1,
     .overwrite = 1,
     .user_id = 0,
+	.url_cheats = GOLDCHEATS_URL,
+	.url_patches = GOLDPATCH_URL,
+	.url_plugins = GOLDPLUGINS_UPDATE_URL,
 };
 
 int close_app = 0;

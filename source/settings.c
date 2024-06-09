@@ -17,6 +17,16 @@
 
 static char * sort_opt[] = {"Disabled", "by Name", "by Title ID", NULL};
 
+static void log_callback(int sel);
+static void music_callback(int sel);
+static void sort_callback(int sel);
+static void ani_callback(int sel);
+static void overwrite_callback(int sel);
+static void clearcache_callback(int sel);
+static void clearpatch_callback(int sel);
+static void set_pluginsperms_callback(int sel);
+static void change_url_callback(int sel);
+
 menu_option_t menu_options[] = {
 	{ .name = "Background Music", 
 		.options = NULL, 
@@ -48,6 +58,12 @@ menu_option_t menu_options[] = {
 		.value = &gcm_config.overwrite,
 		.callback = overwrite_callback
 	},
+	{ .name = "Change Update Download URLs",
+		.options = NULL,
+		.type = APP_OPTION_CALL,
+		.value = NULL,
+		.callback = change_url_callback 
+	},
 	{ .name = "\nClear Temp Folder", 
 		.options = NULL, 
 		.type = APP_OPTION_CALL, 
@@ -64,7 +80,7 @@ menu_option_t menu_options[] = {
 		.options = NULL,
 		.type = APP_OPTION_CALL,
 		.value = NULL,
-		.callback = setpluginsperms_callback
+		.callback = set_pluginsperms_callback
 	},
 	{ .name = "Enable Debug Log",
 		.options = NULL,
@@ -76,27 +92,27 @@ menu_option_t menu_options[] = {
 };
 
 
-void music_callback(int sel)
+static void music_callback(int sel)
 {
 	gcm_config.music = !sel;
 }
 
-void sort_callback(int sel)
+static void sort_callback(int sel)
 {
 	gcm_config.doSort = sel;
 }
 
-void ani_callback(int sel)
+static void ani_callback(int sel)
 {
 	gcm_config.doAni = !sel;
 }
 
-void overwrite_callback(int sel)
+static void overwrite_callback(int sel)
 {
 	gcm_config.overwrite = !sel;
 }
 
-void clearcache_callback(int sel)
+static void clearcache_callback(int sel)
 {
 	LOG("Cleaning folder '%s'...", CHEATSMGR_LOCAL_CACHE);
 	clean_directory(CHEATSMGR_LOCAL_CACHE);
@@ -104,14 +120,14 @@ void clearcache_callback(int sel)
 	show_message("Local cache folder cleaned:\n" CHEATSMGR_LOCAL_CACHE);
 }
 
-void clearpatch_callback(int sel)
+static void clearpatch_callback(int sel)
 {
 	LOG("Cleaning folder '" GOLDPATCH_SETTINGS_PATH "'...");
 	clean_directory(GOLDPATCH_SETTINGS_PATH);
 	show_message("Patch settings folder cleaned:\n" GOLDPATCH_SETTINGS_PATH);
 }
 
-void setpluginsperms_callback(int sel)
+static void set_pluginsperms_callback(int sel)
 {
 	if (set_perms_directory(GOLDCHEATS_PLUGINS_PATH, 0777) == SUCCESS)
 	{
@@ -121,6 +137,27 @@ void setpluginsperms_callback(int sel)
 	{
 		show_message("Failed to set file permissions:\n" GOLDCHEATS_PLUGINS_PATH);
 	}
+}
+
+static void change_url_callback(int sel)
+{
+	if (osk_dialog_get_text("Enter the Cheat Download URL (1/3)", gcm_config.url_cheats, sizeof(gcm_config.url_cheats)))
+		show_message("Cheat Download URL changed to:\n%s", gcm_config.url_cheats);
+
+	if (osk_dialog_get_text("Enter the Patch Download URL (2/3)", gcm_config.url_patches, sizeof(gcm_config.url_patches)))
+		show_message("Patch Download URL changed to:\n%s", gcm_config.url_patches);
+
+	if (osk_dialog_get_text("Enter the Plugin Download URL (3/3)", gcm_config.url_plugins, sizeof(gcm_config.url_plugins)))
+		show_message("Plugin Download URL changed to:\n%s", gcm_config.url_plugins);
+
+	if (gcm_config.url_cheats[strlen(gcm_config.url_cheats)-1] != '/')
+		strcat(gcm_config.url_cheats, "/");
+
+	if (gcm_config.url_patches[strlen(gcm_config.url_patches)-1] != '/')
+		strcat(gcm_config.url_patches, "/");
+
+	if (gcm_config.url_plugins[strlen(gcm_config.url_plugins)-1] != '/')
+		strcat(gcm_config.url_plugins, "/");
 }
 
 void update_callback(int sel)
@@ -193,7 +230,7 @@ end_update:
 	return;
 }
 
-void log_callback(int sel)
+static void log_callback(int sel)
 {
 	dbglogger_init_mode(FILE_LOGGER, CHEATSMGR_PATH "cheatsmgr.log", 0);
 	show_message("Debug Logging Enabled!\n\n" CHEATSMGR_PATH "cheatsmgr.log");

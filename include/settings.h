@@ -1,4 +1,4 @@
-#define CHEATSMGR_VERSION          "1.2.0"     // PS4 Cheats Manager version (about menu)
+#define CHEATSMGR_VERSION          "1.2.2"     // PS4 Cheats Manager version (about menu)
 
 #define MENU_TITLE_OFF             45          // Offset of menu title text from menu mini icon
 #define MENU_ICON_OFF              105         // X Offset to start printing menu mini icon
@@ -34,18 +34,13 @@ typedef struct
     uint8_t update;
     uint8_t overwrite;
     uint32_t user_id;
+    char url_cheats[256];
+    char url_patches[256];
+    char url_plugins[256];
 } app_config_t;
 
 extern menu_option_t menu_options[];
 
 extern app_config_t gcm_config;
 
-void log_callback(int sel);
-void music_callback(int sel);
-void sort_callback(int sel);
-void ani_callback(int sel);
 void update_callback(int sel);
-void overwrite_callback(int sel);
-void clearcache_callback(int sel);
-void clearpatch_callback(int sel);
-void setpluginsperms_callback(int sel);

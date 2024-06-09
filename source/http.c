@@ -10,26 +10,24 @@
 #include "common.h"
 #include "cheats.h"
 
-#define HTTP_SUCCESS 	1
-#define HTTP_FAILED	 	0
 #define HTTP_USER_AGENT "Mozilla/5.0 (PLAYSTATION 4; 1.00)"
 
 
 int http_init(void)
 {
 	if(sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_NET) < 0)
-		return HTTP_FAILED;
+		return false;
 
 	if(sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_NETCTL) < 0)
-		return HTTP_FAILED;
+		return false;
 
 	if(curl_global_init(CURL_GLOBAL_ALL) != CURLE_OK)
-		return HTTP_FAILED;
+		return false;
 
 	if(sceNetCtlInit() < 0)
-		return HTTP_FAILED;
+		return false;
 
-	return HTTP_SUCCESS;
+	return true;
 }
 
 /* follow the CURLOPT_XFERINFOFUNCTION callback definition */
@@ -53,13 +51,13 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	if(!curl)
 	{
 		LOG("ERROR: CURL INIT");
-		return HTTP_FAILED;
+		return false;
 	}
 
 	fd = fopen(local_dst, "wb");
 	if (!fd) {
 		LOG("fopen Error: File path '%s'", local_dst);
-		return HTTP_FAILED;
+		return false;
 	}
 
 	snprintf(full_url, sizeof(full_url), "%s%s", url, filename);
@@ -128,10 +126,10 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	{
 		LOG("curl_easy_perform() failed: %s", curl_easy_strerror(res));
 		unlink_secure(local_dst);
-		return HTTP_FAILED;
+		return false;
 	}
 
-	return HTTP_SUCCESS;
+	return true;
 }
 
 void http_end(void)
