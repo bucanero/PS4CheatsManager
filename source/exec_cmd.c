@@ -57,7 +57,7 @@ static void toggleCheatFile(game_entry_t* game)
 	if (game->flags & CHEAT_FLAG_LOCKED)
 	{
 		snprintf(file_path, sizeof(file_path), "%s", game->path);
-		strrchr(file_path, '-')[1] = '\0';
+		*strrchr(file_path, '-') = 0;
 	}
 	else
 		snprintf(file_path, sizeof(file_path), "%s-disabled", game->path);
