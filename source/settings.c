@@ -141,24 +141,24 @@ static void set_pluginsperms_callback(int sel)
 
 static void change_url_callback(int sel)
 {
-	if (osk_dialog_get_text("Enter the Cheat Download URL (1/3)", gcm_config.url_cheats, sizeof(gcm_config.url_cheats)))
+	if (osk_dialog_get_text("Enter the Cheats Download URL (1/3)", gcm_config.url_cheats, sizeof(gcm_config.url_cheats)))
 	{
 		if (gcm_config.url_cheats[strlen(gcm_config.url_cheats)-1] != '/')
 			strcat(gcm_config.url_cheats, "/");
 
-		show_message("Cheat Download URL changed to:\n%s", gcm_config.url_cheats);
+		show_message("Cheats Download URL changed to:\n%s", gcm_config.url_cheats);
 	}
 
-	if (osk_dialog_get_text("Enter the Patch Download URL (2/3)", gcm_config.url_patches, sizeof(gcm_config.url_patches)))
+	if (osk_dialog_get_text("Enter the Patches Download URL (2/3)", gcm_config.url_patches, sizeof(gcm_config.url_patches)))
 	{
 		if (gcm_config.url_patches[strlen(gcm_config.url_patches)-1] != '/')
 			strcat(gcm_config.url_patches, "/");
 
-		show_message("Patch Download URL changed to:\n%s", gcm_config.url_patches);
+		show_message("Patches Download URL changed to:\n%s", gcm_config.url_patches);
 	}
 
-	if (osk_dialog_get_text("Enter the Plugin Download URL (3/3)", gcm_config.url_plugins, sizeof(gcm_config.url_plugins)))
-		show_message("Plugin Download URL changed to:\n%s", gcm_config.url_plugins);
+	if (osk_dialog_get_text("Enter the Plugins Download URL (3/3)", gcm_config.url_plugins, sizeof(gcm_config.url_plugins)))
+		show_message("Plugins Download URL changed to:\n%s", gcm_config.url_plugins);
 }
 
 void update_callback(int sel)
