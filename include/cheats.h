@@ -46,8 +46,7 @@ enum cmd_code_enum
 
 // Code commands
     CMD_TOGGLE_PATCH,
-    CMD_VIEW_RAW_PATCH,
-    CMD_VIEW_DETAILS,
+    CMD_TOGGLE_CHEAT,
     CMD_DECRYPT_MC4,
 
 // Remove commands

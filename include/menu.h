@@ -72,6 +72,7 @@ enum texture_index
 	tag_shn_png_index,
 	tag_mc4_png_index,
 	tag_json_png_index,
+	tag_lock_png_index,
 
 	TOTAL_MENU_TEXTURES
 };

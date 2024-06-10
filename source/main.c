@@ -200,6 +200,7 @@ static int LoadTextures_Menu(void)
 	load_menu_texture(tag_shn, png);
 	load_menu_texture(tag_mc4, png);
 	load_menu_texture(tag_json, png);
+	load_menu_texture(tag_lock, png);
 	load_menu_texture(circle_error_dark, png);
 	load_menu_texture(circle_error_light, png);
 	load_menu_texture(circle_loading_bg, png);
@@ -303,6 +304,7 @@ static void registerSpecialChars(void)
 	RegisterSpecialCharacter(CHAR_TAG_MC4, 0, 1.0, &menu_textures[tag_mc4_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_SHN, 0, 1.0, &menu_textures[tag_shn_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_JSON, 0, 1.0, &menu_textures[tag_json_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_LOCKED, 0, 1.0, &menu_textures[tag_lock_png_index]);
 }
 
 static void helpFooter(int id)

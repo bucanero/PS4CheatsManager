@@ -350,10 +350,8 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
 			if (item->flags & CHEAT_FLAG_SHN) tmp[0] = CHAR_TAG_SHN;
 			if (item->flags & CHEAT_FLAG_MC4) tmp[0] = CHAR_TAG_MC4;
 			if (item->flags & CHEAT_FLAG_JSON) tmp[0] = CHAR_TAG_JSON;
-/*
-			tmp[1] = (item->flags & CHEAT_FLAG_OWNER) ? CHAR_TAG_OWNER : ' ';
-			tmp[2] = (item->flags & CHEAT_FLAG_LOCKED) ? CHAR_TAG_LOCKED : ' ';
-*/
+			if (item->flags & CHEAT_FLAG_LOCKED) tmp[0] = CHAR_TAG_LOCKED;
+
 			DrawString(SCREEN_WIDTH - (MENU_ICON_OFF * 2), game_y, tmp);
 
 			if (item->flags & CHEAT_FLAG_OWNER)

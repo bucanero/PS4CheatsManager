@@ -243,10 +243,6 @@ static game_entry_t* createGameEntry(uint16_t flag, const char* name)
 int set_json_codes(game_entry_t* item)
 {
 	code_entry_t* cmd;
-	item->codes = list_alloc();
-
-//	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Save Details", CMD_VIEW_DETAILS);
-//	list_append(item->codes, cmd);
 
 	LOG("Parsing \"%s\"...", item->path);
 
@@ -331,13 +327,22 @@ char* mc4_decrypt(const char* data)
 	aes_setkey_dec(&aes_ctx, (uint8_t*) MC4_AES256CBC_KEY, 256);
 	aes_crypt_cbc(&aes_ctx, AES_DECRYPT, enc_size, iv, enc_data, enc_data);
 
+	// replace html entities in the decrypted XML data
+	for (size_t i = 0; i < (enc_size - 3); i++)
+	{
+		if (strncmp((char*) &enc_data[i], "&lt;", 4) == 0)
+			memcpy(enc_data + i, "<   ", 4);
+
+		else if (strncmp((char*) &enc_data[i], "&gt;", 4) == 0)
+			memcpy(enc_data + i, ">   ", 4);
+	}
+
 	return (char*) enc_data;
 }
 
 int set_shn_codes(game_entry_t* item)
 {
 	code_entry_t* cmd;
-	item->codes = list_alloc();
 
 	LOG("Parsing %s...", item->path);
 	char *buffer = readTextFile(item->path, NULL);
@@ -415,6 +420,11 @@ int set_shn_codes(game_entry_t* item)
  */
 int ReadCodes(game_entry_t * save)
 {
+	save->codes = list_alloc();
+	list_append(save->codes, _createCmdCode(PATCH_COMMAND,
+		(save->flags & CHEAT_FLAG_LOCKED) ? CHAR_ICON_LOCK " Enable Cheat File" : CHAR_ICON_LOCK "Disable Cheat File",
+		CMD_TOGGLE_CHEAT));
+
 	if (save->flags & CHEAT_FLAG_JSON)
 		return set_json_codes(save);
 
@@ -458,6 +468,7 @@ int ReadOnlineCodes(game_entry_t * game)
 
 	char *tmp = game->path;
 	game->path = path;
+	game->codes = list_alloc();
 
 	if (game->flags & CHEAT_FLAG_JSON)
 		set_json_codes(game);
@@ -913,7 +924,7 @@ static void read_shn_games(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (!endsWith(dir->d_name, ".shn"))
+		if (!endsWith(dir->d_name, ".shn") && !endsWith(dir->d_name, ".shn-disabled"))
 			continue;
 
 		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
@@ -951,6 +962,9 @@ static void read_shn_games(const char* userPath, list_t *list)
 		mxmlDelete(tree);
 		free(buffer);
 
+		if (endsWith(dir->d_name, ".shn-disabled"))
+			item->flags |= CHEAT_FLAG_LOCKED;
+
 		LOG("[%s] F(%d) '%s'", item->title_id, item->flags, item->name);
 		list_append(list, item);
 	}
@@ -972,7 +986,7 @@ static void read_mc4_games(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (!endsWith(dir->d_name, ".mc4"))
+		if (!endsWith(dir->d_name, ".mc4") && !endsWith(dir->d_name, ".mc4-disabled"))
 			continue;
 
 		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
@@ -1027,6 +1041,9 @@ static void read_mc4_games(const char* userPath, list_t *list)
 		mxmlDelete(tree);
 		free(buffer);
 
+		if (endsWith(dir->d_name, ".mc4-disabled"))
+			item->flags |= CHEAT_FLAG_LOCKED;
+
 		LOG("[%s] F(%d) '%s'", item->title_id, item->flags, item->name);
 		list_append(list, item);
 	}
@@ -1049,7 +1066,7 @@ static void read_json_games(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (!endsWith(dir->d_name, ".json"))
+		if (!endsWith(dir->d_name, ".json") && !endsWith(dir->d_name, ".json-disabled"))
 			continue;
 
 		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
@@ -1081,6 +1098,9 @@ static void read_json_games(const char* userPath, list_t *list)
 
 		cJSON_Delete(cheat);
 		free(buffer);
+
+		if (endsWith(dir->d_name, ".json-disabled"))
+			item->flags |= CHEAT_FLAG_LOCKED;
 
 		LOG("[%s] F(%d) '%s'", item->title_id, item->flags, item->name);
 		list_append(list, item);
