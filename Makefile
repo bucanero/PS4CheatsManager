@@ -1,13 +1,13 @@
 # Package metadata.
 TITLE       := PS4 Cheats Manager
-VERSION     := 01.20
+VERSION     := 01.22
 TITLE_ID    := CHTM00777
 CONTENT_ID  := IV0000-CHTM00777_00-PS4CHEATSMANAGER
 
 # Libraries linked into the ELF.
 LIBS        := -lc -lkernel -lSceAudioOut -lSceUserService -lScePigletv2VSH -lSceSysmodule -lSceFreeType \
                -lScePad -lSceSystemService -lSceSaveData -lSceCommonDialog -lSceMsgDialog -lSceNet \
-               -lSceNetCtl -lSDL2 -lcjson -ldbglogger -lz -ljbc -lmxml -lcurl -lpolarssl -lSQLite
+               -lSceNetCtl -lSceImeDialog -lSDL2 -lcjson -ldbglogger -lz -ljbc -lmxml -lcurl -lpolarssl -lSQLite
 
 # Additional compile flags.
 EXTRAFLAGS  := -fcolor-diagnostics -Wall -D__PS4__

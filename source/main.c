@@ -48,6 +48,9 @@ app_config_t gcm_config = {
     .update = 1,
     .overwrite = 1,
     .user_id = 0,
+    .url_cheats = GOLDCHEATS_URL,
+    .url_patches = GOLDPATCH_URL,
+    .url_plugins = GOLDPLUGINS_UPDATE_URL,
 };
 
 int close_app = 0;
@@ -427,7 +430,8 @@ s32 main(s32 argc, const char* argv[])
 	}
 
 	// Load MsgDialog
-	if (sceSysmoduleLoadModule(ORBIS_SYSMODULE_MESSAGE_DIALOG) < 0)
+	if (sceSysmoduleLoadModule(ORBIS_SYSMODULE_MESSAGE_DIALOG) < 0 ||
+		sceSysmoduleLoadModule(ORBIS_SYSMODULE_IME_DIALOG) < 0)
 	{
 		LOG("Failed to load dialog!");
 		return (-1);

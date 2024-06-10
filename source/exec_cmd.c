@@ -51,9 +51,9 @@ static void togglePatch(const game_entry_t* game, const code_entry_t* code)
 
 static void updNetCheats(void)
 {
-	if (!http_download(GOLDCHEATS_URL, GOLDCHEATS_FILE, CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
+	if (!http_download(gcm_config.url_cheats, GOLDCHEATS_FILE, CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
 	{
-		show_message("No internet connection to " GOLDCHEATS_URL GOLDCHEATS_FILE " or server not available!");
+		show_message("No internet connection to %s%s or server not available!", gcm_config.url_cheats, GOLDCHEATS_FILE);
 		return;
 	}
 
@@ -74,9 +74,9 @@ static void updNetCheats(void)
 
 static void updNetPatches(void)
 {
-	if (!http_download(GOLDPATCH_URL, GOLDPATCH_FILE, CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
+	if (!http_download(gcm_config.url_patches, GOLDPATCH_FILE, CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
 	{
-		show_message("No internet connection to " GOLDPATCH_URL GOLDPATCH_FILE " or server not available!");
+		show_message("No internet connection to %s%s or server not available!", gcm_config.url_patches, GOLDPATCH_FILE);
 		return;
 	}
 
@@ -97,9 +97,9 @@ static void updNetPatches(void)
 
 static void updNetPlugins(void)
 {
-	if (!http_download(GOLDPLUGINS_UPDATE_URL, "", CHEATSMGR_LOCAL_CACHE "plugins.json", 0))
+	if (!http_download(gcm_config.url_plugins, "", CHEATSMGR_LOCAL_CACHE "plugins.json", 0))
 	{
-		show_message("No internet connection to " GOLDPLUGINS_UPDATE_URL " or server not available!");
+		show_message("No internet connection to %s or server not available!", gcm_config.url_plugins);
 		return;
 	}
 
