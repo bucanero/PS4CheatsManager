@@ -49,7 +49,7 @@ static void togglePatch(const game_entry_t* game, const code_entry_t* code)
 	show_message("Patch \"%s\" %s", code->name, code->activated ? "Enabled" : "Disabled");
 }
 
-static void toggleCheatFile(game_entry_t* game)
+static void toggleCheatFile(game_entry_t* game, code_entry_t* code)
 {
 	char file_path[256];
 
@@ -70,8 +70,9 @@ static void toggleCheatFile(game_entry_t* game)
 	game->flags ^= CHEAT_FLAG_LOCKED;
 	free(game->path);
 	asprintf(&game->path, "%s", file_path);
+	memcpy(code->name +1, (game->flags & CHEAT_FLAG_LOCKED) ? "Dis" : " En", 3);
 
-	show_message("Cheat File \"%s\" %s", game->name, (game->flags & CHEAT_FLAG_LOCKED) ? "Disabled" : "Enabled");
+	show_message("Cheat File %s:\n%s", (game->flags & CHEAT_FLAG_LOCKED) ? "Disabled" : "Enabled", game->path);
 }
 
 static void updNetCheats(void)
@@ -392,7 +393,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_TOGGLE_CHEAT:
-			toggleCheatFile(selected_entry);
+			toggleCheatFile(selected_entry, code);
 			return;
 
 		case CMD_TOGGLE_PATCH:
