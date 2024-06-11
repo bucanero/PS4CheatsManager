@@ -243,10 +243,6 @@ static game_entry_t* createGameEntry(uint16_t flag, const char* name)
 int set_json_codes(game_entry_t* item)
 {
 	code_entry_t* cmd;
-	item->codes = list_alloc();
-
-//	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Save Details", CMD_VIEW_DETAILS);
-//	list_append(item->codes, cmd);
 
 	LOG("Parsing \"%s\"...", item->path);
 
@@ -331,13 +327,22 @@ char* mc4_decrypt(const char* data)
 	aes_setkey_dec(&aes_ctx, (uint8_t*) MC4_AES256CBC_KEY, 256);
 	aes_crypt_cbc(&aes_ctx, AES_DECRYPT, enc_size, iv, enc_data, enc_data);
 
+	// replace html entities in the decrypted XML data
+	for (size_t i = 0; i < (enc_size - 3); i++)
+	{
+		if (strncmp((char*) &enc_data[i], "&lt;", 4) == 0)
+			memcpy(enc_data + i, "<   ", 4);
+
+		else if (strncmp((char*) &enc_data[i], "&gt;", 4) == 0)
+			memcpy(enc_data + i, ">   ", 4);
+	}
+
 	return (char*) enc_data;
 }
 
 int set_shn_codes(game_entry_t* item)
 {
 	code_entry_t* cmd;
-	item->codes = list_alloc();
 
 	LOG("Parsing %s...", item->path);
 	char *buffer = readTextFile(item->path, NULL);
@@ -415,6 +420,11 @@ int set_shn_codes(game_entry_t* item)
  */
 int ReadCodes(game_entry_t * save)
 {
+	save->codes = list_alloc();
+	list_append(save->codes, _createCmdCode(PATCH_COMMAND,
+		(save->flags & CHEAT_FLAG_LOCKED) ? CHAR_ICON_LOCK " Enable Cheat File" : CHAR_ICON_LOCK "Disable Cheat File",
+		CMD_TOGGLE_CHEAT));
+
 	if (save->flags & CHEAT_FLAG_JSON)
 		return set_json_codes(save);
 
@@ -458,6 +468,7 @@ int ReadOnlineCodes(game_entry_t * game)
 
 	char *tmp = game->path;
 	game->path = path;
+	game->codes = list_alloc();
 
 	if (game->flags & CHEAT_FLAG_JSON)
 		set_json_codes(game);
@@ -913,7 +924,7 @@ static void read_shn_games(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (!endsWith(dir->d_name, ".shn"))
+		if (!endsWith(dir->d_name, ".shn") && !endsWith(dir->d_name, ".shn-disabled"))
 			continue;
 
 		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
@@ -951,6 +962,9 @@ static void read_shn_games(const char* userPath, list_t *list)
 		mxmlDelete(tree);
 		free(buffer);
 
+		if (endsWith(dir->d_name, ".shn-disabled"))
+			item->flags |= CHEAT_FLAG_LOCKED;
+
 		LOG("[%s] F(%d) '%s'", item->title_id, item->flags, item->name);
 		list_append(list, item);
 	}
@@ -972,7 +986,7 @@ static void read_mc4_games(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (!endsWith(dir->d_name, ".mc4"))
+		if (!endsWith(dir->d_name, ".mc4") && !endsWith(dir->d_name, ".mc4-disabled"))
 			continue;
 
 		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
@@ -1027,6 +1041,9 @@ static void read_mc4_games(const char* userPath, list_t *list)
 		mxmlDelete(tree);
 		free(buffer);
 
+		if (endsWith(dir->d_name, ".mc4-disabled"))
+			item->flags |= CHEAT_FLAG_LOCKED;
+
 		LOG("[%s] F(%d) '%s'", item->title_id, item->flags, item->name);
 		list_append(list, item);
 	}
@@ -1049,7 +1066,7 @@ static void read_json_games(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (!endsWith(dir->d_name, ".json"))
+		if (!endsWith(dir->d_name, ".json") && !endsWith(dir->d_name, ".json-disabled"))
 			continue;
 
 		snprintf(fullPath, sizeof(fullPath), "%s%s", userPath, dir->d_name);
@@ -1082,6 +1099,9 @@ static void read_json_games(const char* userPath, list_t *list)
 		cJSON_Delete(cheat);
 		free(buffer);
 
+		if (endsWith(dir->d_name, ".json-disabled"))
+			item->flags |= CHEAT_FLAG_LOCKED;
+
 		LOG("[%s] F(%d) '%s'", item->title_id, item->flags, item->name);
 		list_append(list, item);
 	}
@@ -1110,26 +1130,6 @@ list_t * ReadUserList(const char* userPath)
 		return NULL;
 
 	list = list_alloc();
-
-/*
-	item = createGameEntry(CHEAT_FLAG_PS4, CHAR_ICON_COPY " Bulk Cheats Management");
-	item->type = FILE_TYPE_MENU;
-	item->codes = list_alloc();
-	item->path = strdup(userPath);
-//	item->path = (void*) list; //bulk management hack
-
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_ALL_SAVES);
-	list_append(item->codes, cmd);
-
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy all Saves to USB", CMD_CODE_NULL);
-	cmd->options_count = 1;
-	cmd->options = _createOptions(2, "Copy Saves to USB", CMD_COPY_SAVES_USB);
-	list_append(item->codes, cmd);
-
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_LOCK " Dump all Save Fingerprints", CMD_DUMP_FINGERPRINTS);
-	list_append(item->codes, cmd);
-	list_append(list, item);
-*/
 
 	LOG("Loading JSON files...");
 	snprintf(fullPath, sizeof(fullPath), "%sjson/", userPath);
@@ -1250,152 +1250,4 @@ list_t * ReadOnlineList(const char* urlPath)
 
 	check_game_appdb(list);
 	return list;
-}
-
-int get_save_details(const game_entry_t* save, char **details)
-{
-/*
-	char sfoPath[256];
-	sqlite3 *db;
-	sqlite3_stmt *res;
-
-
-	if (!(save->flags & CHEAT_FLAG_PS4))
-	{
-		asprintf(details, "%s\n\nTitle: %s\n", save->path, save->name);
-		return 1;
-	}
-
-	if (save->flags & CHEAT_FLAG_TROPHY)
-	{
-		if ((db = open_sqlite_db(save->path)) == NULL)
-			return 0;
-
-		char* query = sqlite3_mprintf("SELECT id, description, trophy_num, unlocked_trophy_num, progress,"
-			"platinum_num, unlocked_platinum_num, gold_num, unlocked_gold_num, silver_num, unlocked_silver_num,"
-			"bronze_num, unlocked_bronze_num FROM tbl_trophy_title WHERE id = %d", save->blocks);
-
-		if (sqlite3_prepare_v2(db, query, -1, &res, NULL) != SQLITE_OK || sqlite3_step(res) != SQLITE_ROW)
-		{
-			LOG("Failed to fetch data: %s", sqlite3_errmsg(db));
-			sqlite3_free(query);
-			sqlite3_close(db);
-			return 0;
-		}
-
-		asprintf(details, "Trophy-Set Details\n\n"
-			"Title: %s\n"
-			"Description: %s\n"
-			"NP Comm ID: %s\n"
-			"Progress: %d/%d - %d%%\n"
-			"%c Platinum: %d/%d\n"
-			"%c Gold: %d/%d\n"
-			"%c Silver: %d/%d\n"
-			"%c Bronze: %d/%d\n",
-			save->name, sqlite3_column_text(res, 1), save->title_id,
-			sqlite3_column_int(res, 3), sqlite3_column_int(res, 2), sqlite3_column_int(res, 4),
-			CHAR_TRP_PLATINUM, sqlite3_column_int(res, 6), sqlite3_column_int(res, 5),
-			CHAR_TRP_GOLD, sqlite3_column_int(res, 8), sqlite3_column_int(res, 7),
-			CHAR_TRP_SILVER, sqlite3_column_int(res, 10), sqlite3_column_int(res, 9),
-			CHAR_TRP_BRONZE, sqlite3_column_int(res, 12), sqlite3_column_int(res, 11));
-
-		sqlite3_free(query);
-		sqlite3_finalize(res);
-		sqlite3_close(db);
-
-		return 1;
-	}
-
-	if(save->flags & CHEAT_FLAG_LOCKED)
-	{
-		asprintf(details, "%s\n\n"
-			"Title ID: %s\n"
-			"Dir Name: %s\n"
-			"Blocks: %d\n"
-			"Account ID: %.16s\n",
-			save->path,
-			save->title_id,
-			save->version,
-			save->blocks,
-			save->path + 23);
-
-		return 1;
-	}
-
-	if(save->flags & CHEAT_FLAG_HDD)
-	{
-		if ((db = open_sqlite_db(save->path)) == NULL)
-			return 0;
-
-		char* query = sqlite3_mprintf("SELECT sub_title, detail, free_blocks, size_kib, user_id, account_id FROM savedata "
-			" WHERE title_id = %Q AND dir_name = %Q", save->title_id, save->version);
-
-		if (sqlite3_prepare_v2(db, query, -1, &res, NULL) != SQLITE_OK || sqlite3_step(res) != SQLITE_ROW)
-		{
-			LOG("Failed to fetch data: %s", sqlite3_errmsg(db));
-			sqlite3_free(query);
-			sqlite3_close(db);
-			return 0;
-		}
-
-		asprintf(details, "%s\n\n"
-			"Title: %s\n"
-			"Subtitle: %s\n"
-			"Detail: %s\n"
-			"Dir Name: %s\n"
-			"Blocks: %d (%d Free)\n"
-			"Size: %d Kb\n"
-			"User ID: %08x\n"
-			"Account ID: %016llx\n",
-			save->path, save->name, 
-			sqlite3_column_text(res, 0),
-			sqlite3_column_text(res, 1),
-			save->version,
-			save->blocks, sqlite3_column_int(res, 2), 
-			sqlite3_column_int(res, 3),
-			sqlite3_column_int(res, 4),
-			sqlite3_column_int64(res, 5));
-
-		sqlite3_free(query);
-		sqlite3_finalize(res);
-		sqlite3_close(db);
-
-		return 1;
-	}
-
-	snprintf(sfoPath, sizeof(sfoPath), "%s" "sce_sys/param.sfo", save->path);
-	LOG("Save Details :: Reading %s...", sfoPath);
-
-	sfo_context_t* sfo = sfo_alloc();
-	if (sfo_read(sfo, sfoPath) < 0) {
-		LOG("Unable to read from '%s'", sfoPath);
-		sfo_free(sfo);
-		return 0;
-	}
-
-	char* subtitle = (char*) sfo_get_param_value(sfo, "SUBTITLE");
-	char* detail = (char*) sfo_get_param_value(sfo, "DETAIL");
-	uint64_t* account_id = (uint64_t*) sfo_get_param_value(sfo, "ACCOUNT_ID");
-	sfo_params_ids_t* param_ids = (sfo_params_ids_t*) sfo_get_param_value(sfo, "PARAMS");
-
-	asprintf(details, "%s\n\n"
-		"Title: %s\n"
-		"Subtitle: %s\n"
-		"Detail: %s\n"
-		"Dir Name: %s\n"
-		"Blocks: %d\n"
-		"User ID: %08x\n"
-		"Account ID: %016lx\n",
-		save->path, save->name,
-		subtitle,
-		detail,
-		save->version,
-		save->blocks,
-		param_ids->user_id,
-		*account_id);
-
-	sfo_free(sfo);
-*/
-	asprintf(details, "%s\n", save->path);
-	return 1;
 }

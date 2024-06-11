@@ -46,8 +46,7 @@ enum cmd_code_enum
 
 // Code commands
     CMD_TOGGLE_PATCH,
-    CMD_VIEW_RAW_PATCH,
-    CMD_VIEW_DETAILS,
+    CMD_TOGGLE_CHEAT,
     CMD_DECRYPT_MC4,
 
 // Remove commands
@@ -161,7 +160,6 @@ typedef struct
     list_t* (*ReadList)(const char*);
 } game_list_t;
 
-list_t * ReadUsbList(const char* userPath);
 list_t * ReadUserList(const char* userPath);
 list_t * ReadOnlineList(const char* urlPath);
 list_t * ReadBackupList(const char* userPath);
@@ -199,7 +197,6 @@ void execCodeCommand(code_entry_t* code, const char* codecmd);
 uint64_t patch_hash_calc(const game_entry_t* game, const code_entry_t* code);
 char* mc4_decrypt(const char* data);
 
-int get_save_details(const game_entry_t *save, char** details);
 int orbis_SaveUmount(const char* mountPath);
 int orbis_UpdateSaveParams(const char* mountPath, const char* title, const char* subtitle, const char* details);
 

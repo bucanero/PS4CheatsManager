@@ -79,32 +79,6 @@ static int ReloadUserGames(game_list_t* save_list, const char* message)
 	return list_count(save_list->list);
 }
 
-static code_entry_t* LoadRawPatch(void)
-{
-	size_t len;
-	char patchPath[256];
-	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
-
-	centry->name = strdup(selected_entry->title_id);
-	snprintf(patchPath, sizeof(patchPath), GOLDCHEATS_DATA_PATH "%s.savepatch", selected_entry->title_id);
-	read_buffer(patchPath, (u8**) &centry->codes, &len);
-	centry->codes[len] = 0;
-
-	return centry;
-}
-
-static code_entry_t* LoadSaveDetails(void)
-{
-	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
-	centry->name = strdup(selected_entry->title_id);
-
-	if (!get_save_details(selected_entry, &centry->codes))
-		asprintf(&centry->codes, "Error getting details (%s)", selected_entry->name);
-
-	LOG("%s", centry->codes);
-	return (centry);
-}
-
 static void SetMenu(int id)
 {   
 	switch (menu_id) //Leaving menu
@@ -195,25 +169,7 @@ static void SetMenu(int id)
 			//if entering from game list, don't keep index, otherwise keep
 			if (menu_id == MENU_HDD_CHEATS || menu_id == MENU_ONLINE_DB || menu_id == MENU_HDD_PATCHES || menu_id == MENU_UPDATE_CHEATS)
 				menu_old_sel[MENU_PATCHES] = 0;
-/*
-			char iconfile[256];
-			snprintf(iconfile, sizeof(iconfile), "%s" "sce_sys/icon0.png", selected_entry->path);
 
-			if (selected_entry->flags & CHEAT_FLAG_ONLINE)
-			{
-				snprintf(iconfile, sizeof(iconfile), CHEATSMGR_LOCAL_CACHE "%s.PNG", selected_entry->title_id);
-
-				if (file_exists(iconfile) != SUCCESS)
-					http_download(selected_entry->path, "icon0.png", iconfile, 0);
-			}
-			else if (selected_entry->flags & CHEAT_FLAG_HDD)
-				snprintf(iconfile, sizeof(iconfile), PS4_SAVES_PATH_HDD "%s/%s_icon0.png", gcm_config.user_id, selected_entry->title_id, selected_entry->version);
-
-			if (file_exists(iconfile) == SUCCESS)
-				LoadFileTexture(iconfile, icon_png_file_index);
-			else
-				menu_textures[icon_png_file_index].size = 0;
-*/
 			if (gcm_config.doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
 				Draw_CheatsMenu_Selection_Ani();
 			break;
@@ -609,22 +565,6 @@ static void doPatchMenu(void)
 			{
 				option_index = 0;
 				SetMenu(MENU_CODE_OPTIONS);
-				return;
-			}
-
-			if (selected_centry->codes[0] == CMD_VIEW_RAW_PATCH)
-			{
-				selected_centry->activated = 0;
-				selected_centry = LoadRawPatch();
-				SetMenu(MENU_SAVE_DETAILS);
-				return;
-			}
-
-			if (selected_centry->codes[0] == CMD_VIEW_DETAILS)
-			{
-				selected_centry->activated = 0;
-				selected_centry = LoadSaveDetails();
-				SetMenu(MENU_SAVE_DETAILS);
 				return;
 			}
 		}

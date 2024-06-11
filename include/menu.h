@@ -72,6 +72,7 @@ enum texture_index
 	tag_shn_png_index,
 	tag_mc4_png_index,
 	tag_json_png_index,
+	tag_lock_png_index,
 
 	TOTAL_MENU_TEXTURES
 };
@@ -152,11 +153,9 @@ void drawEndLogo();
 
 int load_app_settings(app_config_t* config);
 int save_app_settings(app_config_t* config);
-int reset_app_settings(app_config_t* config);
 
 int initialize_jbc();
 void terminate_jbc();
-int patch_save_libraries();
 void initMenuOptions();
 
 #endif

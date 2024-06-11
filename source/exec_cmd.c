@@ -49,6 +49,32 @@ static void togglePatch(const game_entry_t* game, const code_entry_t* code)
 	show_message("Patch \"%s\" %s", code->name, code->activated ? "Enabled" : "Disabled");
 }
 
+static void toggleCheatFile(game_entry_t* game, code_entry_t* code)
+{
+	char file_path[256];
+
+	LOG("Toggle cheat file: %s", game->path);
+	if (game->flags & CHEAT_FLAG_LOCKED)
+	{
+		snprintf(file_path, sizeof(file_path), "%s", game->path);
+		*strrchr(file_path, '-') = 0;
+	}
+	else
+		snprintf(file_path, sizeof(file_path), "%s-disabled", game->path);
+
+	if (rename(game->path, file_path) < 0)
+	{
+		LOG("Failed to rename cheat file %s", file_path);
+		return;
+	}
+	game->flags ^= CHEAT_FLAG_LOCKED;
+	free(game->path);
+	asprintf(&game->path, "%s", file_path);
+	memcpy(code->name +1, (game->flags & CHEAT_FLAG_LOCKED) ? "Dis" : " En", 3);
+
+	show_message("Cheat File %s:\n%s", (game->flags & CHEAT_FLAG_LOCKED) ? "Disabled" : "Enabled", game->path);
+}
+
 static void updNetCheats(void)
 {
 	if (!http_download(gcm_config.url_cheats, GOLDCHEATS_FILE, CHEATSMGR_LOCAL_CACHE LOCAL_TEMP_ZIP, 1))
@@ -365,6 +391,10 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 		case CMD_REMOVE_PLUGINS:
 			removePlugins();
 			break;
+
+		case CMD_TOGGLE_CHEAT:
+			toggleCheatFile(selected_entry, code);
+			return;
 
 		case CMD_TOGGLE_PATCH:
 			togglePatch(selected_entry, code);
