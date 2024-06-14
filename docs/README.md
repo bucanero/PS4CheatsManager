@@ -29,7 +29,7 @@ My GitHub projects are open to a [Patreon sponsor program](https://patreon.com/d
 
 # Setup instructions
 
-No special setup is needed. Just download the latest `IV0000-CHTM00777_00-PS4CHEATSMANAGER.pkg` package and install it on your PlayStation 4.
+No special setup is needed. Just download the latest [`IV0000-CHTM00777_00-PS4CHEATSMANAGER.pkg`](https://github.com/bucanero/PS4CheatsManager/releases/latest/download/IV0000-CHTM00777_00-PS4CHEATSMANAGER.pkg) package and install it on your PlayStation 4.
 On first run, the application will detect and setup the required user settings.
 
 # Usage
